@@ -1,0 +1,303 @@
+/* ===== Device UI – Apple Watch Simulator ===== */
+:root {
+  --bg: #000;
+  --fg: #fff;
+  --accent: #00e5ff;
+  --green: #4cd964;
+  --orange: #ff9500;
+  --red: #ff3b30;
+  --gray: #8e8e93;
+  --dark-gray: #1c1c1e;
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #1a1a2e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: var(--font);
+  color: var(--fg);
+}
+
+/* Watch frame */
+.watch-frame {
+  width: 340px;
+  height: 420px;
+  background: #2c2c2e;
+  border-radius: 80px;
+  padding: 18px;
+  box-shadow:
+    0 0 0 4px #3a3a3c,
+    0 0 0 8px #1c1c1e,
+    0 20px 60px rgba(0,0,0,.6);
+  position: relative;
+}
+
+/* Crown button */
+.watch-frame::after {
+  content: '';
+  position: absolute;
+  right: -14px;
+  top: 35%;
+  width: 10px;
+  height: 40px;
+  background: #3a3a3c;
+  border-radius: 0 4px 4px 0;
+}
+
+.watch-frame::before {
+  content: '';
+  position: absolute;
+  right: -12px;
+  top: 52%;
+  width: 8px;
+  height: 22px;
+  background: #3a3a3c;
+  border-radius: 0 3px 3px 0;
+}
+
+.watch-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  border-radius: 62px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Header */
+.watch-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px 8px;
+  font-size: 12px;
+  color: var(--gray);
+}
+
+.watch-header .time {
+  font-weight: 600;
+}
+
+.watch-header .swym-logo {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+/* Content area */
+.watch-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px 18px;
+}
+
+/* ---- Idle / Start Screen ---- */
+.idle-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.idle-screen .swim-icon {
+  font-size: 52px;
+  animation: bob 2s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.idle-screen h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.idle-screen p {
+  font-size: 12px;
+  color: var(--gray);
+  line-height: 1.4;
+}
+
+.btn-start {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 3px solid var(--green);
+  background: rgba(76, 217, 100, .15);
+  color: var(--green);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all .25s ease;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-start:hover {
+  background: rgba(76, 217, 100, .3);
+  transform: scale(1.05);
+}
+
+.btn-start:active {
+  transform: scale(.95);
+}
+
+/* ---- Active Session Screen ---- */
+.session-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 6px;
+}
+
+.session-screen.active {
+  display: flex;
+}
+
+.session-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gray);
+  margin-top: 4px;
+}
+
+/* Metrics */
+.metric {
+  text-align: center;
+  width: 100%;
+  padding: 4px 0;
+}
+
+.metric .value {
+  font-size: 38px;
+  font-weight: 200;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.metric .unit {
+  font-size: 11px;
+  color: var(--gray);
+  font-weight: 500;
+}
+
+.metric.distance .value { color: var(--accent); }
+.metric.time .value { color: var(--green); }
+.metric.pace .value { color: var(--orange); }
+
+.metric-divider {
+  width: 60%;
+  height: 1px;
+  background: var(--dark-gray);
+}
+
+/* Stop button */
+.btn-stop {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 3px solid var(--red);
+  background: rgba(255, 59, 48, .15);
+  color: var(--red);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-top: 6px;
+  transition: all .25s ease;
+}
+
+.btn-stop:hover {
+  background: rgba(255, 59, 48, .3);
+}
+
+/* ---- Summary Screen ---- */
+.summary-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  text-align: center;
+}
+
+.summary-screen.active {
+  display: flex;
+}
+
+.summary-screen h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--green);
+}
+
+.summary-stats {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 16px;
+  background: var(--dark-gray);
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.summary-row .label { color: var(--gray); }
+.summary-row .val { font-weight: 600; }
+
+.btn-new-session {
+  padding: 10px 28px;
+  border-radius: 20px;
+  border: none;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  margin-top: 6px;
+  transition: all .25s ease;
+}
+
+.btn-new-session:hover {
+  opacity: .85;
+}
+
+/* Water ripple bg */
+.water-bg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(0deg, rgba(0,229,255,.08) 0%, transparent 100%);
+  pointer-events: none;
+}

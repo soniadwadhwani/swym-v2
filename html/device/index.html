@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Swym – Swim Session Device</title>
+  <link rel="stylesheet" href="../../css/device.css" />
+</head>
+<body>
+
+  <div class="watch-frame">
+    <div class="watch-screen">
+
+      <!-- Header -->
+      <div class="watch-header">
+        <span class="time" id="clockTime">10:09</span>
+        <span class="swym-logo">SWYM</span>
+      </div>
+
+      <!-- Content -->
+      <div class="watch-content">
+
+        <!-- ===== Idle Screen ===== -->
+        <div class="idle-screen" id="idleScreen">
+          <span class="swim-icon">🏊</span>
+          <h2>Pool Swim</h2>
+          <p>Tap start to begin your swim session</p>
+          <button class="btn-start" id="btnStart">START</button>
+        </div>
+
+        <!-- ===== Active Session Screen ===== -->
+        <div class="session-screen" id="sessionScreen">
+          <span class="session-label">Pool Swim</span>
+
+          <div class="metric distance">
+            <div class="value" id="distValue">0</div>
+            <div class="unit">meters</div>
+          </div>
+
+          <div class="metric-divider"></div>
+
+          <div class="metric time">
+            <div class="value" id="timeValue">00:00</div>
+            <div class="unit">elapsed</div>
+          </div>
+
+          <div class="metric-divider"></div>
+
+          <div class="metric pace">
+            <div class="value" id="paceValue">--:--</div>
+            <div class="unit">min / 100m</div>
+          </div>
+
+          <button class="btn-stop" id="btnStop">STOP</button>
+        </div>
+
+        <!-- ===== Summary Screen ===== -->
+        <div class="summary-screen" id="summaryScreen">
+          <h3>🏁 Session Complete</h3>
+          <div class="summary-stats">
+            <div class="summary-row">
+              <span class="label">Distance</span>
+              <span class="val" id="sumDist">0 m</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Duration</span>
+              <span class="val" id="sumTime">00:00</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Avg Pace</span>
+              <span class="val" id="sumPace">--:--</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Laps (50m)</span>
+              <span class="val" id="sumLaps">0</span>
+            </div>
+          </div>
+          <button class="btn-new-session" id="btnNewSession">New Session</button>
+        </div>
+
+      </div><!-- /watch-content -->
+
+      <div class="water-bg"></div>
+    </div><!-- /watch-screen -->
+  </div><!-- /watch-frame -->
+
+  <script src="../../js/device.js"></script>
+</body>
+</html>

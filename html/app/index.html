@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Swym – Swim Coaching App</title>
+  <link rel="stylesheet" href="../../css/app.css" />
+</head>
+<body>
+
+<div class="phone-frame">
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span id="statusTime">9:41</span>
+    <div class="notch"></div>
+    <span>📶 🔋</span>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- SCREEN : Welcome / Login                                          -->
+  <!-- ================================================================= -->
+  <div class="screen screen-login active" id="screenLogin">
+    <div class="login-hero">
+      <span class="wave-emoji">🏊‍♂️</span>
+      <div class="logo-text">SWYM</div>
+      <div class="tagline">Smart Swimming Companion</div>
+    </div>
+
+    <div class="login-body">
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Sign in to access your swim dashboard</p>
+
+      <div class="form-group">
+        <label>Mobile Number</label>
+        <div class="input-prefix">
+          <span class="country-code">+91</span>
+          <input type="tel" id="inputPhone" placeholder="Enter mobile number" maxlength="10" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="inputPassword" placeholder="Enter password" maxlength="10" autocomplete="off" />
+      </div>
+
+      <p class="error-msg" id="loginError">Invalid phone number or password</p>
+
+      <button class="btn-primary" id="btnLogin">Log In</button>
+      <button class="btn-secondary" id="btnRegister">Create Account</button>
+    </div>
+
+    <div class="login-footer">
+      By continuing you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- SCREEN : Role Selection (for dual-role users)                     -->
+  <!-- ================================================================= -->
+  <div class="screen screen-role-select" id="screenRole">
+    <div class="role-header">
+      <h2>Choose Your Role</h2>
+      <p>You have multiple roles on Swym</p>
+    </div>
+
+    <div class="role-body">
+      <div class="role-card" id="roleCoach">
+        <span class="role-icon">🏅</span>
+        <div class="role-info">
+          <h3>Coach</h3>
+          <p>Manage your swimmers &amp; sessions</p>
+        </div>
+      </div>
+
+      <div class="role-card" id="roleLearner">
+        <span class="role-icon">🏊</span>
+        <div class="role-info">
+          <h3>Learner</h3>
+          <p>Track your progress &amp; workouts</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- SCREEN : Coach Dashboard                                          -->
+  <!-- ================================================================= -->
+  <div class="screen" id="screenCoach">
+    <div class="dash-header">
+      <div class="greeting">Good Morning 👋</div>
+      <div class="user-name">Coach Rajesh</div>
+      <div class="dash-subtitle">Here's your team overview</div>
+    </div>
+
+    <div class="dash-body">
+      <!-- Stats -->
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value">12</div>
+          <div class="stat-label">Learners</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-value">3</div>
+          <div class="stat-label">Sessions Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-value">8</div>
+          <div class="stat-label">Improved</div>
+        </div>
+      </div>
+
+      <!-- Today's Schedule -->
+      <div class="section-title">Today's Schedule</div>
+      <div class="schedule-card">
+        <div class="schedule-time">6:00 AM</div>
+        <div class="schedule-info">
+          <div class="title">Morning Batch</div>
+          <div class="meta">5 learners · Freestyle drills</div>
+        </div>
+      </div>
+      <div class="schedule-card">
+        <div class="schedule-time">4:30 PM</div>
+        <div class="schedule-info">
+          <div class="title">Afternoon Batch</div>
+          <div class="meta">4 learners · Backstroke technique</div>
+        </div>
+      </div>
+
+      <!-- Learners -->
+      <div class="section-title">Your Learners</div>
+      <div class="learner-list">
+        <div class="learner-item">
+          <div class="avatar">AP</div>
+          <div class="learner-info">
+            <div class="name">Ananya Patel</div>
+            <div class="meta">Last session: Yesterday · 1200m</div>
+          </div>
+          <span class="badge badge-green">Active</span>
+        </div>
+        <div class="learner-item">
+          <div class="avatar">RK</div>
+          <div class="learner-info">
+            <div class="name">Rohan Kumar</div>
+            <div class="meta">Last session: 2 days ago · 800m</div>
+          </div>
+          <span class="badge badge-green">Active</span>
+        </div>
+        <div class="learner-item">
+          <div class="avatar">SS</div>
+          <div class="learner-info">
+            <div class="name">Sneha Sharma</div>
+            <div class="meta">Last session: 5 days ago · 600m</div>
+          </div>
+          <span class="badge badge-orange">Inactive</span>
+        </div>
+        <div class="learner-item">
+          <div class="avatar">DW</div>
+          <div class="learner-info">
+            <div class="name">Dev Wadhwani</div>
+            <div class="meta">Last session: Today · 1500m</div>
+          </div>
+          <span class="badge badge-green">Active</span>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="section-title">Quick Actions</div>
+      <div class="quick-actions">
+        <button class="quick-action-btn">
+          <span class="action-icon">📝</span>
+          Assign Drill
+        </button>
+        <button class="quick-action-btn">
+          <span class="action-icon">📊</span>
+          View Reports
+        </button>
+        <button class="quick-action-btn">
+          <span class="action-icon">📩</span>
+          Message
+        </button>
+      </div>
+
+      <button class="btn-logout" id="logoutCoach">Log Out</button>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <div class="nav-item active"><span class="nav-icon">🏠</span>Home</div>
+      <div class="nav-item"><span class="nav-icon">👥</span>Learners</div>
+      <div class="nav-item"><span class="nav-icon">📅</span>Schedule</div>
+      <div class="nav-item"><span class="nav-icon">👤</span>Profile</div>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- SCREEN : Learner Dashboard                                        -->
+  <!-- ================================================================= -->
+  <div class="screen" id="screenLearner">
+    <div class="dash-header">
+      <div class="greeting">Good Morning 👋</div>
+      <div class="user-name">Dev Wadhwani</div>
+      <div class="dash-subtitle">Keep pushing your limits!</div>
+    </div>
+
+    <div class="dash-body">
+      <!-- Stats -->
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-icon">🏊</div>
+          <div class="stat-value">24</div>
+          <div class="stat-label">Sessions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📏</div>
+          <div class="stat-value">18.5k</div>
+          <div class="stat-label">Total Meters</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-value">2:12</div>
+          <div class="stat-label">Best Pace</div>
+        </div>
+      </div>
+
+      <!-- Weekly Progress -->
+      <div class="section-title">Weekly Progress</div>
+      <div style="background:var(--card-bg);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;">
+          <span style="font-weight:600;">Distance Goal</span>
+          <span style="color:var(--primary);font-weight:700;">3,200 / 5,000 m</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" style="width:64%;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:12px;margin-bottom:8px;">
+          <span style="font-weight:600;">Sessions Goal</span>
+          <span style="color:var(--primary);font-weight:700;">3 / 5</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" style="width:60%;"></div>
+        </div>
+      </div>
+
+      <!-- Recent Sessions -->
+      <div class="section-title">Recent Sessions</div>
+      <div class="activity-card">
+        <div class="activity-icon">🏊</div>
+        <div class="activity-info">
+          <div class="title">Pool Swim</div>
+          <div class="details">
+            <span>1,500m</span>
+            <span>32:10</span>
+            <span>Pace 2:08</span>
+          </div>
+        </div>
+        <div class="activity-time">Today</div>
+      </div>
+      <div class="activity-card">
+        <div class="activity-icon">🏊</div>
+        <div class="activity-info">
+          <div class="title">Pool Swim</div>
+          <div class="details">
+            <span>1,200m</span>
+            <span>27:45</span>
+            <span>Pace 2:19</span>
+          </div>
+        </div>
+        <div class="activity-time">Yesterday</div>
+      </div>
+      <div class="activity-card">
+        <div class="activity-icon">🏊</div>
+        <div class="activity-info">
+          <div class="title">Drill Session</div>
+          <div class="details">
+            <span>500m</span>
+            <span>15:30</span>
+            <span>Pace 3:06</span>
+          </div>
+        </div>
+        <div class="activity-time">Apr 17</div>
+      </div>
+
+      <!-- Coach -->
+      <div class="section-title">Your Coach</div>
+      <div class="learner-item">
+        <div class="avatar">RJ</div>
+        <div class="learner-info">
+          <div class="name">Coach Rajesh</div>
+          <div class="meta">Next session: Tomorrow 6:00 AM</div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="section-title">Quick Actions</div>
+      <div class="quick-actions">
+        <button class="quick-action-btn">
+          <span class="action-icon">🏊</span>
+          Start Swim
+        </button>
+        <button class="quick-action-btn">
+          <span class="action-icon">📊</span>
+          My Progress
+        </button>
+        <button class="quick-action-btn">
+          <span class="action-icon">📩</span>
+          Ask Coach
+        </button>
+      </div>
+
+      <button class="btn-logout" id="logoutLearner">Log Out</button>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <div class="nav-item active"><span class="nav-icon">🏠</span>Home</div>
+      <div class="nav-item"><span class="nav-icon">📊</span>Progress</div>
+      <div class="nav-item"><span class="nav-icon">📅</span>Schedule</div>
+      <div class="nav-item"><span class="nav-icon">👤</span>Profile</div>
+    </div>
+  </div>
+
+</div><!-- /phone-frame -->
+
+<script src="../../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Swym – Prototype</title>
+  <style>
+    :root {
+      --primary: #0091EA;
+      --primary-dark: #0277BD;
+      --accent: #00E5FF;
+      --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      font-family: var(--font);
+      background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 50%, #0d1b2a 100%);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .logo { font-size: 64px; font-weight: 800; letter-spacing: 6px; color: var(--accent); margin-bottom: 8px; }
+    .tagline { font-size: 18px; opacity: .7; margin-bottom: 50px; }
+    .cards { display: flex; gap: 32px; flex-wrap: wrap; justify-content: center; }
+    .card {
+      width: 300px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 20px;
+      padding: 36px 28px;
+      text-align: center;
+      text-decoration: none;
+      color: #fff;
+      transition: all .3s ease;
+      backdrop-filter: blur(10px);
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      background: rgba(255,255,255,.1);
+      border-color: var(--accent);
+      box-shadow: 0 12px 40px rgba(0,229,255,.15);
+    }
+    .card .icon { font-size: 52px; margin-bottom: 16px; display: block; }
+    .card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .card p { font-size: 14px; opacity: .65; line-height: 1.5; }
+    .footer { margin-top: 60px; font-size: 13px; opacity: .35; }
+  </style>
+</head>
+<body>
+  <div class="logo">SWYM</div>
+  <div class="tagline">Smart Swimming Companion – Prototype</div>
+
+  <div class="cards">
+    <a href="html/device/index.html" class="card">
+      <span class="icon">⌚</span>
+      <h2>Device Simulator</h2>
+      <p>Apple Watch–style swim session tracker. Start a session and watch distance, time &amp; pace update live.</p>
+    </a>
+
+    <a href="html/app/index.html" class="card">
+      <span class="icon">📱</span>
+      <h2>Swym App</h2>
+      <p>Mobile app interface with Coach &amp; Learner dashboards. Log in with demo accounts to explore.</p>
+    </a>
+  </div>
+
+  <div class="footer">Swym v2 Prototype &middot; Vercel Deploy</div>
+</body>
+</html>
