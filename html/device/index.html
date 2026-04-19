@@ -3,86 +3,147 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Swym – Swim Session Device</title>
+  <title>Swym Monitor – Pool Session Tracker</title>
   <link rel="stylesheet" href="../../css/device.css" />
 </head>
 <body>
 
-  <div class="watch-frame">
-    <div class="watch-screen">
+  <div class="monitor-frame">
+    <span class="monitor-brand">swym</span>
 
-      <!-- Header -->
-      <div class="watch-header">
-        <span class="time" id="clockTime">10:09</span>
-        <span class="swym-logo">SWYM</span>
+    <div class="monitor-screen">
+      <!-- Animated underwater background -->
+      <div class="screen-bg"></div>
+
+      <!-- Header bar -->
+      <div class="monitor-header">
+        <div class="header-left">
+          <span class="logo-mark">swym</span>
+          <span class="monitor-status idle" id="monitorStatus">Standby</span>
+        </div>
+        <div class="header-right">
+          <span>Pool A</span>
+          <span class="clock" id="clockTime">10:09</span>
+        </div>
       </div>
 
-      <!-- Content -->
-      <div class="watch-content">
+      <!-- Content area -->
+      <div class="monitor-content">
 
-        <!-- ===== Idle Screen ===== -->
-        <div class="idle-screen" id="idleScreen">
-          <span class="swim-icon">🏊</span>
-          <h2>Pool Swim</h2>
-          <p>Tap start to begin your swim session</p>
-          <button class="btn-start" id="btnStart">START</button>
+        <!-- ===== Idle View ===== -->
+        <div class="idle-view" id="idleView">
+          <div class="ring-graphic">💍</div>
+          <h2>Ready to Swim</h2>
+          <p>Tap the button to scan your Swym Ring and start a session. Multiple swimmers can join the same pool.</p>
+          <button class="btn-tap-start" id="btnTapStart">Start Session</button>
         </div>
 
-        <!-- ===== Active Session Screen ===== -->
-        <div class="session-screen" id="sessionScreen">
-          <span class="session-label">Pool Swim</span>
-
-          <div class="metric distance">
-            <div class="value" id="distValue">0</div>
-            <div class="unit">meters</div>
-          </div>
-
-          <div class="metric-divider"></div>
-
-          <div class="metric time">
-            <div class="value" id="timeValue">00:00</div>
-            <div class="unit">elapsed</div>
-          </div>
-
-          <div class="metric-divider"></div>
-
-          <div class="metric pace">
-            <div class="value" id="paceValue">--:--</div>
-            <div class="unit">min / 100m</div>
-          </div>
-
-          <button class="btn-stop" id="btnStop">STOP</button>
+        <!-- ===== Swimmer Select ===== -->
+        <div class="swimmer-select" id="swimmerSelect">
+          <h3>🔍 Ring Detected — Select Swimmer</h3>
+          <div id="swimmerList"></div>
+          <button class="btn-cancel-select" id="btnCancelSelect">Cancel</button>
         </div>
 
-        <!-- ===== Summary Screen ===== -->
-        <div class="summary-screen" id="summaryScreen">
-          <h3>🏁 Session Complete</h3>
-          <div class="summary-stats">
-            <div class="summary-row">
-              <span class="label">Distance</span>
-              <span class="val" id="sumDist">0 m</span>
-            </div>
-            <div class="summary-row">
-              <span class="label">Duration</span>
-              <span class="val" id="sumTime">00:00</span>
-            </div>
-            <div class="summary-row">
-              <span class="label">Avg Pace</span>
-              <span class="val" id="sumPace">--:--</span>
-            </div>
-            <div class="summary-row">
-              <span class="label">Laps (50m)</span>
-              <span class="val" id="sumLaps">0</span>
-            </div>
+        <!-- ===== Live Dashboard ===== -->
+        <div class="live-dashboard" id="liveDashboard">
+          <div class="dash-toolbar">
+            <span class="active-count">Active Sessions: <strong id="activeCount">0</strong></span>
+            <button class="btn-add-swimmer" id="btnAddSwimmer">+ Add Swimmer</button>
           </div>
-          <button class="btn-new-session" id="btnNewSession">New Session</button>
+          <div class="session-table-wrap">
+            <table class="session-table">
+              <thead>
+                <tr>
+                  <th>Swimmer</th>
+                  <th>Distance</th>
+                  <th>Time</th>
+                  <th>Pace (min/100m)</th>
+                  <th>Laps</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="sessionTableBody"></tbody>
+            </table>
+          </div>
         </div>
 
-      </div><!-- /watch-content -->
+        <!-- ===== Single Swimmer View (Hotspot 1) ===== -->
+        <div class="single-swimmer-view" id="singleSwimmerView">
+          <div class="single-nav" id="singleNavInline">
+            <span class="single-nav-label" id="singleNavLabel">1 / 0</span>
+          </div>
+          <div class="single-card" id="singleCard">
+            <div class="single-name" id="singleName">--</div>
+            <div class="single-metrics">
+              <div class="single-metric">
+                <div class="single-value accent" id="singleDist">0</div>
+                <div class="single-unit">meters</div>
+              </div>
+              <div class="single-metric">
+                <div class="single-value green" id="singleTime">00:00</div>
+                <div class="single-unit">elapsed</div>
+              </div>
+              <div class="single-metric">
+                <div class="single-value orange" id="singlePace">--:--</div>
+                <div class="single-unit">min/100m</div>
+              </div>
+            </div>
+            <div class="single-extra">
+              <span class="single-laps">Laps: <strong id="singleLaps">0</strong></span>
+            </div>
+          </div>
+        </div>
 
-      <div class="water-bg"></div>
-    </div><!-- /watch-screen -->
-  </div><!-- /watch-frame -->
+        <!-- ===== Leaderboard View (Hotspot 2) ===== -->
+        <div class="leaderboard-view" id="leaderboardView">
+          <div class="lb-title">Leaderboard</div>
+          <div class="lb-list" id="lbList"></div>
+        </div>
+
+      </div><!-- /monitor-content -->
+
+      <!-- Ring detected overlay -->
+      <div class="ring-detected-overlay" id="ringOverlay">
+        <span class="detect-icon">💍</span>
+        <h3 id="detectedName">Ring Detected</h3>
+        <p id="detectedMsg">Binding session…</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="monitor-footer">
+        <span>Swym Monitor v2.0</span>
+        <span id="footerPool">Pool A · 50m</span>
+      </div>
+
+      <!-- Hotspots -->
+      <div class="hotspots">
+        <div class="hotspot" id="hotspot1">
+          <span class="dot-single"></span>
+        </div>
+        <div class="hotspot" id="hotspot2">
+          <span class="dot-tri dot-tri-top"></span>
+          <span class="dot-tri dot-tri-bl"></span>
+          <span class="dot-tri dot-tri-br"></span>
+        </div>
+      </div>
+
+      <!-- Navigator hotspot (right footer) -->
+      <div class="hotspot-nav" id="hotspotNav">
+        <button class="nav-arrow nav-arrow-left" id="navArrowLeft">&#9664;</button>
+        <span class="nav-counter" id="navCounter">1 / 0</span>
+        <button class="nav-arrow nav-arrow-right" id="navArrowRight">&#9654;</button>
+      </div>
+
+    </div><!-- /monitor-screen -->
+
+    <!-- Physical elements -->
+    <div class="monitor-dial"></div>
+    <div class="monitor-icons">
+      <span class="icon-btn">↗</span>
+      <span class="icon-btn">👥</span>
+    </div>
+  </div><!-- /monitor-frame -->
 
   <script src="../../js/device.js"></script>
 </body>
