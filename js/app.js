@@ -1,9 +1,9 @@
-/* ============================================================
-   SWYM App – Full Interactivity
+﻿/* ============================================================
+   SWYM App ΓÇô Full Interactivity
    Converted from React state management to vanilla JS
    ============================================================ */
 
-// ─── DATA ────────────────────────────────────────────────────
+// ΓöÇΓöÇΓöÇ DATA ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 const DRILL_TYPES = [
   { value:'warmup',  label:'Warmup',    color:'#707CFF' },
   { value:'main',    label:'Main Set',  color:'#707CFF' },
@@ -104,7 +104,7 @@ const CHALLENGES = [
     leaderboard:[{fid:'f2',pct:100,val:5,done:true},{fid:'you',pct:80,val:4,done:false},{fid:'f1',pct:60,val:3,done:false},{fid:'f3',pct:40,val:2,done:false}] },
 ];
 
-// ─── STATE ───────────────────────────────────────────────────
+// ΓöÇΓöÇΓöÇ STATE ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 let activeScreen = 'home';
 let todaySet = null;
 let setHistory = {...MOCK_HISTORY};
@@ -118,7 +118,7 @@ let communityView = 'leaderboard';
 let selectedChallenge = 'c1';
 let viewingLegendId = null;
 
-// ─── HELPERS ─────────────────────────────────────────────────
+// ΓöÇΓöÇΓöÇ HELPERS ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 const $ = id => document.getElementById(id);
 const pad2 = n => String(n).padStart(2,'0');
 const fmtPace = s => Math.floor(s/60)+':'+pad2(s%60);
@@ -149,7 +149,7 @@ function drillIconLg(type) {
   return drillIcon(type).replace(/width="14"/g,'width="18"').replace(/height="14"/g,'height="18"');
 }
 
-// ─── NAVIGATION ──────────────────────────────────────────────
+// ΓöÇΓöÇΓöÇ NAVIGATION ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 function navTo(screen) {
   activeScreen = screen;
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -171,7 +171,7 @@ function navTo(screen) {
   if(screen==='analytics') renderAnalytics();
 }
 
-// ─── HOME SCREEN ─────────────────────────────────────────────
+// ΓöÇΓöÇΓöÇ HOME SCREEN ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 function renderHome() {
   const el = $('homeWorkout');
   if(todaySet) {
@@ -182,10 +182,10 @@ function renderHome() {
     // Render drills
     $('homeDrills').innerHTML = todaySet.drills.map(d => {
       const m = drillMeta(d.type);
-      return `<div class="drill-row">${drillIcon(d.type)}<span class="f12 cw50 f1">${m.label} — ${d.reps>1?d.reps+'×':''}${d.distance}m ${d.stroke}</span><span class="f10 cw20 tabular">${d.paceMin}:${pad2(d.paceSec)}</span></div>`;
+      return `<div class="drill-row">${drillIcon(d.type)}<span class="f12 cw50 f1">${m.label} ΓÇö ${d.reps>1?d.reps+'├ù':''}${d.distance}m ${d.stroke}</span><span class="f10 cw20 tabular">${d.paceMin}:${pad2(d.paceSec)}</span></div>`;
     }).join('');
     $('homeDrillSummary').classList.remove('hidden');
-    $('homeDrillSummary').textContent = todaySet.drills.length+' drills · '+fmtDist(total)+' total';
+    $('homeDrillSummary').textContent = todaySet.drills.length+' drills ┬╖ '+fmtDist(total)+' total';
     $('homeNoSet').classList.add('hidden');
     $('homeWorkoutBtn').innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 9l4-4 2 2 4-4M8 3h3v3"/></svg>Pair Device to Start Workout<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h8m-3-3 3 3-3 3"/></svg>';
     $('homeWorkoutBtn').onclick = () => showSetOverview();
@@ -202,7 +202,7 @@ function renderHome() {
   }
 }
 
-// ─── TRAIN SCREEN ────────────────────────────────────────────
+// ΓöÇΓöÇΓöÇ TRAIN SCREEN ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 function renderTrain() {
   // Date
   $('dateLabel').textContent = displayDate(selectedDate);
@@ -271,7 +271,7 @@ function renderDrillsReadOnly(set) {
       <div style="display:flex;flex-direction:column;gap:8px">
         ${set.drills.map((d,i) => {
           const m = drillMeta(d.type);
-          return `<div class="drill-row-light"><span class="f10 c15" style="width:12px">${i+1}</span>${drillIcon(d.type)}<div class="f1"><span class="f12 c70">${m.label}</span><span class="f10 c25 ml-2">${d.reps>1?d.reps+'×':''}${d.distance}m ${d.stroke}</span></div><span class="f10 c20 tabular">${d.paceMin}:${pad2(d.paceSec)}</span></div>`;
+          return `<div class="drill-row-light"><span class="f10 c15" style="width:12px">${i+1}</span>${drillIcon(d.type)}<div class="f1"><span class="f12 c70">${m.label}</span><span class="f10 c25 ml-2">${d.reps>1?d.reps+'├ù':''}${d.distance}m ${d.stroke}</span></div><span class="f10 c20 tabular">${d.paceMin}:${pad2(d.paceSec)}</span></div>`;
         }).join('')}
       </div>
     </div>
@@ -316,7 +316,7 @@ function renderDrills() {
       <button class="drill-hdr" onclick="toggleDrill('${drill.id}')">
         <div class="flex ic gap-1 c10"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 3v8M9 3v8"/></svg><span class="f10" style="width:16px">${i+1}</span></div>
         <div style="width:36px;height:36px;border-radius:12px;background:rgba(112,124,255,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0">${drillIconLg(drill.type)}</div>
-        <div class="f1"><div class="f14 c-dark">${m.label}</div><div class="f10 c25 mt-1">${drill.reps>1?drill.reps+' × ':''}${drill.distance}m ${drill.stroke} · ${drill.paceMin}:${pad2(drill.paceSec)}/100m</div></div>
+        <div class="f1"><div class="f14 c-dark">${m.label}</div><div class="f10 c25 mt-1">${drill.reps>1?drill.reps+' ├ù ':''}${drill.distance}m ${drill.stroke} ┬╖ ${drill.paceMin}:${pad2(drill.paceSec)}/100m</div></div>
         <svg width="14" height="14" fill="none" stroke="rgba(20,12,50,.15)" stroke-width="1.5" style="transition:transform .2s;${exp?'transform:rotate(180deg)':''}"><polyline points="3,5 7,9 11,5"/></svg>
       </button>
       <div class="drill-body ${exp?'open':''}">
@@ -426,7 +426,7 @@ $('btnDatePrev').addEventListener('click', ()=>{ selectedDate.setDate(selectedDa
 $('btnDateNext').addEventListener('click', ()=>{ const t=new Date(); if(selectedDate<t){selectedDate.setDate(selectedDate.getDate()+1); renderTrain();} });
 $('btnAddDrill').addEventListener('click', showDrillPicker);
 
-// ─── SET OVERVIEW ────────────────────────────────────────────
+// ΓöÇΓöÇΓöÇ SET OVERVIEW ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 function showSetOverview() {
   if(!todaySet) return;
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -465,7 +465,7 @@ function showSetOverview() {
     return `<div style="background:rgba(255,255,255,.04);border-radius:18px;padding:16px;border:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:16px">
       <span class="f10 cw10" style="width:12px;text-align:center">${i+1}</span>
       <div style="width:40px;height:40px;border-radius:12px;background:rgba(112,124,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">${drillIconLg(d.type)}</div>
-      <div class="f1"><div class="flex ic gap-2"><span class="f14" style="color:white">${m.label}</span><span class="f10 cw15">·</span><span class="f10 cw30">${d.stroke}</span></div><div class="f11 cw20 mt-1">${d.reps>1?d.reps+' × ':''}${d.distance}m @ ${d.paceMin}:${pad2(d.paceSec)}/100m${d.rest>0?' · '+d.rest+'s rest':''}</div></div>
+      <div class="f1"><div class="flex ic gap-2"><span class="f14" style="color:white">${m.label}</span><span class="f10 cw15">┬╖</span><span class="f10 cw30">${d.stroke}</span></div><div class="f11 cw20 mt-1">${d.reps>1?d.reps+' ├ù ':''}${d.distance}m @ ${d.paceMin}:${pad2(d.paceSec)}/100m${d.rest>0?' ┬╖ '+d.rest+'s rest':''}</div></div>
     </div>`;
   }).join('');
 }
@@ -474,7 +474,7 @@ function hideSetOverview() {
   navTo('home');
 }
 
-// ─── COMMUNITY ───────────────────────────────────────────────
+// ΓöÇΓöÇΓöÇ COMMUNITY ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 function renderCommunity() {
   renderCommunityView();
   renderChallenges();
@@ -546,7 +546,7 @@ function renderLegends() {
     </div>`).join('');
 }
 
-// ─── LEGEND SETS VIEWER ──────────────────────────────────────
+// ΓöÇΓöÇΓöÇ LEGEND SETS VIEWER ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 function showLegendSets(legendId) {
   viewingLegendId = legendId;
   const legend = LEGENDS.find(l=>l.id===legendId);
@@ -578,7 +578,7 @@ function showLegendSets(legendId) {
         <div class="st-bg"><div class="v-lg c-dark">${set.drills.length}</div><div class="f8 c20" style="letter-spacing:.05em">drills</div></div>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
-        ${set.drills.map((d,i) => `<div class="drill-row-light"><span class="f10 c15" style="width:12px">${i+1}</span>${drillIcon(d.type)}<div class="f1"><span class="f12 c70">${drillMeta(d.type).label}</span><span class="f10 c25 ml-2">${d.reps>1?d.reps+'×':''}${d.distance}m ${d.stroke}</span></div><span class="f10 c20 tabular">${d.paceMin}:${pad2(d.paceSec)}</span></div>`).join('')}
+        ${set.drills.map((d,i) => `<div class="drill-row-light"><span class="f10 c15" style="width:12px">${i+1}</span>${drillIcon(d.type)}<div class="f1"><span class="f12 c70">${drillMeta(d.type).label}</span><span class="f10 c25 ml-2">${d.reps>1?d.reps+'├ù':''}${d.distance}m ${d.stroke}</span></div><span class="f10 c20 tabular">${d.paceMin}:${pad2(d.paceSec)}</span></div>`).join('')}
       </div>
       <div class="flex gap-2">
         <button class="f1 flex ic jc gap-2" style="background:white;border:1px solid var(--sage);color:var(--dark);padding:12px;border-radius:16px;font-size:12px;letter-spacing:.05em;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.03)" onclick="copyLegendSet('${legendId}',${idx})"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="8" height="8" rx="1"/><path d="M6 3V1h8v8h-2"/></svg>Copy Set</button>
@@ -605,7 +605,7 @@ function toggleLegendGhost(legendId) {
   showLegendSets(legendId);
 }
 
-// ─── ANALYTICS ───────────────────────────────────────────────
+// ΓöÇΓöÇΓöÇ ANALYTICS ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 function renderAnalytics() {
   renderPaceChart();
   renderVolumeBars();
@@ -677,7 +677,7 @@ function renderPerfBars() {
   $('overallScore').textContent = Math.round(metrics.reduce((s,m)=>s+m.v,0)/metrics.length)+'%';
 }
 
-// ─── WORKOUT REVIEW ──────────────────────────────────────────
+// ΓöÇΓöÇΓöÇ WORKOUT REVIEW ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 function showWorkoutReview() {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   $('scrWorkoutReview').classList.add('active');
@@ -691,7 +691,7 @@ function showWorkoutReview() {
     return `<button class="cw w100" style="text-align:left;border:none;cursor:pointer;padding:20px" onclick="showSetDetail('${set.id}')">
       <div class="flex is gap-4 mb-4">
         <div style="width:44px;height:44px;border-radius:16px;background:rgba(112,124,255,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0">${drillIconLg(set.type).replace(/width="18"/g,'width="20"').replace(/height="18"/g,'height="20"')}</div>
-        <div class="f1"><div class="flex ic gap-2 mb-1"><span class="v-md c-dark">${m.label}</span><span class="f10 c15">•</span><span class="f10 c30">${set.stroke}</span></div><div class="f12 c40">${set.actualDistance}m · ${set.laps.length} laps</div></div>
+        <div class="f1"><div class="flex ic gap-2 mb-1"><span class="v-md c-dark">${m.label}</span><span class="f10 c15">ΓÇó</span><span class="f10 c30">${set.stroke}</span></div><div class="f12 c40">${set.actualDistance}m ┬╖ ${set.laps.length} laps</div></div>
         <svg width="16" height="16" fill="none" stroke="rgba(20,12,50,.15)" stroke-width="1.5" style="flex-shrink:0"><path d="M6 3l5 5-5 5"/></svg>
       </div>
       <div class="g3">
@@ -711,7 +711,7 @@ function hideWorkoutReview() {
   navTo('analytics');
 }
 
-// ─── SET DETAIL ──────────────────────────────────────────────
+// ΓöÇΓöÇΓöÇ SET DETAIL ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 function showSetDetail(setId) {
   const w = COMPLETED_WORKOUT;
   const set = w.sets.find(s=>s.id===setId);
@@ -720,8 +720,8 @@ function showSetDetail(setId) {
   $('scrSetDetail').classList.add('active');
   $('bottomNav').style.display='none';
 
-  $('sdTitle').textContent = set.stroke+' · '+set.actualDistance+'m';
-  $('sdSubtitle').textContent = set.laps.length+' laps × 50m';
+  $('sdTitle').textContent = set.stroke+' ┬╖ '+set.actualDistance+'m';
+  $('sdSubtitle').textContent = set.laps.length+' laps ├ù 50m';
 
   const diff = set.avgPace100m - set.targetPace;
   const faster = diff<0;
@@ -741,8 +741,8 @@ function showSetDetail(setId) {
 
   // Fastest/Slowest
   $('sdFastSlow').innerHTML = `
-    <div class="cw" style="padding:20px"><div class="flex ic gap-2 mb-3"><svg width="14" height="14" fill="none" stroke="#16a34a" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M7 4v6M4.5 7h5"/></svg><span class="f10 c25" style="letter-spacing:.15em">FASTEST LAP</span></div><div class="v-2xl text-green mb-1">#${fastest.n}</div><div class="f12 c40">${fastest.t}s · ${fmtPace(fastest.p)}/100m</div></div>
-    <div class="cw" style="padding:20px"><div class="flex ic gap-2 mb-3"><svg width="14" height="14" fill="none" stroke="#ef4444" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M7 4v3M7 9v.5"/></svg><span class="f10 c25" style="letter-spacing:.15em">SLOWEST LAP</span></div><div class="v-2xl text-red mb-1">#${slowest.n}</div><div class="f12 c40">${slowest.t}s · ${fmtPace(slowest.p)}/100m</div></div>`;
+    <div class="cw" style="padding:20px"><div class="flex ic gap-2 mb-3"><svg width="14" height="14" fill="none" stroke="#16a34a" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M7 4v6M4.5 7h5"/></svg><span class="f10 c25" style="letter-spacing:.15em">FASTEST LAP</span></div><div class="v-2xl text-green mb-1">#${fastest.n}</div><div class="f12 c40">${fastest.t}s ┬╖ ${fmtPace(fastest.p)}/100m</div></div>
+    <div class="cw" style="padding:20px"><div class="flex ic gap-2 mb-3"><svg width="14" height="14" fill="none" stroke="#ef4444" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M7 4v3M7 9v.5"/></svg><span class="f10 c25" style="letter-spacing:.15em">SLOWEST LAP</span></div><div class="v-2xl text-red mb-1">#${slowest.n}</div><div class="f12 c40">${slowest.t}s ┬╖ ${fmtPace(slowest.p)}/100m</div></div>`;
 
   // Split analysis
   const half = Math.floor(set.laps.length/2);
@@ -781,7 +781,7 @@ function showSetDetail(setId) {
   $('sdInsights').innerHTML = `
     <div class="flex ic gap-2 mb-4"><div style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center"><svg width="11" height="11" fill="none" stroke="white" stroke-width="1.5"><path d="M5.5 1v1M5.5 9v1M1 5.5h1M9 5.5h1"/></svg></div><span class="f10" style="color:rgba(255,255,255,.4);letter-spacing:.15em">COACHING INSIGHTS</span></div>
     ${insights.map(i=>`<div class="flex gap-3"><div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4);margin-top:8px;flex-shrink:0"></div><p class="f14 lh-relaxed f1 fw300" style="color:rgba(255,255,255,.95)">${i}</p></div>`).join('')}
-    <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.1)"><div class="f10 cw30 mb-2" style="letter-spacing:.05em">NEXT STEPS</div><p class="f12 lh-relaxed fw300" style="color:rgba(255,255,255,.7)">Focus on maintaining pace consistency in the middle portion. Your data shows you have the capacity — train your mind to stay locked in when fatigue sets in.</p></div>`;
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.1)"><div class="f10 cw30 mb-2" style="letter-spacing:.05em">NEXT STEPS</div><p class="f12 lh-relaxed fw300" style="color:rgba(255,255,255,.7)">Focus on maintaining pace consistency in the middle portion. Your data shows you have the capacity ΓÇö train your mind to stay locked in when fatigue sets in.</p></div>`;
 }
 
 function renderLapChart(set) {
@@ -838,6 +838,6 @@ function hideSetDetail() {
   showWorkoutReview();
 }
 
-// ─── INIT ────────────────────────────────────────────────────
+// ΓöÇΓöÇΓöÇ INIT ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 renderHome();
 renderAnalytics();
