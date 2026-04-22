@@ -47,29 +47,17 @@ function goTo(id) {
   currentScreen = id;
 }
 
-function selectRole(role) {
-  currentRole = role;
-  const t = document.getElementById('loginTitle');
-  const s = document.getElementById('loginSub');
-  if (role === 'coach') {
-    t.textContent = 'Coach Sign In';
-    s.textContent = 'Enter your coach credentials';
-  } else {
-    t.textContent = 'Sign In';
-    s.textContent = 'Enter your credentials';
-  }
-  goTo('scrLogin');
-}
-
 function doLogin() {
   const u = document.getElementById('inputUser').value.trim().toLowerCase();
   const p = document.getElementById('inputPass').value.trim();
   const err = document.getElementById('loginError');
-  if (currentRole === 'swimmer' && u === 'swimmer' && p === '000') {
+  if (u === 'swimmer' && p === '000') {
     err.textContent = '';
+    currentRole = 'swimmer';
     enterSwimmerApp();
-  } else if (currentRole === 'coach' && u === 'coach' && p === '000') {
+  } else if (u === 'coach' && p === '000') {
     err.textContent = '';
+    currentRole = 'coach';
     goTo('scrCoachRole');
   } else {
     err.textContent = 'Invalid credentials. Try again.';
@@ -81,6 +69,45 @@ function enterSwimmerApp() {
   document.getElementById('coachNav').style.display = 'none';
   navTo('home');
   initSwimmerScreens();
+}
+
+function pairDevice() {
+  const btn = document.getElementById('btnPair');
+  const dot = document.getElementById('ringDot');
+  const label = document.getElementById('ringLabel');
+  // Stage 1: Connecting
+  btn.disabled = true;
+  btn.innerHTML = '<span class="pair-spinner"></span> Connecting…';
+  dot.style.background = '#fbbf24';
+  dot.classList.add('pulse-dot');
+  label.textContent = 'Connecting…';
+  setTimeout(function() {
+    // Stage 2: Connected
+    dot.style.background = '#34d399';
+    dot.classList.remove('pulse-dot');
+    label.textContent = 'Ring Connected';
+    btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="4,8 7,11 12,5"/></svg> Connected';
+    btn.style.opacity = '.7';
+  }, 2000);
+}
+
+function doSignup() {
+  const name = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const pass = document.getElementById('signupPass').value;
+  const confirm = document.getElementById('signupConfirm').value;
+  const err = document.getElementById('signupError');
+  if (!name || !email || !pass) { err.textContent = 'Please fill in all fields.'; return; }
+  if (pass !== confirm) { err.textContent = 'Passwords do not match.'; return; }
+  err.textContent = '';
+  const role = document.querySelector('.onb-role-opt.active');
+  currentRole = role ? role.dataset.role : 'swimmer';
+  if (currentRole === 'coach') { enterCoachApp(); } else { enterSwimmerApp(); }
+}
+
+function pickRole(r) {
+  document.querySelectorAll('.onb-role-opt').forEach(b => b.classList.remove('active'));
+  document.querySelector('.onb-role-opt[data-role="'+r+'"]').classList.add('active');
 }
 
 function enterCoachApp() {

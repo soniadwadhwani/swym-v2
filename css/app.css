@@ -494,9 +494,12 @@ button, .nav-btn, .chip, .badge-ghost { user-select: none; -webkit-user-select: 
 /* ============================================================
    Onboarding
    ============================================================ */
-.onb-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 32px;text-align:center;background:linear-gradient(180deg,#111033 0%,#2A324E 100%);min-height:100%}
+.onb-screen{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 32px;text-align:center;min-height:100%;overflow:hidden}
+.onb-screen video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.onb-screen .onb-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(17,16,51,.92),rgba(17,16,51,.88) 50%,rgba(17,16,51,.96))}
+.onb-screen>*:not(video):not(.onb-overlay){position:relative;z-index:10}
 .onb-logo{width:120px;margin-bottom:24px;filter:brightness(1.1)}
-.onb-title{font-family:var(--font-head);font-size:28px;color:white;margin-bottom:8px}
+.onb-title{font-family:var(--font-head);font-size:22px;color:white;margin-bottom:8px}
 .onb-sub{font-size:15px;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:48px;max-width:280px}
 .onb-btn{width:100%;max-width:280px;padding:16px;border-radius:16px;border:none;font-size:15px;font-family:var(--font-body);cursor:pointer;transition:transform .15s;letter-spacing:.03em}
 .onb-btn:active{transform:scale(.97)}
@@ -512,6 +515,21 @@ button, .nav-btn, .chip, .badge-ghost { user-select: none; -webkit-user-select: 
 .onb-role-title{font-family:var(--font-head);font-size:16px;margin-bottom:4px}
 .onb-role-desc{font-size:13px;color:rgba(255,255,255,.4)}
 .onb-error{color:#f87171;font-size:13px;margin-bottom:12px;min-height:20px}
+.onb-skip{position:absolute;top:16px;right:20px;z-index:20;background:none;border:none;color:rgba(255,255,255,.5);font-size:14px;font-family:var(--font-body);cursor:pointer;letter-spacing:.03em;transition:color .2s}
+.onb-skip:hover{color:rgba(255,255,255,.8)}
+.onb-illustration{margin-bottom:32px;opacity:.9}
+.onb-dots{display:flex;gap:8px;justify-content:center;margin-bottom:32px}
+.onb-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .3s}
+.onb-dot.active{width:24px;border-radius:4px;background:#D4ECF1}
+.onb-terms{font-size:11px;color:rgba(255,255,255,.35);margin-top:16px;line-height:1.5;max-width:260px}
+.onb-terms a{color:rgba(212,236,241,.6);text-decoration:none}
+.onb-role-toggle{display:flex;width:100%;max-width:280px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.15);margin-bottom:12px;background:rgba(255,255,255,.04)}
+.onb-role-opt{flex:1;padding:14px 0;background:transparent;border:none;color:rgba(255,255,255,.5);font-size:15px;font-weight:500;font-family:var(--font-body);cursor:pointer;transition:all .2s;letter-spacing:.02em;text-align:center;display:flex;align-items:center;justify-content:center}
+.onb-role-opt.active{background:rgba(212,236,241,.2);color:#fff}
+@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}
+.pulse-dot{animation:pulseDot .8s ease-in-out infinite}
+.pair-spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(17,16,51,.2);border-top-color:#111033;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
 /* ============================================================
    Quick Actions
    ============================================================ */

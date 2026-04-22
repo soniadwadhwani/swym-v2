@@ -12,46 +12,134 @@
   <!-- WELCOME -->
   <div class="screen active" id="scrWelcome">
     <div class="onb-screen">
+      <video autoplay loop muted playsinline preload="auto" src="../../videos/water.mp4"></video>
+      <div class="onb-overlay"></div>
       <img src="../../images/swym-logo-transparent.png" alt="SWYM" class="onb-logo" />
-      <h1 class="onb-title">Welcome to SWYM</h1>
+      <h1 class="onb-title">Swim Your Pace</h1>
       <p class="onb-sub">Train smarter. Swim stronger. Compete globally.</p>
-      <button class="onb-btn onb-btn-primary" onclick="goTo('scrRole')">Get Started</button>
+      <button class="onb-btn onb-btn-primary" onclick="goTo('scrOnb1')">Get Started</button>
+      <button class="onb-btn onb-btn-outline" onclick="goTo('scrLogin')">Log In</button>
     </div>
   </div>
 
-  <!-- ROLE SELECT -->
-  <div class="screen" id="scrRole">
+  <!-- ONBOARDING 1 -->
+  <div class="screen" id="scrOnb1">
     <div class="onb-screen">
-      <h1 class="onb-title">Choose Your Role</h1>
-      <p class="onb-sub">How will you use SWYM?</p>
-      <button class="onb-role-btn" onclick="selectRole('swimmer')">
-        <div class="onb-role-icon"><svg width="24" height="24" fill="none" stroke="white" stroke-width="1.5"><path d="M2 12c2-3 4-5 6-5s4 2 6 5c2 3 4 5 6 5"/></svg></div>
-        <div class="onb-role-text"><div class="onb-role-title">Swimmer</div><div class="onb-role-desc">Track, train, and compete</div></div>
-      </button>
-      <button class="onb-role-btn" onclick="selectRole('coach')">
-        <div class="onb-role-icon"><svg width="24" height="24" fill="none" stroke="white" stroke-width="1.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div>
-        <div class="onb-role-text"><div class="onb-role-title">Coach</div><div class="onb-role-desc">Manage athletes and plans</div></div>
-      </button>
+      <video autoplay loop muted playsinline preload="auto" src="../../videos/water.mp4"></video>
+      <div class="onb-overlay"></div>
+      <button class="onb-skip" onclick="enterSwimmerApp()">Skip</button>
+      <div class="onb-illustration">
+        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+          <circle cx="60" cy="60" r="56" stroke="rgba(212,236,241,.15)" stroke-width="2"/>
+          <path d="M30 65c5-8 12-18 20-18s12 10 20 18c8 8 15 15 20 15" stroke="#D4ECF1" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="60" cy="38" r="12" stroke="#98C0C8" stroke-width="2"/>
+          <path d="M48 38h24" stroke="#98C0C8" stroke-width="1.5"/>
+          <path d="M60 26v24" stroke="#98C0C8" stroke-width="1.5"/>
+          <path d="M38 80l6-10 8 6 10-14 8 8 12-6" stroke="#D4ECF1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="38" cy="80" r="3" fill="#D4ECF1"/>
+          <circle cx="82" cy="64" r="3" fill="#D4ECF1"/>
+        </svg>
+      </div>
+      <h1 class="onb-title">Train Smarter</h1>
+      <p class="onb-sub">AI-powered swim guidance built around your pace, recovery, and goals.</p>
+      <div class="onb-dots"><span class="onb-dot active"></span><span class="onb-dot"></span><span class="onb-dot"></span></div>
+      <button class="onb-btn onb-btn-primary" onclick="goTo('scrOnb2')">Next</button>
+    </div>
+  </div>
+
+  <!-- ONBOARDING 2 -->
+  <div class="screen" id="scrOnb2">
+    <div class="onb-screen">
+      <video autoplay loop muted playsinline preload="auto" src="../../videos/water.mp4"></video>
+      <div class="onb-overlay"></div>
+      <button class="onb-skip" onclick="enterSwimmerApp()">Skip</button>
+      <div class="onb-illustration">
+        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+          <circle cx="60" cy="60" r="56" stroke="rgba(212,236,241,.15)" stroke-width="2"/>
+          <circle cx="60" cy="52" r="18" stroke="#D4ECF1" stroke-width="2.5"/>
+          <circle cx="60" cy="52" r="6" fill="#98C0C8" opacity=".6"/>
+          <path d="M60 70v20" stroke="#D4ECF1" stroke-width="2" stroke-linecap="round"/>
+          <path d="M48 82h24" stroke="#D4ECF1" stroke-width="2" stroke-linecap="round"/>
+          <path d="M26 55c0 0 8-3 14 2" stroke="#98C0C8" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 3"/>
+          <path d="M94 55c0 0-8-3-14 2" stroke="#98C0C8" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 3"/>
+          <circle cx="26" cy="55" r="4" stroke="#98C0C8" stroke-width="1.5"/>
+          <circle cx="94" cy="55" r="4" stroke="#98C0C8" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <h1 class="onb-title">Swim Connected</h1>
+      <p class="onb-sub">Pair your smart ring for real-time pacing, effort tracking, and live feedback.</p>
+      <div class="onb-dots"><span class="onb-dot"></span><span class="onb-dot active"></span><span class="onb-dot"></span></div>
+      <button class="onb-btn onb-btn-primary" onclick="goTo('scrOnb3')">Next</button>
+    </div>
+  </div>
+
+  <!-- ONBOARDING 3 -->
+  <div class="screen" id="scrOnb3">
+    <div class="onb-screen">
+      <video autoplay loop muted playsinline preload="auto" src="../../videos/water.mp4"></video>
+      <div class="onb-overlay"></div>
+      <button class="onb-skip" onclick="enterSwimmerApp()">Skip</button>
+      <div class="onb-illustration">
+        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+          <circle cx="60" cy="60" r="56" stroke="rgba(212,236,241,.15)" stroke-width="2"/>
+          <rect x="36" y="30" width="48" height="64" rx="8" stroke="#D4ECF1" stroke-width="2.5"/>
+          <path d="M44 48h32M44 58h24M44 68h28" stroke="#98C0C8" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="40" cy="48" r="2.5" fill="#F6AA38"/>
+          <circle cx="40" cy="58" r="2.5" fill="#D4ECF1"/>
+          <circle cx="40" cy="68" r="2.5" fill="#98C0C8"/>
+          <path d="M72 36l8-8M80 28l-4 2M80 28l-2 4" stroke="#F6AA38" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1 class="onb-title">Compete Globally</h1>
+      <p class="onb-sub">Challenge friends, race legends, climb leaderboards, and unlock achievements.</p>
+      <div class="onb-dots"><span class="onb-dot"></span><span class="onb-dot"></span><span class="onb-dot active"></span></div>
+      <button class="onb-btn onb-btn-primary" onclick="goTo('scrSignup')">Start Swimming</button>
+    </div>
+  </div>
+
+  <!-- CREATE ACCOUNT -->
+  <div class="screen" id="scrSignup">
+    <div class="onb-screen">
+      <video autoplay loop muted playsinline preload="auto" src="../../videos/water.mp4"></video>
+      <div class="onb-overlay"></div>
+      <img src="../../images/swym-logo-transparent.png" alt="SWYM" class="onb-logo" style="width:80px;margin-bottom:16px" />
+      <h1 class="onb-title">Create Your Account</h1>
+      <p class="onb-sub" style="margin-bottom:24px">Set up your profile to get started</p>
+      <input class="onb-input" id="signupName" type="text" placeholder="Full Name" autocomplete="off" />
+      <input class="onb-input" id="signupEmail" type="email" placeholder="Email" autocomplete="off" />
+      <input class="onb-input" id="signupPass" type="password" placeholder="Create Password" />
+      <input class="onb-input" id="signupConfirm" type="password" placeholder="Confirm Password" />
+      <div class="onb-role-toggle" id="roleToggle">
+        <button class="onb-role-opt active" data-role="swimmer" onclick="pickRole('swimmer')">Swimmer</button>
+        <button class="onb-role-opt" data-role="coach" onclick="pickRole('coach')">Coach</button>
+      </div>
+      <div class="onb-error" id="signupError"></div>
+      <button class="onb-btn onb-btn-primary" onclick="doSignup()" style="margin-top:4px">Create Account</button>
+      <p class="onb-terms">By signing up you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a></p>
     </div>
   </div>
 
   <!-- LOGIN -->
   <div class="screen" id="scrLogin">
     <div class="onb-screen">
+      <video autoplay loop muted playsinline preload="auto" src="../../videos/water.mp4"></video>
+      <div class="onb-overlay"></div>
       <img src="../../images/swym-logo-transparent.png" alt="SWYM" class="onb-logo" />
-      <h1 class="onb-title" id="loginTitle">Sign In</h1>
-      <p class="onb-sub" id="loginSub">Enter your credentials</p>
+      <h1 class="onb-title">Sign In</h1>
+      <p class="onb-sub">Enter your credentials</p>
       <div class="onb-error" id="loginError"></div>
       <input class="onb-input" id="inputUser" type="text" placeholder="Username" autocomplete="off" />
       <input class="onb-input" id="inputPass" type="password" placeholder="Password" />
       <button class="onb-btn onb-btn-primary" onclick="doLogin()" style="margin-top:8px">Sign In</button>
-      <button class="onb-btn onb-btn-outline" onclick="goTo('scrRole')">Back</button>
+      <button class="onb-btn onb-btn-outline" onclick="goTo('scrWelcome')">Back</button>
     </div>
   </div>
 
   <!-- COACH ROLE SELECTOR -->
   <div class="screen" id="scrCoachRole">
     <div class="onb-screen">
+      <video autoplay loop muted playsinline preload="auto" src="../../videos/water.mp4"></video>
+      <div class="onb-overlay"></div>
       <h1 class="onb-title">Welcome, Coach</h1>
       <p class="onb-sub">Choose how you'd like to continue</p>
       <button class="onb-role-btn" onclick="enterCoachApp()">
@@ -72,7 +160,7 @@
       <video autoplay loop muted playsinline preload="auto" src="../../videos/water.mp4"></video>
       <div class="hero-overlay"></div>
       <div class="hero-top">
-        <div class="glass-pill"><div class="dot" style="background:#fbbf24"></div><span class="f10 cw80" style="color:rgba(255,255,255,.8)">Ring Not Paired</span></div>
+        <div class="glass-pill" id="ringPill"><div class="dot" id="ringDot" style="background:#fbbf24"></div><span class="f10 cw80" id="ringLabel" style="color:rgba(255,255,255,.8)">Ring Not Paired</span></div>
         <div class="glass-pill"><svg width="12" height="12" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.5"><path d="M1 9l4-4 2 2 4-4M8 3h3v3"/></svg><span class="f10 cw80" style="color:rgba(255,255,255,.8)">UWB Ready</span></div>
       </div>
       <div class="hero-center">
@@ -104,7 +192,7 @@
           <div class="streak-pill"><svg width="14" height="14" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5"><circle cx="7" cy="7" r="6"/><path d="M7 3v4l2.5 1.5"/></svg><span class="v-sm" style="color:white">Next: Tomorrow</span></div>
         </div>
 
-        <button class="btn-accent-pill" onclick="navTo('train')">
+        <button class="btn-accent-pill" id="btnPair" onclick="pairDevice()">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 9l4-4 2 2 4-4M8 3h3v3"/></svg>
           Pair Your Device
         </button>
