@@ -3,12 +3,19 @@ import { BottomNav } from './components/BottomNav';
 import { HomeScreen } from './components/HomeScreen';
 import { TrainScreen } from './components/TrainScreen';
 import { CommunityScreen } from './components/CommunityScreen';
-import { AnalyticsScreen } from './components/AnalyticsScreen';
+import { CoachScreen } from './components/CoachScreen';
 import { ProfileScreen } from './components/ProfileScreen';
 import { SetOverviewScreen } from './components/SetOverviewScreen';
 import { LegendSetsViewer } from './components/LegendSetsViewer';
 import { WorkoutReviewScreen } from './components/WorkoutReviewScreen';
 import { SetDetailScreen } from './components/SetDetailScreen';
+import { WelcomeScreen } from './components/WelcomeScreen';
+import { OnboardingScreen } from './components/OnboardingScreen';
+import { CreateAccountScreen } from './components/CreateAccountScreen';
+import { ChooseRoleScreen } from './components/ChooseRoleScreen';
+import { LoginScreen } from './components/LoginScreen';
+import { CoachRoleSelector } from './components/CoachRoleSelector';
+import { CoachDashboard } from './components/CoachDashboard';
 
 export interface Drill {
   id: string;
@@ -126,7 +133,7 @@ const MOCK_FRIENDS: Friend[] = [
     id: 'f1',
     name: 'Sonia Kumar',
     initials: 'SK',
-    color: '#707CFF',
+    color: '#61949B',
     weeklyDistance: 12.4,
     lastActivity: { action: 'hit a new PB', detail: '1:22/100m', time: '2h ago' },
   },
@@ -134,7 +141,7 @@ const MOCK_FRIENDS: Friend[] = [
     id: 'f2',
     name: 'Arjun Patel',
     initials: 'AP',
-    color: '#140C32',
+    color: '#1A343B',
     weeklyDistance: 8.2,
     lastActivity: { action: 'completed', detail: '4.2km endurance', time: '4h ago' },
   },
@@ -142,7 +149,7 @@ const MOCK_FRIENDS: Friend[] = [
     id: 'f3',
     name: 'Maya Chen',
     initials: 'MC',
-    color: '#D1DEDF',
+    color: '#87ACAA',
     weeklyDistance: 10.1,
     lastActivity: { action: 'achieved', detail: '5-day streak', time: '6h ago' },
   },
@@ -332,6 +339,12 @@ const MOCK_LEGENDS: Legend[] = [
 ];
 
 export default function App() {
+  // Auth state
+  const [authFlow, setAuthFlow] = useState<'welcome' | 'onboarding' | 'createAccount' | 'chooseRole' | 'login' | 'coachSelector' | 'app'>('welcome');
+  const [userRole, setUserRole] = useState<'swimmer' | 'coach' | null>(null);
+  const [viewMode, setViewMode] = useState<'swimmer' | 'coach'>('swimmer');
+
+  // App state
   const [activeScreen, setActiveScreen] = useState('home');
   const [showSetOverview, setShowSetOverview] = useState(false);
   const [todaySet, setTodaySet] = useState<PlannedSet | null>(null);
@@ -341,6 +354,95 @@ export default function App() {
   const [viewingWorkout, setViewingWorkout] = useState(false);
   const [viewingSetDetail, setViewingSetDetail] = useState<string | null>(null);
 
+  // Auth handlers
+  const handleGetStarted = () => {
+    setAuthFlow('onboarding');
+  };
+
+  const handleGoToLogin = () => {
+    setAuthFlow('login');
+  };
+
+  const handleOnboardingComplete = () => {
+    setAuthFlow('createAccount');
+  };
+
+  const handleOnboardingSkip = () => {
+    setAuthFlow('createAccount');
+  };
+
+  const handleCreateAccount = (role: 'swimmer' | 'coach') => {
+    setUserRole(role);
+    if (role === 'coach') {
+      setAuthFlow('coachSelector');
+    } else {
+      setViewMode('swimmer');
+      setAuthFlow('app');
+    }
+  };
+
+  const handleSelectRole = (role: 'swimmer' | 'coach') => {
+    setUserRole(role);
+    setAuthFlow('login');
+  };
+
+  const handleLogin = (username: string, password: string, role: 'swimmer' | 'coach') => {
+    setUserRole(role);
+    if (role === 'coach') {
+      setAuthFlow('coachSelector');
+    } else {
+      setAuthFlow('app');
+      setViewMode('swimmer');
+    }
+  };
+
+  const handleCoachModeSelect = (mode: 'coach' | 'swimmer') => {
+    setViewMode(mode);
+    setAuthFlow('app');
+  };
+
+  const handleBackToWelcome = () => {
+    setAuthFlow('welcome');
+    setUserRole(null);
+  };
+
+  // Render auth flows
+  if (authFlow === 'welcome') {
+    return <WelcomeScreen onGetStarted={handleGetStarted} onLogin={handleGoToLogin} />;
+  }
+
+  if (authFlow === 'onboarding') {
+    return <OnboardingScreen onComplete={handleOnboardingComplete} onSkip={handleOnboardingSkip} />;
+  }
+
+  if (authFlow === 'createAccount') {
+    return <CreateAccountScreen onCreateAccount={handleCreateAccount} onGoToLogin={handleGoToLogin} />;
+  }
+
+  if (authFlow === 'chooseRole') {
+    return <ChooseRoleScreen onSelectRole={handleSelectRole} />;
+  }
+
+  if (authFlow === 'login') {
+    return <LoginScreen onLogin={handleLogin} onBack={handleBackToWelcome} />;
+  }
+
+  if (authFlow === 'coachSelector') {
+    return <CoachRoleSelector onSelectMode={handleCoachModeSelect} />;
+  }
+
+  // Main app - Coach Dashboard view
+  if (viewMode === 'coach') {
+    return (
+      <div className="size-full bg-[#111033] max-w-md mx-auto relative overflow-hidden">
+        <div className="h-full overflow-y-auto overflow-x-hidden">
+          <CoachDashboard onSwitchToSwimmer={() => setViewMode('swimmer')} />
+        </div>
+      </div>
+    );
+  }
+
+  // Main app state handlers
   const handleSaveSet = (set: PlannedSet) => {
     setTodaySet(set);
     setSetHistory(prev => ({ ...prev, [set.date]: set }));
@@ -379,7 +481,7 @@ export default function App() {
 
   if (showSetOverview && todaySet) {
     return (
-      <div className="size-full bg-[#F3F1EE] max-w-md mx-auto relative overflow-hidden">
+      <div className="size-full bg-[#111033] max-w-md mx-auto relative overflow-hidden">
         <div className="h-full overflow-y-auto overflow-x-hidden">
           <SetOverviewScreen
             set={todaySet}
@@ -402,7 +504,7 @@ export default function App() {
     }
 
     return (
-      <div className="size-full bg-[#F3F1EE] max-w-md mx-auto relative overflow-hidden">
+      <div className="size-full bg-[#111033] max-w-md mx-auto relative overflow-hidden">
         <div className="h-full overflow-y-auto overflow-x-hidden">
           <LegendSetsViewer
             legend={legend}
@@ -418,7 +520,7 @@ export default function App() {
 
   if (viewingSetDetail) {
     return (
-      <div className="size-full bg-[#F3F1EE] max-w-md mx-auto relative overflow-hidden">
+      <div className="size-full bg-[#111033] max-w-md mx-auto relative overflow-hidden">
         <div className="h-full overflow-y-auto overflow-x-hidden">
           <SetDetailScreen
             workout={MOCK_COMPLETED_WORKOUT}
@@ -435,7 +537,7 @@ export default function App() {
 
   if (viewingWorkout) {
     return (
-      <div className="size-full bg-[#F3F1EE] max-w-md mx-auto relative overflow-hidden">
+      <div className="size-full bg-[#111033] max-w-md mx-auto relative overflow-hidden">
         <div className="h-full overflow-y-auto overflow-x-hidden">
           <WorkoutReviewScreen
             workout={MOCK_COMPLETED_WORKOUT}
@@ -485,15 +587,10 @@ export default function App() {
             onViewLegendSets={handleViewLegendSets}
           />
         );
-      case 'analytics':
-        return (
-          <AnalyticsScreen
-            recentWorkout={MOCK_COMPLETED_WORKOUT}
-            onViewWorkout={() => setViewingWorkout(true)}
-          />
-        );
+      case 'coach':
+        return <CoachScreen />;
       case 'profile':
-        return <ProfileScreen />;
+        return <ProfileScreen onLogout={() => setAuthFlow('welcome')} />;
       default:
         return <HomeScreen todaySet={todaySet} onCreateSet={() => setActiveScreen('train')} onStartWorkout={() => setShowSetOverview(true)} />;
     }
@@ -502,7 +599,7 @@ export default function App() {
   const showBottomNav = !viewingWorkout && !viewingSetDetail;
 
   return (
-    <div className="size-full bg-[#F3F1EE] max-w-md mx-auto relative overflow-hidden">
+    <div className="size-full bg-[#111033] max-w-md mx-auto relative overflow-hidden">
       <div className="h-full overflow-y-auto overflow-x-hidden">
         {renderScreen()}
       </div>

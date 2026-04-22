@@ -2,43 +2,56 @@
 
 :root {
   --font-size: 16px;
-  --background: #ffffff;
-  --foreground: oklch(0.145 0 0);
-  --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: #030213;
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #030213;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
-  --destructive: #d4183d;
-  --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
+
+  /* SWYM Approved Color Palette */
+  --primary-deep: #061922;
+  --secondary-dark: #1A343B;
+  --steel-blue: #61949B;
+  --soft-aqua: #87ACAA;
+  --accent-gold: #FFAE00;
+  --warm-neutral: #CBC6B3;
+  --white: #FFFFFF;
+
+  /* Mapped to Tailwind variables */
+  --background: #CBC6B3;
+  --foreground: #061922;
+  --card: #FFFFFF;
+  --card-foreground: #061922;
+  --popover: #FFFFFF;
+  --popover-foreground: #061922;
+  --primary: #061922;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1A343B;
+  --secondary-foreground: #FFFFFF;
+  --muted: #87ACAA;
+  --muted-foreground: #061922;
+  --accent: #61949B;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(6, 25, 34, 0.1);
   --input: transparent;
-  --input-background: #f3f3f5;
-  --switch-background: #cbced4;
+  --input-background: #FFFFFF;
+  --switch-background: #87ACAA;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --ring: #61949B;
+  --chart-1: #61949B;
+  --chart-2: #87ACAA;
+  --chart-3: #1A343B;
+  --chart-4: #CBC6B3;
+  --chart-5: #FFAE00;
+  --radius: 1.5rem;
+  --sidebar: #1A343B;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #061922;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #61949B;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #61949B;
 }
 
 .dark {
@@ -126,6 +139,7 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', system-ui, sans-serif;
   }
 
   /**
@@ -177,5 +191,26 @@
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
+  }
+}
+
+@layer utilities {
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+    20%, 40%, 60%, 80% { transform: translateX(4px); }
+  }
+
+  .animate-shake {
+    animation: shake 0.4s ease-in-out;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }

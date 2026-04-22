@@ -1,4 +1,4 @@
-import { Home, Activity, Users, BarChart3, User } from 'lucide-react';
+import { Home, Activity, Users, Zap, User } from 'lucide-react';
 
 interface BottomNavProps {
   activeScreen: string;
@@ -10,13 +10,13 @@ export function BottomNav({ activeScreen, onNavigate }: BottomNavProps) {
     { id: 'home', icon: Home, label: 'Home' },
     { id: 'train', icon: Activity, label: 'Train' },
     { id: 'community', icon: Users, label: 'Social' },
-    { id: 'analytics', icon: BarChart3, label: 'Stats' },
+    { id: 'coach', icon: Zap, label: 'Coach' },
     { id: 'profile', icon: User, label: 'Profile' },
   ];
 
   return (
     <nav className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-40px)] max-w-[360px]">
-      <div className="bg-[#140C32]/95 backdrop-blur-xl rounded-full px-1.5 py-1.5 flex justify-around items-center shadow-2xl shadow-[#140C32]/50 border border-white/[0.04]">
+      <div className="bg-[#111033]/95 backdrop-blur-xl rounded-full px-1.5 py-1.5 flex justify-around items-center shadow-2xl shadow-black/50 border border-white/[0.04]">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeScreen === item.id;
@@ -26,7 +26,7 @@ export function BottomNav({ activeScreen, onNavigate }: BottomNavProps) {
               onClick={() => onNavigate(item.id)}
               className={`flex items-center gap-1.5 py-2.5 px-4 rounded-full transition-all duration-300 ${
                 isActive
-                  ? 'bg-white text-[#140C32]'
+                  ? 'bg-[#334F6B] text-white'
                   : 'text-white/30 hover:text-white/50'
               }`}
             >

@@ -34,7 +34,7 @@ export function SetOverviewScreen({ set, onBack, onEdit, selectedGhost, friends 
   const totalMin = Math.floor(totalTime / 60);
 
   return (
-    <div className="min-h-screen bg-[#140C32] pb-12">
+    <div className="min-h-screen bg-[#061922] pb-12">
       {/* Header */}
       <div className="px-5 pt-14 pb-8">
         <div className="flex items-center justify-between mb-8">
@@ -63,7 +63,7 @@ export function SetOverviewScreen({ set, onBack, onEdit, selectedGhost, friends 
         <div className="px-5 mb-6">
           <div className="bg-white/[0.06] rounded-2xl p-4 border border-white/[0.08]">
             <div className="flex items-center gap-2 mb-3">
-              <Users size={13} strokeWidth={1.5} className="text-[#707CFF]" />
+              <Users size={13} strokeWidth={1.5} className="text-[#61949B]" />
               <span className="text-white/25 text-[10px] tracking-[0.15em]">RACING AGAINST</span>
             </div>
             <div className="flex items-center gap-3">
@@ -72,7 +72,7 @@ export function SetOverviewScreen({ set, onBack, onEdit, selectedGhost, friends 
                   className="w-11 h-11 rounded-full flex items-center justify-center text-sm shrink-0"
                   style={{
                     backgroundColor: ghost.color,
-                    color: ghost.color === '#D1DEDF' ? '#140C32' : 'white',
+                    color: ghost.color === '#87ACAA' ? '#061922' : 'white',
                     fontFamily: 'Comfortaa, sans-serif',
                   }}
                 >
@@ -138,8 +138,8 @@ export function SetOverviewScreen({ set, onBack, onEdit, selectedGhost, friends 
             return (
               <div key={drill.id} className="bg-white/[0.04] rounded-[18px] p-4 border border-white/[0.06] flex items-center gap-4">
                 <div className="w-3 text-white/10 text-[10px] text-center">{i + 1}</div>
-                <div className="w-10 h-10 rounded-xl bg-[#707CFF]/10 flex items-center justify-center shrink-0">
-                  <meta.Icon size={18} strokeWidth={1.5} className="text-[#707CFF]" />
+                <div className="w-10 h-10 rounded-xl bg-[#61949B]/10 flex items-center justify-center shrink-0">
+                  <meta.Icon size={18} strokeWidth={1.5} className="text-[#61949B]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
@@ -160,7 +160,7 @@ export function SetOverviewScreen({ set, onBack, onEdit, selectedGhost, friends 
 
       {/* Pair Device CTA */}
       <div className="px-5">
-        <button className="w-full bg-[#707CFF] text-white py-4 rounded-2xl text-sm tracking-wide shadow-xl shadow-[#707CFF]/30 active:scale-[0.98] transition-transform flex items-center justify-center gap-2.5">
+        <button className="w-full bg-[#61949B] text-white py-4 rounded-2xl text-sm tracking-wide shadow-xl shadow-[#61949B]/30 active:scale-[0.98] transition-transform flex items-center justify-center gap-2.5">
           <Wifi size={16} />
           Pair Device & Start
         </button>

@@ -77,19 +77,19 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
   const radarPoly = rPts.map(p => `${p.x},${p.y}`).join(' ');
 
   const strokes = [
-    { name: 'Freestyle', pct: 65, color: '#707CFF' },
+    { name: 'Freestyle', pct: 65, color: '#61949B' },
     { name: 'Backstroke', pct: 20, color: '#A5AEFF' },
-    { name: 'Breaststroke', pct: 10, color: '#D1DEDF' },
-    { name: 'Butterfly', pct: 5, color: '#140C32' },
+    { name: 'Breaststroke', pct: 10, color: '#87ACAA' },
+    { name: 'Butterfly', pct: 5, color: '#061922' },
   ];
 
   return (
-    <div className="min-h-screen bg-[#F3F1EE] pb-28">
+    <div className="min-h-screen bg-[#CBC6B3] pb-28">
       {/* Header */}
-      <div className="bg-[#140C32] pt-14 pb-14 px-6 relative overflow-hidden">
+      <div className="bg-[#061922] pt-14 pb-14 px-6 relative overflow-hidden">
         {/* Decorative elements */}
-        <div className="absolute -right-12 -top-12 w-44 h-44 rounded-full border border-[#707CFF]/8" />
-        <div className="absolute -right-4 top-24 w-28 h-28 rounded-full border border-[#707CFF]/5" />
+        <div className="absolute -right-12 -top-12 w-44 h-44 rounded-full border border-[#61949B]/8" />
+        <div className="absolute -right-4 top-24 w-28 h-28 rounded-full border border-[#61949B]/5" />
         <div className="absolute right-5 top-14 opacity-8">
           <img src={swymLogo} alt="" className="h-5 opacity-20" />
         </div>
@@ -105,7 +105,7 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
                 key={`p-${t}`}
                 onClick={() => setPeriod(t)}
                 className={`px-5 py-1.5 rounded-full text-[10px] tracking-wide transition-all duration-300 ${
-                  period === t ? 'bg-white text-[#140C32]' : 'text-white/30'
+                  period === t ? 'bg-white text-[#061922]' : 'text-white/30'
                 }`}
               >
                 {t}
@@ -120,11 +120,11 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
         {recentWorkout && (
           <button
             onClick={onViewWorkout}
-            className="w-full bg-[#140C32] rounded-[24px] p-6 text-white shadow-xl shadow-black/10 active:scale-[0.98] transition-all hover:shadow-2xl"
+            className="w-full bg-[#061922] rounded-[24px] p-6 text-white shadow-xl shadow-black/10 active:scale-[0.98] transition-all hover:shadow-2xl"
           >
             <div className="flex items-center justify-between mb-2">
               <div className="text-white/30 text-[10px] tracking-[0.15em]">LATEST SESSION</div>
-              <ChevronRight size={16} strokeWidth={1.5} className="text-[#707CFF]" />
+              <ChevronRight size={16} strokeWidth={1.5} className="text-[#61949B]" />
             </div>
             <div className="mb-4">
               <div className="text-2xl text-white mb-1" style={{ fontFamily: 'Comfortaa, sans-serif' }}>
@@ -169,7 +169,7 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
                 <Waves size={12} strokeWidth={1.5} className="text-white/25" />
                 <span>{recentWorkout.sets.length} sets</span>
               </div>
-              <span className="text-[#707CFF] text-xs">View Full Analysis</span>
+              <span className="text-[#61949B] text-xs">View Full Analysis</span>
             </div>
           </button>
         )}
@@ -178,8 +178,8 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
         <div className="bg-white rounded-[24px] p-6 shadow-sm shadow-black/3">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="text-[#140C32]/25 text-[10px] tracking-[0.15em]">PACE EVOLUTION</div>
-              <div className="text-[#140C32] text-base mt-1" style={{ fontFamily: 'Comfortaa, sans-serif' }}>
+              <div className="text-[#061922]/25 text-[10px] tracking-[0.15em]">PACE EVOLUTION</div>
+              <div className="text-[#061922] text-base mt-1" style={{ fontFamily: 'Comfortaa, sans-serif' }}>
                 Getting Faster
               </div>
             </div>
@@ -188,25 +188,25 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
               <span className="text-green-600 text-xs font-medium">10s faster</span>
             </div>
           </div>
-          <div className="text-xs text-[#140C32]/40 mb-4 font-light leading-relaxed">
+          <div className="text-xs text-[#061922]/40 mb-4 font-light leading-relaxed">
             You've dropped 10 seconds off your average 100m pace this week. That's the equivalent of 2 full body lengths per lap.
           </div>
           <svg viewBox={`0 0 ${chartW} ${chartH + 18}`} className="w-full" style={{ height: 130 }}>
             <defs>
               <linearGradient id="aGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#707CFF" stopOpacity="0.2" />
-                <stop offset="100%" stopColor="#707CFF" stopOpacity="0" />
+                <stop offset="0%" stopColor="#61949B" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="#61949B" stopOpacity="0" />
               </linearGradient>
             </defs>
             <path d={areaPath} fill="url(#aGrad)" />
-            <path d={curvePath} fill="none" stroke="#707CFF" strokeWidth="2" strokeLinecap="round" />
+            <path d={curvePath} fill="none" stroke="#61949B" strokeWidth="2" strokeLinecap="round" />
             {pts.map((p, i) => (
               <g key={`pd-${i}`}>
-                <circle cx={p.x} cy={p.y} r="4" fill="white" stroke="#707CFF" strokeWidth="2" />
+                <circle cx={p.x} cy={p.y} r="4" fill="white" stroke="#61949B" strokeWidth="2" />
               </g>
             ))}
             {paceLabels.map((l, i) => (
-              <text key={`pl-${i}`} x={pts[i].x} y={chartH + 14} textAnchor="middle" fontSize="8" fill="#140C32" opacity="0.2">
+              <text key={`pl-${i}`} x={pts[i].x} y={chartH + 14} textAnchor="middle" fontSize="8" fill="#061922" opacity="0.2">
                 {l}
               </text>
             ))}
@@ -217,28 +217,28 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
         <div className="bg-white rounded-[24px] p-6 shadow-sm shadow-black/3">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="text-[#140C32]/25 text-[10px] tracking-[0.15em]">VOLUME PROGRESSION</div>
-              <div className="text-[#140C32] text-base mt-1" style={{ fontFamily: 'Comfortaa, sans-serif' }}>Building Endurance</div>
+              <div className="text-[#061922]/25 text-[10px] tracking-[0.15em]">VOLUME PROGRESSION</div>
+              <div className="text-[#061922] text-base mt-1" style={{ fontFamily: 'Comfortaa, sans-serif' }}>Building Endurance</div>
             </div>
-            <div className="flex items-center gap-1.5 bg-[#707CFF]/8 rounded-full px-3 py-1.5">
-              <TrendingUp size={12} strokeWidth={2} className="text-[#707CFF]" />
-              <span className="text-[#707CFF] text-xs font-medium">75% increase</span>
+            <div className="flex items-center gap-1.5 bg-[#61949B]/8 rounded-full px-3 py-1.5">
+              <TrendingUp size={12} strokeWidth={2} className="text-[#61949B]" />
+              <span className="text-[#61949B] text-xs font-medium">75% increase</span>
             </div>
           </div>
-          <div className="text-xs text-[#140C32]/40 mb-4 font-light leading-relaxed">
+          <div className="text-xs text-[#061922]/40 mb-4 font-light leading-relaxed">
             Your weekly distance has grown steadily from 8.2km to 14.3km. This sustainable progression builds aerobic base without risking injury.
           </div>
           <div className="flex items-end gap-3" style={{ height: 110 }}>
             {distBars.map((bar) => (
               <div key={`db-${bar.label}`} className="flex-1 flex flex-col items-center gap-1.5">
-                <span className="text-[10px] text-[#140C32]/50" style={{ fontFamily: 'Comfortaa, sans-serif' }}>
+                <span className="text-[10px] text-[#061922]/50" style={{ fontFamily: 'Comfortaa, sans-serif' }}>
                   {bar.value}
                 </span>
                 <div
-                  className="w-full bg-gradient-to-t from-[#707CFF] to-[#A5AEFF] rounded-xl transition-all"
+                  className="w-full bg-gradient-to-t from-[#61949B] to-[#A5AEFF] rounded-xl transition-all"
                   style={{ height: `${(bar.value / distMax) * 75}%` }}
                 />
-                <span className="text-[9px] text-[#140C32]/20">{bar.label}</span>
+                <span className="text-[9px] text-[#061922]/20">{bar.label}</span>
               </div>
             ))}
           </div>
@@ -246,9 +246,9 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
 
         {/* Monthly Consistency Heatmap */}
         <div className="bg-white rounded-[24px] p-6 shadow-sm shadow-black/3">
-          <div className="text-[#140C32]/25 text-[10px] tracking-[0.15em] mb-1">TRAINING RHYTHM</div>
-          <div className="text-[#140C32] text-base mb-1" style={{ fontFamily: 'Comfortaa, sans-serif' }}>April 2026</div>
-          <div className="text-xs text-[#140C32]/40 mb-4 font-light leading-relaxed">
+          <div className="text-[#061922]/25 text-[10px] tracking-[0.15em] mb-1">TRAINING RHYTHM</div>
+          <div className="text-[#061922] text-base mb-1" style={{ fontFamily: 'Comfortaa, sans-serif' }}>April 2026</div>
+          <div className="text-xs text-[#061922]/40 mb-4 font-light leading-relaxed">
             Your consistency is building momentum. The darker the square, the harder you pushed that day.
           </div>
           <div className="grid grid-cols-7 gap-1.5">
@@ -258,7 +258,7 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
                 className="aspect-square rounded-md"
                 style={{
                   backgroundColor: val === 0
-                    ? '#F3F1EE'
+                    ? '#CBC6B3'
                     : `rgba(112, 124, 255, ${Math.max(0.15, val / 100)})`,
                 }}
               />
@@ -266,25 +266,25 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
           </div>
           <div className="flex items-center gap-2 mt-3">
             <div className="flex items-center gap-1">
-              <div className="w-2.5 h-2.5 rounded-sm bg-[#F3F1EE]" />
-              <span className="text-[8px] text-[#140C32]/20">Rest</span>
+              <div className="w-2.5 h-2.5 rounded-sm bg-[#CBC6B3]" />
+              <span className="text-[8px] text-[#061922]/20">Rest</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-2.5 h-2.5 rounded-sm bg-[#707CFF]/30" />
-              <span className="text-[8px] text-[#140C32]/20">Light</span>
+              <div className="w-2.5 h-2.5 rounded-sm bg-[#61949B]/30" />
+              <span className="text-[8px] text-[#061922]/20">Light</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-2.5 h-2.5 rounded-sm bg-[#707CFF]" />
-              <span className="text-[8px] text-[#140C32]/20">Peak</span>
+              <div className="w-2.5 h-2.5 rounded-sm bg-[#61949B]" />
+              <span className="text-[8px] text-[#061922]/20">Peak</span>
             </div>
           </div>
         </div>
 
         {/* Stroke Breakdown */}
         <div className="bg-white rounded-[24px] p-6 shadow-sm shadow-black/3">
-          <div className="text-[#140C32]/25 text-[10px] tracking-[0.15em] mb-1">STROKE DIVERSITY</div>
-          <div className="text-[#140C32] text-base mb-1" style={{ fontFamily: 'Comfortaa, sans-serif' }}>Your Mix</div>
-          <div className="text-xs text-[#140C32]/40 mb-5 font-light leading-relaxed">
+          <div className="text-[#061922]/25 text-[10px] tracking-[0.15em] mb-1">STROKE DIVERSITY</div>
+          <div className="text-[#061922] text-base mb-1" style={{ fontFamily: 'Comfortaa, sans-serif' }}>Your Mix</div>
+          <div className="text-xs text-[#061922]/40 mb-5 font-light leading-relaxed">
             Freestyle dominates your training, building your aerobic engine. Consider adding more backstroke for recovery and injury prevention.
           </div>
 
@@ -316,9 +316,9 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
                 <div key={`sl-${s.name}`} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
-                    <span className="text-xs text-[#140C32]/50">{s.name}</span>
+                    <span className="text-xs text-[#061922]/50">{s.name}</span>
                   </div>
-                  <span className="text-xs text-[#140C32]" style={{ fontFamily: 'Comfortaa, sans-serif' }}>{s.pct}%</span>
+                  <span className="text-xs text-[#061922]" style={{ fontFamily: 'Comfortaa, sans-serif' }}>{s.pct}%</span>
                 </div>
               ))}
             </div>
@@ -326,7 +326,7 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
         </div>
 
         {/* Performance Metrics */}
-        <div className="bg-[#140C32] rounded-[24px] p-6">
+        <div className="bg-[#061922] rounded-[24px] p-6">
           <div className="text-white/20 text-[10px] tracking-[0.15em] mb-1">PERFORMANCE PROFILE</div>
           <div className="text-white text-sm mb-5" style={{ fontFamily: 'Comfortaa, sans-serif' }}>6-Week Analysis</div>
 
@@ -341,7 +341,7 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
                 </div>
                 <div className="h-1.5 bg-white/8 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-[#707CFF] to-[#A5AEFF] rounded-full transition-all"
+                    className="h-full bg-gradient-to-r from-[#61949B] to-[#A5AEFF] rounded-full transition-all"
                     style={{ width: `${metric.value}%` }}
                   />
                 </div>
@@ -361,7 +361,7 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
 
         {/* PB Records */}
         <div>
-          <div className="text-[#140C32]/25 text-[10px] tracking-[0.15em] mb-3 px-1">PERSONAL BESTS</div>
+          <div className="text-[#061922]/25 text-[10px] tracking-[0.15em] mb-3 px-1">PERSONAL BESTS</div>
           <div className="grid grid-cols-2 gap-3">
             {[
               { dist: '100m', time: '1:18', trend: '−3s', desc: 'Sprint power' },
@@ -369,24 +369,24 @@ export function AnalyticsScreen({ recentWorkout, onViewWorkout }: AnalyticsScree
             ].map((pb) => (
               <div key={`pb-${pb.dist}`} className="bg-white rounded-[24px] p-5 shadow-sm shadow-black/3">
                 <div className="flex items-center gap-1.5 mb-3">
-                  <Award size={13} strokeWidth={1.5} className="text-[#707CFF]" />
-                  <span className="text-[10px] text-[#140C32]/30 tracking-wide">{pb.dist}</span>
+                  <Award size={13} strokeWidth={1.5} className="text-[#61949B]" />
+                  <span className="text-[10px] text-[#061922]/30 tracking-wide">{pb.dist}</span>
                 </div>
-                <div className="text-3xl text-[#140C32] mb-1" style={{ fontFamily: 'Comfortaa, sans-serif' }}>
+                <div className="text-3xl text-[#061922] mb-1" style={{ fontFamily: 'Comfortaa, sans-serif' }}>
                   {pb.time}
                 </div>
                 <div className="flex items-center gap-1 mb-2">
                   <TrendingDown size={10} strokeWidth={2} className="text-green-600" />
                   <span className="text-[10px] text-green-600 font-medium">{pb.trend}</span>
                 </div>
-                <div className="text-[9px] text-[#140C32]/25 font-light">{pb.desc}</div>
+                <div className="text-[9px] text-[#061922]/25 font-light">{pb.desc}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* AI Insight */}
-        <div className="bg-gradient-to-br from-[#707CFF] to-[#5A64D9] rounded-[24px] p-6 text-white">
+        <div className="bg-gradient-to-br from-[#61949B] to-[#87ACAA] rounded-[24px] p-6 text-white">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-6 h-6 rounded-full bg-white/12 flex items-center justify-center">
               <Zap size={11} strokeWidth={1.5} />
