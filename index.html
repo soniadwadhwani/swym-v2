@@ -4,70 +4,165 @@ x<!DOCTYPE html>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Swym – Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --primary: #0091EA;
-      --primary-dark: #0277BD;
-      --accent: #00E5FF;
-      --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
-    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       min-height: 100vh;
-      font-family: var(--font);
-      background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 50%, #0d1b2a 100%);
+      font-family: 'DM Sans', sans-serif;
       color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(17,16,51,0.7) 0%, rgba(17,16,51,0.92) 100%);
+      z-index: 1;
+    }
+    .content {
+      position: relative;
+      z-index: 2;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 40px 20px;
     }
-    .logo { font-size: 64px; font-weight: 800; letter-spacing: 6px; color: var(--accent); margin-bottom: 8px; }
-    .tagline { font-size: 18px; opacity: .7; margin-bottom: 50px; }
-    .cards { display: flex; gap: 32px; flex-wrap: wrap; justify-content: center; }
+    .logo-img {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 4px 20px rgba(0,0,0,0.3));
+    }
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 42px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+    .tagline {
+      font-size: 15px;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 52px;
+    }
+    .cards { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
     .card {
-      width: 300px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
+      width: 280px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
       border-radius: 20px;
       padding: 36px 28px;
       text-align: center;
       text-decoration: none;
       color: #fff;
       transition: all .3s ease;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
     }
     .card:hover {
-      transform: translateY(-6px);
-      background: rgba(255,255,255,.1);
-      border-color: var(--accent);
-      box-shadow: 0 12px 40px rgba(0,229,255,.15);
+      transform: translateY(-4px);
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(212,236,241,0.2);
+      box-shadow: 0 12px 40px rgba(212,236,241,0.08);
     }
-    .card .icon { font-size: 52px; margin-bottom: 16px; display: block; }
-    .card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-    .card p { font-size: 14px; opacity: .65; line-height: 1.5; }
-    .footer { margin-top: 60px; font-size: 13px; opacity: .35; }
+    .card-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+      font-size: 24px;
+    }
+    .card-icon.monitor {
+      background: rgba(212,236,241,0.08);
+      border: 1px solid rgba(212,236,241,0.12);
+    }
+    .card-icon.app {
+      background: rgba(246,170,56,0.08);
+      border: 1px solid rgba(246,170,56,0.12);
+    }
+    .card h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .card p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.3);
+      line-height: 1.6;
+    }
+    .card-arrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.25);
+      transition: color 0.2s;
+    }
+    .card:hover .card-arrow { color: #d4ecf1; }
+    .card:hover .card-arrow.gold { color: #f6aa38; }
+    .footer {
+      position: relative;
+      z-index: 2;
+      margin-top: 60px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.12);
+    }
   </style>
 </head>
 <body>
-  <div class="logo">SWYM</div>
-  <div class="tagline">Smart Swimming Companion – Prototype</div>
+  <video autoplay loop muted playsinline preload="auto" class="bg-video" src="videos/water.mp4"></video>
+  <div class="bg-overlay"></div>
 
-  <div class="cards">
-    <a href="html/device/index.html" class="card">
-      <span class="icon">🖥️</span>
-      <h2>Swym Monitor</h2>
-      <p>Poolside monitor that detects swimmer rings. Multiple swimmers can bind sessions and track distance, time &amp; pace live.</p>
-    </a>
+  <div class="content">
+    <img src="images/swym-logo-transparent.png" alt="SWYM" class="logo-img" />
+    <div class="logo">swym</div>
+    <div class="tagline">Smart Swimming Companion</div>
 
-    <a href="html/app/index.html" class="card">
-      <span class="icon">📱</span>
-      <h2>Swym App</h2>
-      <p>Mobile app interface with Coach &amp; Learner dashboards. Log in with demo accounts to explore.</p>
-    </a>
+    <div class="cards">
+      <a href="html/device/index.html" class="card">
+        <div class="card-icon monitor">
+          <svg width="24" height="24" fill="none" stroke="#d4ecf1" stroke-width="1.5"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <h2>Swym Monitor</h2>
+        <p>Poolside display for live tracking — distance, pace &amp; splits in real time.</p>
+        <span class="card-arrow">Open Monitor →</span>
+      </a>
+
+      <a href="html/app/index.html" class="card">
+        <div class="card-icon app">
+          <svg width="24" height="24" fill="none" stroke="#f6aa38" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M10 18h4"/></svg>
+        </div>
+        <h2>Swym App</h2>
+        <p>Mobile app with Coach &amp; Swimmer dashboards, AI insights &amp; training plans.</p>
+        <span class="card-arrow gold">Open App →</span>
+      </a>
+    </div>
+
+    <div class="footer">Swym v2 Prototype</div>
   </div>
-
-  <div class="footer">Swym v2 Prototype &middot; Vercel Deploy</div>
 </body>
 </html>

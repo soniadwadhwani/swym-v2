@@ -44,86 +44,479 @@
     <div class="set-topbar">
       <span class="topbar-brand">swym</span>
       <div class="topbar-tabs">
-        <button class="tab-btn active">READY</button>
-        <button class="tab-btn">COACHING</button>
-        <button class="tab-btn">SUMMARY</button>
-        <button class="tab-btn">GROUP</button>
-        <button class="tab-btn">RACE</button>
-        <button class="tab-btn">RESULTS</button>
+        <button class="tab-btn active" data-tab="ready">READY</button>
+        <button class="tab-btn" data-tab="summary">SUMMARY</button>
+        <button class="tab-btn" data-tab="group">GROUP</button>
+        <button class="tab-btn" data-tab="race">RACE</button>
+        <button class="tab-btn" data-tab="results">RESULTS</button>
       </div>
       <span class="topbar-clock" id="clockTime">03:34</span>
     </div>
 
-    <div class="set-main">
-      <!-- LEFT COLUMN -->
-      <div class="set-left">
-        <div class="set-header-card">
-          <div class="set-header-label">CURRENT SET</div>
-          <h1 class="set-header-title">500m Freestyle</h1>
-          <div class="set-header-badges">
-            <span class="set-badge accent">ENDURANCE</span>
-            <span class="set-badge">50M POOL</span>
+    <!-- TAB: READY (Set Preview) -->
+    <div class="tab-content active" id="tabReady">
+      <div class="set-main">
+        <div class="set-left">
+          <div class="set-header-card">
+            <div class="set-header-label">CURRENT SET</div>
+            <h1 class="set-header-title">500m Freestyle</h1>
+            <div class="set-header-badges">
+              <span class="set-badge accent">ENDURANCE</span>
+              <span class="set-badge">50M POOL</span>
+            </div>
+          </div>
+          <div class="session-plan">
+            <div class="plan-label">SESSION PLAN</div>
+            <div class="plan-items" id="planItems"></div>
+          </div>
+        </div>
+        <div class="set-right">
+          <div class="ghost-card">
+            <div class="ghost-header">
+              <svg width="14" height="14" fill="none" stroke="#f6aa38" stroke-width="1.5"><rect x="2" y="4" width="10" height="7" rx="1.5"/><path d="M5 4V3a2 2 0 014 0v1"/></svg>
+              <span class="ghost-label">RACING GHOST</span>
+            </div>
+            <div class="ghost-pb-label">Personal Best</div>
+            <div class="ghost-pb-date">March 2025</div>
+            <div class="ghost-time">8:42</div>
+            <div class="ghost-target">Your target to beat</div>
+            <div class="ghost-lap-card">
+              <div class="ghost-lap-label">FASTEST GHOST LAP</div>
+              <div class="ghost-lap-row">
+                <span class="ghost-lap-time">0:50</span>
+                <span class="ghost-lap-num">Lap 3</span>
+              </div>
+            </div>
+            <div class="ghost-consistency">
+              <span>Consistency</span>
+              <span class="ghost-consistency-val">73%</span>
+            </div>
+          </div>
+          <div class="stats-card">
+            <div class="stat-section">
+              <div class="stat-row">
+                <svg width="12" height="12" fill="none" stroke="#d4ecf1" stroke-width="1.5"><path d="M2 10c2-3 4-5 6-5s4 2 6 5"/></svg>
+                <span class="stat-label">TOTAL DISTANCE</span>
+              </div>
+              <div class="stat-big">1,200m</div>
+              <div class="stat-sub">4 sets · 10 laps</div>
+            </div>
+            <div class="stat-section">
+              <div class="stat-row">
+                <svg width="12" height="12" fill="none" stroke="#d4ecf1" stroke-width="1.5"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l2 1"/></svg>
+                <span class="stat-label">TARGET PACE</span>
+              </div>
+              <div class="stat-big">1:45</div>
+              <div class="stat-sub">per 100m</div>
+            </div>
+            <div class="stat-section">
+              <div class="stat-row">
+                <svg width="12" height="12" fill="none" stroke="#d4ecf1" stroke-width="1.5"><path d="M6 1v2M2 6h2M10 6h2M3.5 3.5l1 1M8.5 3.5l-1 1"/><circle cx="6" cy="8" r="3"/></svg>
+                <span class="stat-label">EST. BURN</span>
+              </div>
+              <div class="stat-big">480</div>
+              <div class="stat-sub">kcal</div>
+            </div>
+          </div>
+          <button class="score-btn" id="btnScore">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l4-4 3 3 5-7"/></svg>
+            Score
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: COACHING (Set Glance) -->
+    <div class="tab-content" id="tabCoaching">
+      <!-- Back button -->
+      <div class="coaching-back-bar">
+        <button class="coaching-back-btn" id="btnCoachingBack">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2L4 8l6 6"/></svg>
+          Back
+        </button>
+      </div>
+
+      <!-- Row 1: Current Lap + Last Lap + VS Ghost -->
+      <div class="coach-row1">
+        <div class="coach-card coach-current-lap">
+          <span class="coach-card-label">CURRENT LAP</span>
+          <div class="coach-lap-big">
+            <span class="coach-lap-num">6</span>
+            <span class="coach-lap-total">/10</span>
+          </div>
+          <div class="coach-lap-footer">
+            <span class="coach-behind-badge">BEHIND</span>
+            <span class="coach-set-name">500m Freestyle · Main Set</span>
           </div>
         </div>
 
-        <div class="session-plan">
-          <div class="plan-label">SESSION PLAN</div>
-          <div class="plan-items" id="planItems"></div>
+        <div class="coach-card coach-last-lap">
+          <span class="coach-card-label">LAST LAP</span>
+          <div class="coach-last-time">0:53</div>
+          <div class="coach-last-target">target 0:52</div>
+        </div>
+
+        <div class="coach-card coach-vs-ghost">
+          <div class="coach-ghost-header">
+            <svg width="14" height="14" fill="none" stroke="#f6aa38" stroke-width="1.5"><rect x="2" y="4" width="10" height="7" rx="1.5"/><path d="M5 4V3a2 2 0 014 0v1"/></svg>
+            <span class="coach-card-label">VS GHOST</span>
+          </div>
+          <div class="coach-ghost-delta">+2s</div>
+          <div class="coach-ghost-pb">PB · Mar 2025</div>
         </div>
       </div>
 
-      <!-- RIGHT COLUMN -->
-      <div class="set-right">
-        <div class="ghost-card">
-          <div class="ghost-header">
-            <svg width="14" height="14" fill="none" stroke="#f6aa38" stroke-width="1.5"><rect x="2" y="4" width="10" height="7" rx="1.5"/><path d="M5 4V3a2 2 0 014 0v1"/></svg>
-            <span class="ghost-label">RACING GHOST</span>
-          </div>
-          <div class="ghost-pb-label">Personal Best</div>
-          <div class="ghost-pb-date">March 2025</div>
-          <div class="ghost-time">8:42</div>
-          <div class="ghost-target">Your target to beat</div>
+      <!-- Row 2: Coaching Message + Trend -->
+      <div class="coach-row2">
+        <div class="coach-message">
+          <p>Push off harder. Target 0:52 this lap — 1s faster.</p>
+        </div>
+        <div class="coach-trend-card">
+          <span class="coach-trend-label">TREND</span>
+          <svg class="coach-trend-icon" width="36" height="20" fill="none" stroke="#f6aa38" stroke-width="2"><path d="M2 8c4-6 8 6 12 0s8 6 12 0s8 6 12 0"/></svg>
+          <span class="coach-trend-val">FADING</span>
+        </div>
+      </div>
 
-          <div class="ghost-lap-card">
-            <div class="ghost-lap-label">FASTEST GHOST LAP</div>
-            <div class="ghost-lap-row">
-              <span class="ghost-lap-time">0:50</span>
-              <span class="ghost-lap-num">Lap 3</span>
+      <!-- Row 3: Lap Splits Chart -->
+      <div class="coach-row3">
+        <div class="coach-splits-card">
+          <div class="coach-splits-header">
+            <span class="coach-splits-title">LAP SPLITS</span>
+            <div class="coach-splits-legend">
+              <span class="legend-item"><span class="legend-dot" style="background:#f6aa38"></span> You</span>
+              <span class="legend-item"><span class="legend-dot" style="background:rgba(255,255,255,0.2)"></span> Ghost</span>
+              <span class="coach-splits-remaining">4 laps remaining</span>
             </div>
           </div>
+          <canvas id="coachingSplitChart" width="800" height="180"></canvas>
+        </div>
+      </div>
+    </div>
 
-          <div class="ghost-consistency">
-            <span>Consistency</span>
-            <span class="ghost-consistency-val">73%</span>
+    <!-- TAB: RACE (Setup) -->
+    <div class="tab-content" id="tabRace">
+      <!-- Sub-header -->
+      <div class="race-subheader">
+        <div class="race-event-info">
+          <span class="race-event-label">RACE EVENT</span>
+          <h2 class="race-event-title">200m Freestyle · 6 Lanes</h2>
+        </div>
+      </div>
+
+      <div class="race-setup-grid">
+        <!-- Connected Swimmer -->
+        <div class="race-section">
+          <div class="race-section-header">
+            <svg width="14" height="14" fill="none" stroke="#4ade80" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M5 7l1.5 1.5L9 5.5"/></svg>
+            <span class="race-section-label">CONNECTED SWIMMER</span>
+          </div>
+          <div class="race-connected-card">
+            <div class="race-swimmer-avatar accent">KO</div>
+            <div class="race-swimmer-info">
+              <span class="race-swimmer-name">Kai Okafor</span>
+              <span class="race-swimmer-detail">Lane 2 · Ring Connected</span>
+            </div>
+            <div class="race-swimmer-ring-status">
+              <span class="ring-dot"></span> Live
+            </div>
           </div>
         </div>
 
-        <div class="stats-card">
-          <div class="stat-section">
-            <div class="stat-row">
-              <svg width="12" height="12" fill="none" stroke="#d4ecf1" stroke-width="1.5"><path d="M2 10c2-3 4-5 6-5s4 2 6 5"/></svg>
-              <span class="stat-label">TOTAL DISTANCE</span>
-            </div>
-            <div class="stat-big">1,200m</div>
-            <div class="stat-sub">4 sets · 10 laps</div>
+        <!-- Swimmers in Race -->
+        <div class="race-section">
+          <div class="race-section-header">
+            <svg width="14" height="14" fill="none" stroke="#d4ecf1" stroke-width="1.5"><path d="M7 1v12M1 7h12"/></svg>
+            <span class="race-section-label">SWIMMERS IN RACE</span>
+            <span class="race-count" id="raceCount">1 / 6</span>
           </div>
+          <div class="race-swimmer-list" id="raceSwimmerList"></div>
+        </div>
 
-          <div class="stat-section">
-            <div class="stat-row">
-              <svg width="12" height="12" fill="none" stroke="#d4ecf1" stroke-width="1.5"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l2 1"/></svg>
-              <span class="stat-label">TARGET PACE</span>
-            </div>
-            <div class="stat-big">1:45</div>
-            <div class="stat-sub">per 100m</div>
+        <!-- Available Swimmers -->
+        <div class="race-section">
+          <div class="race-section-header">
+            <svg width="14" height="14" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"><circle cx="7" cy="7" r="6"/><path d="M7 4v6M4 7h6"/></svg>
+            <span class="race-section-label">ADD SWIMMERS</span>
           </div>
+          <div class="race-available-list" id="raceAvailableList"></div>
+        </div>
+      </div>
 
-          <div class="stat-section">
-            <div class="stat-row">
-              <svg width="12" height="12" fill="none" stroke="#d4ecf1" stroke-width="1.5"><path d="M6 1v2M2 6h2M10 6h2M3.5 3.5l1 1M8.5 3.5l-1 1"/><circle cx="6" cy="8" r="3"/></svg>
-              <span class="stat-label">EST. BURN</span>
+      <!-- Start Race Button -->
+      <div class="race-start-bar">
+        <button class="race-start-btn" id="btnStartRace">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="6,3 16,9 6,15"/></svg>
+          Start Race
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB: RACE LIVE (during race) -->
+    <div class="tab-content" id="tabRaceLive">
+      <div class="race-subheader">
+        <div class="race-event-info">
+          <span class="race-live-badge">● LIVE</span>
+          <h2 class="race-event-title">200m Freestyle · 6 Lanes</h2>
+        </div>
+        <div class="race-timer" id="raceTimer">0:00</div>
+      </div>
+      <div class="race-live-grid">
+        <!-- Left: Live Leaderboard -->
+        <div class="race-live-left">
+          <div class="race-section-header">
+            <svg width="14" height="14" fill="none" stroke="#f6aa38" stroke-width="1.5"><path d="M7 2l1.5 3 3.5.5-2.5 2.5.5 3.5L7 10l-3 1.5.5-3.5L2 5.5l3.5-.5z"/></svg>
+            <span class="race-section-label">LIVE STANDINGS</span>
+          </div>
+          <div class="race-live-standings" id="raceLiveStandings"></div>
+        </div>
+        <!-- Right: Split Chart -->
+        <div class="race-live-right">
+          <div class="race-section-header">
+            <span class="race-section-label">PER-50M SPLIT COMPARISON</span>
+            <span class="race-chart-note">Showing only you + faster swimmers</span>
+          </div>
+          <canvas id="splitChart" width="500" height="300"></canvas>
+          <div class="race-chart-legend" id="chartLegend"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: RESULTS -->
+    <div class="tab-content" id="tabResults">
+      <div class="race-subheader">
+        <div class="race-event-info">
+          <span class="race-complete-badge">RACE COMPLETE</span>
+          <h2 class="race-event-title">200m Freestyle · 6 Lanes</h2>
+        </div>
+      </div>
+      <div class="results-layout">
+        <!-- Left: Leaderboard -->
+        <div class="results-left">
+          <div class="race-section-header">
+            <svg width="14" height="14" fill="none" stroke="#d4ecf1" stroke-width="1.5"><path d="M7 2l1.5 3 3.5.5-2.5 2.5.5 3.5L7 10l-3 1.5.5-3.5L2 5.5l3.5-.5z"/></svg>
+            <span class="race-section-label">FINAL RESULTS</span>
+          </div>
+          <div class="results-table-head">
+            <span class="rt-pos">POS</span>
+            <span class="rt-swimmer">SWIMMER</span>
+            <span class="rt-time">TIME</span>
+            <span class="rt-gap">GAP</span>
+          </div>
+          <div class="results-table-body" id="resultsTable"></div>
+        </div>
+        <!-- Right: Podium -->
+        <div class="results-right">
+          <div class="podium-area" id="podiumArea">
+            <!-- Podium rendered by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: SUMMARY -->
+    <div class="tab-content" id="tabSummary">
+      <!-- Row 1: Set Complete card + VS Ghost card -->
+      <div class="sum-row1">
+        <div class="sum-complete-card">
+          <div class="sum-complete-left">
+            <span class="sum-complete-label">SET COMPLETE</span>
+            <h2 class="sum-complete-verdict">OFF PACE</h2>
+          </div>
+          <div class="sum-complete-stats">
+            <div class="sum-mini-stat">
+              <span class="sum-mini-label">AVG DELTA</span>
+              <span class="sum-mini-val gold">+1.8s</span>
             </div>
-            <div class="stat-big">480</div>
-            <div class="stat-sub">kcal</div>
+            <div class="sum-mini-stat">
+              <span class="sum-mini-label">BEST LAP</span>
+              <span class="sum-mini-val green">0:51</span>
+            </div>
+            <div class="sum-mini-stat">
+              <span class="sum-mini-label">WORST LAP</span>
+              <span class="sum-mini-val">0:56</span>
+            </div>
+          </div>
+        </div>
+        <div class="sum-ghost-card">
+          <div class="sum-ghost-header">
+            <svg width="14" height="14" fill="none" stroke="#f6aa38" stroke-width="1.5"><rect x="2" y="4" width="10" height="7" rx="1.5"/><path d="M5 4V3a2 2 0 014 0v1"/></svg>
+            <span class="sum-ghost-label">VS GHOST</span>
+          </div>
+          <div class="sum-ghost-time">8:51</div>
+          <div class="sum-ghost-ref">Ghost: 8:33</div>
+          <div class="sum-ghost-diff">+18s behind</div>
+        </div>
+      </div>
+
+      <!-- Row 2: Set Pace chart + Lap Breakdown -->
+      <div class="sum-row2">
+        <div class="sum-chart-card">
+          <div class="sum-chart-header">
+            <span class="sum-chart-title">Set Pace</span>
+            <span class="sum-chart-more">MORE</span>
+          </div>
+          <canvas id="summaryPaceChart" width="600" height="220"></canvas>
+          <div class="sum-chart-legend">
+            <span class="legend-item"><span class="legend-dot" style="background:#f6aa38"></span> You</span>
+            <span class="legend-item"><span class="legend-dot" style="background:rgba(255,255,255,0.2)"></span> Ghost</span>
+          </div>
+        </div>
+        <div class="sum-lap-card">
+          <span class="sum-lap-title">LAP BREAKDOWN</span>
+          <div class="sum-lap-rows">
+            <div class="sum-lap-row"><span class="sum-lap-id">L1</span><span class="sum-lap-time">0:52</span><span class="sum-lap-delta green">+1s</span></div>
+            <div class="sum-lap-row"><span class="sum-lap-id">L2</span><span class="sum-lap-time">0:53</span><span class="sum-lap-delta green">+1s</span></div>
+            <div class="sum-lap-row"><span class="sum-lap-id">L3</span><span class="sum-lap-time">0:51</span><span class="sum-lap-delta green">+1s</span></div>
+            <div class="sum-lap-row"><span class="sum-lap-id">L4</span><span class="sum-lap-time">0:54</span><span class="sum-lap-delta gold">+2s</span></div>
+            <div class="sum-lap-row"><span class="sum-lap-id">L5</span><span class="sum-lap-time">0:55</span><span class="sum-lap-delta gold">+2s</span></div>
+            <div class="sum-lap-row"><span class="sum-lap-id">L6</span><span class="sum-lap-time">0:53</span><span class="sum-lap-delta gold">+2s</span></div>
+            <div class="sum-lap-row"><span class="sum-lap-id">L7</span><span class="sum-lap-time">0:56</span><span class="sum-lap-delta red">+4s</span></div>
+            <div class="sum-lap-row"><span class="sum-lap-id">L8</span><span class="sum-lap-time">0:54</span><span class="sum-lap-delta gold">+3s</span></div>
+            <div class="sum-lap-row"><span class="sum-lap-id">L9</span><span class="sum-lap-time">0:52</span><span class="sum-lap-delta gold">+2s</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: AI Insight + Total Distance + Target Pace -->
+      <div class="sum-row3">
+        <div class="sum-insight-card">
+          <p>Strong start through laps 1–3, faded mid-set. Your closing lap matched the ghost — a strong finish.</p>
+        </div>
+        <div class="sum-bottom-stat">
+          <div class="sum-bottom-stat-header">
+            <svg width="14" height="14" fill="none" stroke="#d4ecf1" stroke-width="1.5"><path d="M2 10c2-3 4-5 6-5s4 2 6 5"/></svg>
+            <span class="sum-bottom-stat-label">TOTAL DISTANCE</span>
+          </div>
+          <span class="sum-bottom-stat-big">1,200m</span>
+          <span class="sum-bottom-stat-sub">4 sets · 10 laps</span>
+        </div>
+        <div class="sum-bottom-stat">
+          <div class="sum-bottom-stat-header">
+            <svg width="14" height="14" fill="none" stroke="#d4ecf1" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><path d="M7 4v3l2 1"/></svg>
+            <span class="sum-bottom-stat-label">TARGET PACE</span>
+          </div>
+          <span class="sum-bottom-stat-big">1:45</span>
+          <span class="sum-bottom-stat-sub">per 100m</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: GROUP -->
+    <div class="tab-content" id="tabGroup">
+      <!-- Sub-header -->
+      <div class="group-subheader">
+        <div class="group-subheader-left">
+          <span class="group-lane-badge">LANE 4 · SET 3 / 5</span>
+          <h2 class="group-event-title">1000m Freestyle · Endurance</h2>
+        </div>
+        <span class="group-swimmer-count">6 swimmers</span>
+      </div>
+
+      <!-- Top stats row: 3 cards -->
+      <div class="group-stats-row">
+        <div class="group-stat-card fastest">
+          <div class="group-stat-header">
+            <svg width="14" height="14" fill="none" stroke="#f6aa38" stroke-width="1.5"><path d="M7 2l1.5 3 3.5.5-2.5 2.5.5 3.5L7 10l-3 1.5.5-3.5L2 5.5l3.5-.5z"/></svg>
+            <span class="group-stat-label">FASTEST IN LANE</span>
+          </div>
+          <div class="group-fastest-row">
+            <span class="group-fastest-time">0:50.8</span>
+            <span class="group-fastest-name">Mara<br>Chen</span>
+          </div>
+        </div>
+
+        <div class="group-stat-card">
+          <div class="group-stat-header">
+            <span class="group-stat-label">DISTANCE</span>
+          </div>
+          <div class="group-distance-row">
+            <span class="group-distance-big">600</span>
+            <span class="group-distance-total">/1000m</span>
+          </div>
+          <div class="group-progress-bar">
+            <div class="group-progress-fill" style="width:60%"></div>
+          </div>
+          <span class="group-distance-sub">60% of set complete</span>
+        </div>
+
+        <div class="group-stat-card">
+          <div class="group-stat-header">
+            <svg width="14" height="14" fill="none" stroke="#d4ecf1" stroke-width="1.5"><path d="M2 10c2-3 4-5 6-5s4 2 6 5"/></svg>
+            <span class="group-stat-label">LANE AVG PACE</span>
+          </div>
+          <span class="group-pace-big">0:52.8</span>
+          <span class="group-pace-sub">per 50m · target 0:52.0</span>
+        </div>
+      </div>
+
+      <!-- Bottom: Leaderboard + Pool Leader -->
+      <div class="group-bottom-grid">
+        <!-- Lane Leaderboard -->
+        <div class="group-leaderboard">
+          <div class="group-lb-header">
+            <div class="group-lb-title-row">
+              <svg width="14" height="14" fill="none" stroke="#d4ecf1" stroke-width="1.5"><path d="M7 2l1.5 3 3.5.5-2.5 2.5.5 3.5L7 10l-3 1.5.5-3.5L2 5.5l3.5-.5z"/></svg>
+              <span class="group-lb-title">LANE LEADERBOARD</span>
+            </div>
+            <span class="group-lb-subtitle">avg pace · gap to leader</span>
+          </div>
+          <div class="group-lb-table-head">
+            <span class="glb-rank">RANK</span>
+            <span class="glb-swimmer">SWIMMER</span>
+            <span class="glb-pace">AVG PACE</span>
+            <span class="glb-gap">GAP</span>
+          </div>
+          <div class="group-lb-rows">
+            <div class="group-lb-row">
+              <span class="glb-rank-val">2</span>
+              <span class="glb-name">Jonas Reyes</span>
+              <span class="glb-pace-val">0:51.4</span>
+              <span class="glb-gap-val">+0.6s</span>
+            </div>
+            <div class="group-lb-row you">
+              <span class="glb-rank-val">3</span>
+              <span class="glb-name">Kai Okafor</span>
+              <span class="glb-pace-val">0:52.6</span>
+              <span class="glb-gap-val">+1.8s</span>
+            </div>
+            <div class="group-lb-row">
+              <span class="glb-rank-val">4</span>
+              <span class="glb-name">Ava Park</span>
+              <span class="glb-pace-val">0:53.1</span>
+              <span class="glb-gap-val">+2.3s</span>
+            </div>
+            <div class="group-lb-row">
+              <span class="glb-rank-val">5</span>
+              <span class="glb-name">Leo Silva</span>
+              <span class="glb-pace-val">0:54.2</span>
+              <span class="glb-gap-val">+3.4s</span>
+            </div>
+            <div class="group-lb-row">
+              <span class="glb-rank-val">6</span>
+              <span class="glb-name">Priya Nair</span>
+              <span class="glb-pace-val">0:54.8</span>
+              <span class="glb-gap-val">+4s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pool Leader -->
+        <div class="group-pool-leader">
+          <div class="group-stat-header">
+            <svg width="14" height="14" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"><circle cx="7" cy="5" r="4"/><path d="M3 14c0-2.2 1.8-4 4-4s4 1.8 4 4"/></svg>
+            <span class="group-stat-label">POOL LEADER</span>
+          </div>
+          <div class="pool-leader-name">S. Novak</div>
+          <div class="pool-leader-detail">Lane 2 · fastest in pool</div>
+          <div class="pool-leader-time">0:48.9</div>
+
+          <div class="pool-leader-divider"></div>
+
+          <div class="pool-lane-label">LANE #1 · MARA CHEN</div>
+          <div class="pool-lane-row">
+            <span class="pool-lane-time">0:50.8</span>
+            <span class="pool-lane-gap">+1.9s</span>
           </div>
         </div>
       </div>
