@@ -238,34 +238,36 @@
 
   <!-- ═══════════ COACH ROLE SELECTOR ═══════════ -->
   <div class="screen" id="scrCoachRole">
-    <div style="height:100%;background:#111033;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px">
-      <img src="../../images/swym-logo-transparent.png" alt="SWYM" style="width:160px;margin-bottom:32px;opacity:0.8" />
-      <h1 style="font-family:var(--font-head);font-size:30px;color:white;margin-bottom:12px;letter-spacing:-0.01em">Welcome, Coach</h1>
-      <p style="color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:48px">Choose your view mode</p>
+    <div style="height:100%;background:#111033;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden">
+      <video autoplay loop muted playsinline preload="auto" src="../../videos/water.mp4" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.25"></video>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(17,16,51,0.5) 0%,rgba(17,16,51,0.85) 100%)"></div>
+      <img src="../../images/swym-logo-transparent.png" alt="SWYM" style="width:120px;margin-bottom:24px;opacity:0.8;position:relative;z-index:1" />
+      <h1 style="font-family:var(--font-head);font-size:22px;color:white;margin-bottom:8px;letter-spacing:-0.01em;position:relative;z-index:1">Welcome, Coach</h1>
+      <p style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:32px;position:relative;z-index:1">Choose your view mode</p>
 
-      <button class="role-card primary" onclick="enterCoachApp()">
+      <button class="role-card primary" onclick="enterCoachApp()" style="position:relative;z-index:1">
         <div class="role-card-row">
           <div class="role-icon" style="background:rgba(51,79,107,0.3)">
-            <svg width="28" height="28" fill="none" stroke="white" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2"/><circle cx="11" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2"/><circle cx="11" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
           </div>
           <div style="flex:1">
             <div class="role-card-title">Continue as Coach</div>
             <div class="role-card-desc">Manage your team and athletes</div>
           </div>
-          <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"><path d="M7 4l6 6-6 6"/></svg>
+          <svg width="18" height="18" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"><path d="M7 4l6 6-6 6"/></svg>
         </div>
       </button>
 
-      <button class="role-card" onclick="enterSwimmerApp()">
+      <button class="role-card" onclick="enterSwimmerApp()" style="position:relative;z-index:1">
         <div class="role-card-row">
           <div class="role-icon" style="background:rgba(51,79,107,0.15)">
-            <svg width="28" height="28" fill="none" stroke="#98C0C8" stroke-width="1.5"><circle cx="14" cy="7" r="4"/><path d="M6 21v-2a8 8 0 0116 0v2"/></svg>
+            <svg width="22" height="22" fill="none" stroke="#98C0C8" stroke-width="1.5"><circle cx="14" cy="7" r="4"/><path d="M6 21v-2a8 8 0 0116 0v2"/></svg>
           </div>
           <div style="flex:1">
             <div class="role-card-title">View Swimmer Mode</div>
             <div class="role-card-desc" style="color:rgba(255,255,255,0.4)">Experience as an athlete</div>
           </div>
-          <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"><path d="M7 4l6 6-6 6"/></svg>
+          <svg width="18" height="18" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"><path d="M7 4l6 6-6 6"/></svg>
         </div>
       </button>
     </div>
@@ -339,17 +341,17 @@
     <!-- Dashboard -->
     <div style="background:var(--dark);padding:0 20px 120px">
       <!-- This Month -->
-      <div class="card-month">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div class="card-month" onclick="navTo('coach')" style="cursor:pointer">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
           <div>
             <div style="font-size:10px;letter-spacing:0.15em;color:rgba(17,16,51,0.4)">THIS MONTH</div>
             <div style="font-family:var(--font-head);font-size:36px;color:#111033;letter-spacing:-0.02em;margin-top:4px">12,480<span style="font-size:14px;color:rgba(17,16,51,0.4);margin-left:4px">m</span></div>
           </div>
-          <div style="width:48px;height:48px;border-radius:16px;background:rgba(51,79,107,0.15);display:flex;align-items:center;justify-content:center">
-            <svg width="20" height="20" fill="none" stroke="#334F6B" stroke-width="1.5"><path d="M2 10c2-3 4-5 6-5s4 2 6 5c2 3 4 5 6 5"/></svg>
+          <div style="width:48px;height:48px;border-radius:16px;background:rgba(51,79,107,0.08);display:flex;align-items:center;justify-content:center">
+            <svg width="22" height="22" fill="none" stroke="#334F6B" stroke-width="1.5"><path d="M11 3C8 7 5 9.5 5 12.5a6 6 0 1012 0C17 9.5 14 7 11 3Z"/></svg>
           </div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
           <div style="text-align:center"><div style="font-family:var(--font-head);font-size:20px;color:#111033">7</div><div style="font-size:9px;color:rgba(17,16,51,0.4);margin-top:2px;letter-spacing:0.05em">Sessions</div></div>
           <div style="text-align:center"><div style="font-family:var(--font-head);font-size:20px;color:#111033">1:24</div><div style="font-size:9px;color:rgba(17,16,51,0.4);margin-top:2px;letter-spacing:0.05em">Best /100m</div></div>
           <div style="text-align:center"><div style="font-family:var(--font-head);font-size:20px;color:#111033">94<span style="font-size:12px;color:rgba(17,16,51,0.3)">%</span></div><div style="font-size:9px;color:rgba(17,16,51,0.4);margin-top:2px;letter-spacing:0.05em">Consistency</div></div>
@@ -398,7 +400,7 @@
             <span style="font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.15em">AI COACH INSIGHT</span>
           </div>
           <p style="font-size:14px;color:rgba(255,255,255,.95);line-height:1.6">Your pace drops after lap 6. Adding 4×200m endurance intervals this week could improve your sustained power by ~8%.</p>
-          <button style="display:flex;align-items:center;gap:4px;font-size:10px;color:rgba(255,255,255,.5);margin-top:20px;letter-spacing:0.05em;background:none;border:none">
+          <button onclick="navTo('coach')" style="display:flex;align-items:center;gap:4px;font-size:10px;color:rgba(255,255,255,.5);margin-top:20px;letter-spacing:0.05em;background:none;border:none;cursor:pointer">
             VIEW FULL ANALYSIS <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l5 5-5 5"/></svg>
           </button>
         </div>
@@ -611,69 +613,134 @@
   </div>
 
   <!-- ═══════════ COACH AI HUB ═══════════ -->
-  <div class="screen" id="scrCoach">
-    <div class="dark-hdr" style="padding-bottom:56px">
-      <div style="position:absolute;right:-48px;top:-48px;width:176px;height:176px;border-radius:50%;border:1px solid rgba(51,79,107,.08)"></div>
-      <div style="position:absolute;right:20px;top:56px;opacity:.08"><img src="../../images/swym-logo-transparent.png" style="height:20px" /></div>
+  <div class="screen" id="scrCoach" style="background:var(--dark)">
+    <!-- Header with gradient card -->
+    <div style="background:linear-gradient(160deg, #1a2240 0%, #111033 40%, #0e1a2e 70%, #111033 100%);padding:48px 24px 28px;position:relative;overflow:hidden;border-radius:0 0 32px 32px;flex-shrink:0">
+      <div style="position:absolute;top:-40px;left:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(51,79,107,0.25),transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;bottom:-20px;right:-20px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(152,192,200,0.08),transparent 70%);pointer-events:none"></div>
       <div style="position:relative;z-index:10">
-        <div style="font-size:10px;letter-spacing:.2em;color:rgba(255,255,255,.2);margin-bottom:8px">AI COACHING</div>
-        <h1 style="font-family:var(--font-head);font-size:30px;color:white;margin-bottom:20px">Coach</h1>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <span style="font-size:11px;letter-spacing:.1em;color:rgba(255,255,255,.25);font-family:var(--font-head)">swym</span>
+          <span style="font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.2)">AI COACH</span>
+        </div>
+        <h1 style="font-family:var(--font-head);font-size:28px;color:white;margin-bottom:6px">Your AI Coach</h1>
+        <p style="font-size:13px;color:rgba(255,255,255,0.3)">Personalized insights and recommendations</p>
       </div>
     </div>
-    <div style="padding:0 20px 120px;margin-top:-24px;display:flex;flex-direction:column;gap:16px">
-      <!-- AI Chat -->
-      <div class="card-white" style="padding:20px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-          <div style="width:24px;height:24px;border-radius:50%;background:rgba(51,79,107,0.12);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" fill="none" stroke="#334F6B" stroke-width="1.5"><path d="M6 1v2M6 9v2M1 6h2M9 6h2"/></svg></div>
-          <span style="font-size:10px;color:rgba(17,16,51,.25);letter-spacing:.15em">AI COACH</span>
+
+    <div style="padding:16px 20px 120px;display:flex;flex-direction:column;gap:16px">
+      <!-- AI Chat Card -->
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:20px">
+        <!-- Coach identity -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+          <div style="width:44px;height:44px;border-radius:50%;background:rgba(246,170,56,0.15);display:flex;align-items:center;justify-content:center">
+            <svg width="20" height="20" fill="none" stroke="#F6AA38" stroke-width="1.5"><path d="M3 14V5a2 2 0 012-2h8a2 2 0 012 2v5a2 2 0 01-2 2H7l-4 2z"/></svg>
+          </div>
+          <div>
+            <div style="font-size:15px;color:white;font-weight:500">AI Coach</div>
+            <div style="display:flex;align-items:center;gap:4px"><div style="width:6px;height:6px;border-radius:50%;background:#4ade80"></div><span style="font-size:10px;color:rgba(255,255,255,0.25)">Online</span></div>
+          </div>
         </div>
+        <!-- Chat messages -->
         <div class="chat-container" id="chatContainer">
-          <div class="chat-msg ai">Hi Alex! Based on your recent data, your endurance has improved 8% this week. Technique consistency is high. I recommend focusing on turn speed for your next performance jump.</div>
+          <div class="coach-ai-row"><div class="coach-ai-icon"><svg width="12" height="12" fill="none" stroke="#F6AA38" stroke-width="2"><path d="M6 1v3M6 8v3M1 6h3M8 6h3"/></svg></div><div class="chat-msg ai">Your endurance trend improved this week. Want today's recommended session?</div></div>
         </div>
-        <div class="chat-input-wrap">
-          <input class="chat-input" id="chatInput" placeholder="Ask your AI coach..." onkeydown="if(event.key==='Enter')sendChat()" />
-          <button class="chat-send" onclick="sendChat()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2L7 9M14 2l-5 12-2-5-5-2 12-5z"/></svg></button>
+        <!-- Quick action chips -->
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0" id="coachChips">
+          <button onclick="coachQuickAction('Yes, recommend a session')" class="coach-chip">Yes</button>
+          <button onclick="coachQuickAction('Give me a recovery set')" class="coach-chip">Recovery Set</button>
+          <button onclick="coachQuickAction('Help me prep for a race')" class="coach-chip">Race Prep</button>
+          <button onclick="coachQuickAction('Ask Anything')" class="coach-chip">Ask Anything</button>
+        </div>
+        <!-- Input -->
+        <div style="display:flex;gap:8px">
+          <input id="chatInput" placeholder="Ask your coach..." onkeydown="if(event.key==='Enter')sendChat()" style="flex:1;padding:12px 16px;border-radius:16px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.04);font-size:13px;color:white;font-family:var(--font-body);outline:none" />
+          <button onclick="sendChat()" style="width:44px;height:44px;border-radius:50%;background:#F6AA38;border:none;color:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform 0.1s" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform=''"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2L7 9M14 2l-5 12-2-5-5-2 12-5z"/></svg></button>
         </div>
       </div>
 
-      <!-- Performance Radar -->
-      <div class="card-white" style="padding:24px">
-        <div style="font-size:10px;letter-spacing:.15em;color:rgba(17,16,51,.25);margin-bottom:4px">PERFORMANCE PROFILE</div>
-        <div style="font-family:var(--font-head);font-size:14px;color:var(--dark);margin-bottom:16px">6-Week Analysis</div>
+      <!-- Performance Profile -->
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:24px">
+        <div style="font-family:var(--font-head);font-size:18px;color:white;margin-bottom:4px">Performance Profile</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.25);margin-bottom:16px">6-week analysis across key metrics</div>
         <div class="radar-wrap"><svg id="radarChart" viewBox="0 0 240 240" style="width:200px;height:200px"></svg></div>
+        <!-- Stat pills -->
+        <div id="radarStats" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px"></div>
       </div>
 
       <!-- Personal Bests -->
-      <div>
-        <div style="font-size:10px;letter-spacing:.15em;color:rgba(17,16,51,.25);margin-bottom:12px;padding:0 4px">PERSONAL BESTS</div>
-        <div class="g3">
-          <div class="card-white" style="padding:16px;text-align:center"><div style="font-size:10px;color:rgba(17,16,51,.3);margin-bottom:4px">100m</div><div style="font-family:var(--font-head);font-size:24px;color:var(--dark)">1:18</div><div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-top:4px"><svg width="10" height="10" fill="none" stroke="#16a34a" stroke-width="2"><polyline points="1,7 5,3 9,5"/></svg><span style="font-size:10px;color:#16a34a">-3s</span></div></div>
-          <div class="card-white" style="padding:16px;text-align:center"><div style="font-size:10px;color:rgba(17,16,51,.3);margin-bottom:4px">200m</div><div style="font-family:var(--font-head);font-size:24px;color:var(--dark)">2:42</div><div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-top:4px"><svg width="10" height="10" fill="none" stroke="#16a34a" stroke-width="2"><polyline points="1,7 5,3 9,5"/></svg><span style="font-size:10px;color:#16a34a">-5s</span></div></div>
-          <div class="card-white" style="padding:16px;text-align:center"><div style="font-size:10px;color:rgba(17,16,51,.3);margin-bottom:4px">400m</div><div style="font-family:var(--font-head);font-size:24px;color:var(--dark)">5:38</div><div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-top:4px"><svg width="10" height="10" fill="none" stroke="#16a34a" stroke-width="2"><polyline points="1,7 5,3 9,5"/></svg><span style="font-size:10px;color:#16a34a">-8s</span></div></div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div>
+            <div style="font-family:var(--font-head);font-size:18px;color:white">Personal Bests</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.25);margin-top:2px">Your fastest times</div>
+          </div>
+          <svg width="20" height="20" fill="none" stroke="#F6AA38" stroke-width="1.5"><path d="M10 3l2 4h4l-3 3 1 4-4-2.5L6 14l1-4-3-3h4Z"/></svg>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);border-radius:14px">
+            <div><div style="font-size:14px;color:white;font-family:var(--font-head)">50m Freestyle</div><div style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:2px">24.3s</div></div>
+            <div style="display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:9999px;background:rgba(246,170,56,0.12);border:1px solid rgba(246,170,56,0.2)"><svg width="10" height="10" fill="none" stroke="#F6AA38" stroke-width="2"><polyline points="1,7 5,3 9,5"/></svg><span style="font-size:10px;color:#F6AA38">+0.8s</span></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);border-radius:14px">
+            <div><div style="font-size:14px;color:white;font-family:var(--font-head)">100m Freestyle</div><div style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:2px">52.1s</div></div>
+            <div style="display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:9999px;background:rgba(246,170,56,0.12);border:1px solid rgba(246,170,56,0.2)"><svg width="10" height="10" fill="none" stroke="#F6AA38" stroke-width="2"><polyline points="1,7 5,3 9,5"/></svg><span style="font-size:10px;color:#F6AA38">+1.2s</span></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);border-radius:14px">
+            <div><div style="font-size:14px;color:white;font-family:var(--font-head)">200m Freestyle</div><div style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:2px">1:54.6</div></div>
+            <div style="display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:9999px;background:rgba(246,170,56,0.12);border:1px solid rgba(246,170,56,0.2)"><svg width="10" height="10" fill="none" stroke="#F6AA38" stroke-width="2"><polyline points="1,7 5,3 9,5"/></svg><span style="font-size:10px;color:#F6AA38">+2.3s</span></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);border-radius:14px">
+            <div><div style="font-size:14px;color:white;font-family:var(--font-head)">400m Freestyle</div><div style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:2px">4:12.8</div></div>
+            <div style="display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:9999px;background:rgba(246,170,56,0.12);border:1px solid rgba(246,170,56,0.2)"><svg width="10" height="10" fill="none" stroke="#F6AA38" stroke-width="2"><polyline points="1,7 5,3 9,5"/></svg><span style="font-size:10px;color:#F6AA38">+5.1s</span></div>
+          </div>
         </div>
       </div>
 
-      <!-- Focus Areas -->
-      <div class="card-white" style="padding:20px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
-          <svg width="14" height="14" fill="none" stroke="#334F6B" stroke-width="1.5"><circle cx="7" cy="7" r="6"/><path d="M7 4v6M4 7h6"/></svg>
-          <span style="font-size:10px;color:rgba(17,16,51,.25);letter-spacing:.15em">RECOMMENDED FOCUS</span>
+      <!-- Recommended Focus -->
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <div style="font-family:var(--font-head);font-size:18px;color:white">Recommended Focus</div>
+          <svg width="16" height="16" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"><circle cx="8" cy="8" r="7"/><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="0.5" fill="rgba(255,255,255,0.2)"/></svg>
         </div>
-        <div style="display:flex;flex-direction:column;gap:12px">
-          <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border-radius:16px"><div style="width:36px;height:36px;border-radius:12px;background:rgba(51,79,107,.08);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" fill="none" stroke="#334F6B" stroke-width="1.5"><path d="M2 10c2-3 4-5 6-5s4 2 6 5"/></svg></div><div><div style="font-family:var(--font-head);font-size:14px;color:var(--dark)">Turns</div><div style="font-size:11px;color:rgba(17,16,51,.3);margin-top:2px">Wall push-off speed below potential</div></div></div>
-          <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border-radius:16px"><div style="width:36px;height:36px;border-radius:12px;background:rgba(51,79,107,.08);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" fill="none" stroke="#334F6B" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg></div><div><div style="font-family:var(--font-head);font-size:14px;color:var(--dark)">Sprint Finish</div><div style="font-size:11px;color:rgba(17,16,51,.3);margin-top:2px">Last 25m pace drops 12%</div></div></div>
-          <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border-radius:16px"><div style="width:36px;height:36px;border-radius:12px;background:rgba(51,79,107,.08);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" fill="none" stroke="#334F6B" stroke-width="1.5"><path d="M9 1C7 5 3 6.5 3 10a6 6 0 1012 0C15 6.5 11 5 9 1Z"/></svg></div><div><div style="font-family:var(--font-head);font-size:14px;color:var(--dark)">Recovery Intervals</div><div style="font-size:11px;color:rgba(17,16,51,.3);margin-top:2px">Heart rate recovery time improving</div></div></div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.25);margin-bottom:16px">AI-suggested training priorities</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);border-radius:14px">
+            <div style="width:36px;height:36px;border-radius:12px;background:rgba(246,170,56,0.1);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" fill="none" stroke="#F6AA38" stroke-width="1.5"><path d="M2 10c2-3 4-5 6-5s4 2 6 5"/></svg></div>
+            <div style="flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px;color:white">Turns</span><span style="padding:2px 8px;border-radius:9999px;background:rgba(239,68,68,0.15);font-size:9px;color:#ef4444">high</span></div><div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:2px">Improve underwater phase by 15%</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);border-radius:14px">
+            <div style="width:36px;height:36px;border-radius:12px;background:rgba(246,170,56,0.1);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" fill="none" stroke="#F6AA38" stroke-width="1.5"><path d="M13 2L3 7l4 2 2 4 4-11z"/></svg></div>
+            <div style="flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px;color:white">Sprint Finish</span><span style="padding:2px 8px;border-radius:9999px;background:rgba(246,170,56,0.15);font-size:9px;color:#F6AA38">medium</span></div><div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:2px">Build final 25m power</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);border-radius:14px">
+            <div style="width:36px;height:36px;border-radius:12px;background:rgba(152,192,200,0.1);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" fill="none" stroke="#98C0C8" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v6M5 8h6"/></svg></div>
+            <div style="flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px;color:white">Recovery Intervals</span><span style="padding:2px 8px;border-radius:9999px;background:rgba(74,222,128,0.15);font-size:9px;color:#4ade80">low</span></div><div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:2px">Optimize rest between sets</div></div>
+          </div>
         </div>
+      </div>
+
+      <!-- This Week's Goal -->
+      <div style="background:linear-gradient(135deg, rgba(51,79,107,0.3), rgba(42,50,78,0.4));border:1px solid rgba(51,79,107,0.3);border-radius:20px;padding:20px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <svg width="16" height="16" fill="none" stroke="#F6AA38" stroke-width="1.5"><path d="M8 2v3M5 3l1 2M11 3l-1 2M4 8h8M5 8v4a3 3 0 006 0V8"/></svg>
+          <div style="font-family:var(--font-head);font-size:18px;color:white">This Week's Goal</div>
+        </div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.4);line-height:1.5;margin-bottom:16px">Add 4×50m race pace turns drills to improve your underwater efficiency by 15%.</p>
+        <button onclick="navTo('train')" style="padding:12px 24px;border-radius:16px;background:rgba(152,192,200,0.15);border:1px solid rgba(152,192,200,0.2);color:#98C0C8;font-size:12px;display:flex;align-items:center;gap:6px">Add to Training Plan</button>
       </div>
     </div>
   </div>
 
   <!-- ═══════════ PROFILE ═══════════ -->
-  <div class="screen" id="scrProfile">
-    <div class="dark-hdr" style="padding-bottom:80px">
-      <div style="position:absolute;right:-80px;bottom:-80px;width:224px;height:224px;border-radius:50%;background:rgba(51,79,107,.1);filter:blur(48px)"></div>
-      <div style="position:absolute;right:20px;top:56px;opacity:.1"><img src="../../images/swym-logo-transparent.png" style="height:20px" /></div>
-      <div style="position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:16px">
+  <div class="screen" id="scrProfile" style="background:var(--dark)">
+    <!-- Header -->
+    <div style="background:linear-gradient(160deg, #1a2240 0%, #111033 40%, #0e1a2e 70%, #111033 100%);padding:48px 24px 32px;position:relative;overflow:hidden;border-radius:0 0 32px 32px;flex-shrink:0">
+      <div style="position:absolute;top:-40px;left:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(51,79,107,0.25),transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;bottom:-20px;right:-20px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(152,192,200,0.08),transparent 70%);pointer-events:none"></div>
+      <!-- Edit button -->
+      <button style="position:absolute;right:20px;top:52px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;z-index:10"><svg width="13" height="13" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><path d="M9.5 2.5l2 2M1 11l7-7 2 2-7 7H1v-2z"/></svg></button>
+      <div style="position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:16px">
         <div style="position:relative;margin-bottom:16px">
           <div class="avatar-lg">AK</div>
           <div class="online-dot"></div>
@@ -682,60 +749,63 @@
         <p style="font-size:12px;color:rgba(255,255,255,.25)">Premium Member · Since Jan 2025</p>
       </div>
     </div>
-    <div style="padding:0 20px 120px;margin-top:-40px;display:flex;flex-direction:column;gap:16px">
-      <!-- Device -->
-      <div class="card-white" style="padding:20px">
-        <div style="font-size:10px;letter-spacing:.15em;color:rgba(17,16,51,.25);margin-bottom:12px">CONNECTED DEVICE</div>
+
+    <div style="padding:16px 20px 120px;display:flex;flex-direction:column;gap:16px">
+      <!-- Connected Device -->
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:20px">
+        <div style="font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.2);margin-bottom:12px">CONNECTED DEVICE</div>
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div style="display:flex;align-items:center;gap:12px">
-            <div style="width:40px;height:40px;border-radius:14px;background:rgba(51,79,107,.08);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" fill="none" stroke="#334F6B" stroke-width="1.5"><path d="M7 2a5 5 0 015 5v3H2V7a5 5 0 015-5z"/><path d="M5 14h4"/></svg></div>
-            <div><div style="font-family:var(--font-head);font-size:14px;color:var(--dark)">SWYM Ring Pro</div><div style="font-size:9px;color:rgba(17,16,51,.25);display:flex;align-items:center;gap:4px;margin-top:2px"><div style="width:6px;height:6px;border-radius:50%;background:#4ade80"></div>Connected · v3.2</div></div>
+            <div style="width:40px;height:40px;border-radius:14px;background:rgba(51,79,107,0.15);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" fill="none" stroke="#61949B" stroke-width="1.5"><path d="M5.5 1v3M10.5 1v3M3 7h10M8 10v3"/></svg></div>
+            <div><div style="font-family:var(--font-head);font-size:14px;color:white">SWYM Ring Pro</div><div style="font-size:9px;color:rgba(255,255,255,.25);display:flex;align-items:center;gap:4px;margin-top:2px"><div style="width:6px;height:6px;border-radius:50%;background:#4ade80"></div>Connected</div></div>
           </div>
-          <div style="display:flex;align-items:center;gap:6px;background:var(--bg);border-radius:9999px;padding:6px 12px"><svg width="13" height="13" fill="none" stroke="#334F6B" stroke-width="1.5"><rect x="2" y="5" width="9" height="6" rx="1"/><path d="M4 5V3.5a3 3 0 016 0V5"/></svg><span style="font-family:var(--font-head);font-size:12px;color:var(--dark)">87%</span></div>
+          <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:9999px;padding:6px 12px"><svg width="13" height="13" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"><rect x="2" y="5" width="9" height="6" rx="1"/><path d="M12 7v2"/></svg><span style="font-family:var(--font-head);font-size:12px;color:white">87%</span></div>
         </div>
-        <div style="margin-top:12px;height:4px;background:var(--bg);border-radius:9999px;overflow:hidden"><div style="height:100%;width:87%;background:linear-gradient(90deg,var(--accent),var(--accent-light));border-radius:9999px"></div></div>
+        <div style="margin-top:12px;height:4px;background:rgba(255,255,255,0.06);border-radius:9999px;overflow:hidden"><div style="height:100%;width:87%;background:linear-gradient(90deg,#334F6B,#98C0C8);border-radius:9999px"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px"><span style="font-size:9px;color:rgba(255,255,255,0.15)">Firmware v1.2</span><span style="font-size:9px;color:rgba(255,255,255,0.3)">Manage Device</span></div>
+      </div>
+
+      <!-- Premium Membership -->
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="16" height="16" fill="none" stroke="#F6AA38" stroke-width="1.5"><path d="M8 2l2 3h3l-2.5 2.5 1 3L8 9l-3.5 1.5 1-3L3 5h3Z"/></svg>
+            <span style="font-family:var(--font-head);font-size:16px;color:white">Premium Membership</span>
+          </div>
+          <span style="padding:4px 10px;border-radius:9999px;background:rgba(246,170,56,0.15);border:1px solid rgba(246,170,56,0.2);font-size:9px;color:#F6AA38;letter-spacing:.05em">PREMIUM</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;padding-left:4px">
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.2)"></div><span style="font-size:12px;color:rgba(255,255,255,0.4)">AI Coaching</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.2)"></div><span style="font-size:12px;color:rgba(255,255,255,0.4)">Community Access</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.2)"></div><span style="font-size:12px;color:rgba(255,255,255,0.4)">Unlimited Analytics</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.2)"></div><span style="font-size:12px;color:rgba(255,255,255,0.4)">Priority Support</span></div>
+        </div>
+        <button style="width:100%;padding:12px;border-radius:16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);font-size:12px">Manage Plan</button>
       </div>
 
       <!-- Goals -->
-      <div class="card-white" style="padding:20px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px"><svg width="13" height="13" fill="none" stroke="#334F6B" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="5.5"/><circle cx="6.5" cy="6.5" r="2.5"/></svg><span style="font-size:10px;color:rgba(17,16,51,.25);letter-spacing:.15em">GOALS</span></div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:20px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px"><svg width="13" height="13" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="5.5"/><circle cx="6.5" cy="6.5" r="2.5"/></svg><span style="font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.15em">GOALS</span></div>
         <div style="display:flex;flex-direction:column;gap:16px">
-          <div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:12px;color:rgba(17,16,51,.4)">Weekly Distance</span><span style="font-family:var(--font-head);font-size:14px;color:var(--dark)">15 km</span></div><div class="prog-track"><div class="prog-fill" style="width:83%"></div></div><div style="font-size:8px;color:rgba(17,16,51,.15);margin-top:4px">83% of goal</div></div>
-          <div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:12px;color:rgba(17,16,51,.4)">Sessions / Week</span><span style="font-family:var(--font-head);font-size:14px;color:var(--dark)">5</span></div><div class="prog-track"><div class="prog-fill" style="width:60%"></div></div><div style="font-size:8px;color:rgba(17,16,51,.15);margin-top:4px">60% of goal</div></div>
-          <div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:12px;color:rgba(17,16,51,.4)">Target 100m Pace</span><span style="font-family:var(--font-head);font-size:14px;color:var(--dark)">1:25</span></div><div class="prog-track"><div class="prog-fill" style="width:92%"></div></div><div style="font-size:8px;color:rgba(17,16,51,.15);margin-top:4px">92% of goal</div></div>
+          <div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,0.5)">Weekly Distance</span><span style="font-family:var(--font-head);font-size:14px;color:white">15 km</span></div><div style="height:4px;background:rgba(255,255,255,0.06);border-radius:9999px;overflow:hidden"><div style="height:100%;width:83%;background:linear-gradient(90deg,#334F6B,#98C0C8);border-radius:9999px"></div></div><div style="font-size:8px;color:rgba(255,255,255,0.12);margin-top:4px">83% of goal</div></div>
+          <div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,0.5)">Sessions / Week</span><span style="font-family:var(--font-head);font-size:14px;color:white">5</span></div><div style="height:4px;background:rgba(255,255,255,0.06);border-radius:9999px;overflow:hidden"><div style="height:100%;width:60%;background:linear-gradient(90deg,#334F6B,#98C0C8);border-radius:9999px"></div></div><div style="font-size:8px;color:rgba(255,255,255,0.12);margin-top:4px">60% of goal</div></div>
+          <div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;color:rgba(255,255,255,0.5)">Target 100m Pace</span><span style="font-family:var(--font-head);font-size:14px;color:white">1:25</span></div><div style="height:4px;background:rgba(255,255,255,0.06);border-radius:9999px;overflow:hidden"><div style="height:100%;width:92%;background:linear-gradient(90deg,#334F6B,#98C0C8);border-radius:9999px"></div></div><div style="font-size:8px;color:rgba(255,255,255,0.12);margin-top:4px">92% of goal</div></div>
         </div>
       </div>
 
-      <!-- Training History -->
-      <div class="card-white" style="padding:20px">
-        <div style="font-size:10px;letter-spacing:.15em;color:rgba(17,16,51,.25);margin-bottom:12px">RECENT HISTORY</div>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:12px"><div><div style="font-size:14px;color:var(--dark)">Threshold Session</div><div style="font-size:10px;color:rgba(17,16,51,.3);margin-top:2px">2.4km · 52 min</div></div><span style="font-size:9px;color:rgba(17,16,51,.2)">Today</span></div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:12px"><div><div style="font-size:14px;color:var(--dark)">Sprint Set</div><div style="font-size:10px;color:rgba(17,16,51,.3);margin-top:2px">1.8km · 38 min</div></div><span style="font-size:9px;color:rgba(17,16,51,.2)">Yesterday</span></div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:12px"><div><div style="font-size:14px;color:var(--dark)">Endurance</div><div style="font-size:10px;color:rgba(17,16,51,.3);margin-top:2px">3.2km · 65 min</div></div><span style="font-size:9px;color:rgba(17,16,51,.2)">Mon</span></div>
+      <!-- Recent History -->
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:20px">
+        <div style="font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.2);margin-bottom:12px">RECENT HISTORY</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);border-radius:14px"><div><div style="font-size:14px;color:white">Threshold Session</div><div style="font-size:10px;color:rgba(255,255,255,.2);margin-top:2px">2.4km · 52 min</div></div><span style="font-size:9px;color:rgba(255,255,255,.15)">Today</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);border-radius:14px"><div><div style="font-size:14px;color:white">Sprint Set</div><div style="font-size:10px;color:rgba(255,255,255,.2);margin-top:2px">1.8km · 38 min</div></div><span style="font-size:9px;color:rgba(255,255,255,.15)">Yesterday</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);border-radius:14px"><div><div style="font-size:14px;color:white">Endurance</div><div style="font-size:10px;color:rgba(255,255,255,.2);margin-top:2px">3.2km · 65 min</div></div><span style="font-size:9px;color:rgba(255,255,255,.15)">Mon</span></div>
         </div>
-      </div>
-
-      <!-- Monthly Stats -->
-      <div class="card-white" style="padding:20px">
-        <div style="font-size:10px;letter-spacing:.15em;color:rgba(17,16,51,.25);margin-bottom:12px">THIS MONTH</div>
-        <div class="g3">
-          <div style="text-align:center"><div style="font-family:var(--font-head);font-size:24px;color:var(--dark)">12.4<span style="font-size:10px;color:rgba(17,16,51,.2)">km</span></div><div style="font-size:9px;color:rgba(17,16,51,.3);margin-top:2px">Distance</div></div>
-          <div style="text-align:center"><div style="font-family:var(--font-head);font-size:24px;color:var(--dark)">1:26</div><div style="font-size:9px;color:rgba(17,16,51,.3);margin-top:2px">Avg Pace</div></div>
-          <div style="text-align:center"><div style="font-family:var(--font-head);font-size:24px;color:var(--dark)">7</div><div style="font-size:9px;color:rgba(17,16,51,.3);margin-top:2px">Sessions</div></div>
-        </div>
-      </div>
-
-      <!-- Menu -->
-      <div class="card-white" style="padding:0;overflow:hidden">
-        <button class="menu-item"><div style="display:flex;align-items:center;gap:12px"><svg width="16" height="16" fill="none" stroke="rgba(17,16,51,.3)" stroke-width="1.5"><path d="M8 2a2 2 0 012 2v3a2 2 0 01-4 0V4a2 2 0 012-2z"/><path d="M4 9v1a4 4 0 008 0V9"/></svg><span style="font-size:14px;color:rgba(17,16,51,.7)">Notifications</span></div><svg width="14" height="14" fill="none" stroke="rgba(17,16,51,.15)" stroke-width="1.5"><path d="M5 2l5 5-5 5"/></svg></button>
-        <div class="divider"></div>
-        <button class="menu-item"><div style="display:flex;align-items:center;gap:12px"><svg width="16" height="16" fill="none" stroke="rgba(17,16,51,.3)" stroke-width="1.5"><circle cx="8" cy="8" r="2"/><path d="M12.5 8a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg><span style="font-size:14px;color:rgba(17,16,51,.7)">Settings</span></div><svg width="14" height="14" fill="none" stroke="rgba(17,16,51,.15)" stroke-width="1.5"><path d="M5 2l5 5-5 5"/></svg></button>
       </div>
 
       <!-- Sign Out -->
-      <button class="btn-signout" onclick="showLogoutModal()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3l4 4-4 4M13 7H5M5 1H3a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>SIGN OUT</button>
-      <div style="text-align:center;padding:8px 0 16px"><img src="../../images/swym-logo-transparent.png" alt="SWYM" style="height:16px;opacity:.1;display:block;margin:0 auto 4px" /><div style="font-size:8px;color:rgba(17,16,51,.1)">v2.4.1 · Built with precision</div></div>
+      <button onclick="showLogoutModal()" style="width:100%;padding:14px;border-radius:16px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);color:rgba(239,68,68,0.6);font-size:12px;letter-spacing:.05em;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3l4 4-4 4M13 7H5M5 1H3a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>SIGN OUT</button>
+      <div style="text-align:center;padding:8px 0 16px"><img src="../../images/swym-logo-transparent.png" alt="SWYM" style="height:16px;opacity:.06;display:block;margin:0 auto 4px" /><div style="font-size:8px;color:rgba(255,255,255,0.06)">v2.4.1 · Built with precision</div></div>
     </div>
 
     <!-- Logout Modal -->
@@ -788,20 +858,22 @@
   </div>
 
   <!-- ═══════════ LEGEND SETS VIEWER ═══════════ -->
-  <div class="screen" id="scrLegendSets">
-    <div class="dark-hdr" style="padding-bottom:32px">
+  <div class="screen" id="scrLegendSets" style="background:var(--dark)">
+    <div style="padding:48px 24px 28px;position:relative;flex-shrink:0">
+      <div style="position:absolute;right:16px;top:48px;opacity:.1"><img src="../../images/swym-logo-transparent.png" style="height:24px" /></div>
       <div style="position:relative;z-index:10">
         <button class="btn-back" onclick="hideLegendSets()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2L4 7l5 5"/></svg>Back</button>
         <div style="font-size:10px;letter-spacing:.2em;color:rgba(255,255,255,.2);margin-bottom:8px">LEGEND WORKOUTS</div>
-        <h1 style="font-family:var(--font-head);font-size:24px;color:white" id="legendViewerName"></h1>
-        <div style="font-size:12px;color:rgba(255,255,255,.3);margin-top:4px" id="legendViewerInfo"></div>
+        <h1 style="font-family:var(--font-head);font-size:28px;color:white;margin-bottom:4px" id="legendViewerName"></h1>
+        <div style="font-size:13px;color:rgba(255,255,255,.3);margin-bottom:16px" id="legendViewerSpecialty"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="legendViewerBadges"></div>
       </div>
     </div>
-    <div style="padding:0 20px 120px;margin-top:-12px;display:flex;flex-direction:column;gap:16px" id="legendSetsContent"></div>
+    <div style="padding:0 20px 120px;display:flex;flex-direction:column;gap:20px" id="legendSetsContent"></div>
   </div>
 
   <!-- ═══════════ COACH DASHBOARD ═══════════ -->
-  <div class="screen" id="scrCoachDash">
+  <div class="screen" id="scrCoachDash" style="background:var(--dark)">
     <!-- Coach sub-screens are managed by JS -->
     <div id="coachDashContent"></div>
 

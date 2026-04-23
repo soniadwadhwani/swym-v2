@@ -145,14 +145,20 @@ function navTo(tab) {
   const scrId = SCREEN_MAP[tab];
   if (!scrId) return;
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(scrId).classList.add('active');
+  const scrEl = document.getElementById(scrId);
+  if (scrEl) scrEl.classList.add('active');
   currentScreen = scrId;
   document.querySelectorAll('#swimmerNav .nav-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.screen === tab);
   });
+  // Ensure swimmer nav is visible
+  document.getElementById('swimmerNav').style.display = '';
   if (tab === 'community') { renderCommunity(); }
   if (tab === 'coach') { renderRadarChart(); }
   if (tab === 'train') { renderDrills(); }
+  if (tab === 'home') { updateHomeWorkoutCard(); }
+  // Save current tab
+  try { localStorage.setItem('swym_tab', tab); } catch(e) {}
 }
 
 // ── Auth ────────────────────────────────────────────────────
@@ -212,6 +218,7 @@ function pickSignupRole(r) {
 
 function enterSwimmerApp() {
   viewMode = 'swimmer';
+  try { localStorage.setItem('swym_session', JSON.stringify({ role: currentRole, mode: 'swimmer' })); } catch(e) {}
   document.getElementById('swimmerNav').style.display = '';
   navTo('home');
   initSwimmerScreens();
@@ -219,6 +226,7 @@ function enterSwimmerApp() {
 
 function enterCoachApp() {
   viewMode = 'coach';
+  try { localStorage.setItem('swym_session', JSON.stringify({ role: currentRole, mode: 'coach' })); } catch(e) {}
   document.getElementById('swimmerNav').style.display = 'none';
   goTo('scrCoachDash');
   renderCoachDashboard('coachHome');
@@ -226,6 +234,7 @@ function enterCoachApp() {
 
 function doLogout() {
   hideLogoutModal();
+  try { localStorage.removeItem('swym_session'); localStorage.removeItem('swym_tab'); } catch(e) {}
   document.getElementById('swimmerNav').style.display = 'none';
   document.getElementById('inputUser').value = '';
   document.getElementById('inputPass').value = '';
@@ -235,7 +244,11 @@ function doLogout() {
   goTo('scrWelcome');
 }
 
-function showLogoutModal() { document.getElementById('logoutModal').classList.add('active'); }
+function showLogoutModal() {
+  var m = document.getElementById('logoutModal');
+  m.classList.add('active');
+  m.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 function hideLogoutModal() { document.getElementById('logoutModal').classList.remove('active'); }
 
 // ── Device Pairing ──────────────────────────────────────────
@@ -784,26 +797,52 @@ function viewLegendSets(legendId) {
   const legend = LEGENDS.find(l => l.id === legendId);
   if (!legend) return;
   document.getElementById('legendViewerName').textContent = legend.name;
-  document.getElementById('legendViewerInfo').textContent = legend.specialty + ' · ' + legend.badge;
+  document.getElementById('legendViewerSpecialty').textContent = legend.specialty;
+  const badges = document.getElementById('legendViewerBadges');
+  badges.innerHTML = `
+    <div style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:9999px;background:rgba(246,170,56,0.15);border:1px solid rgba(246,170,56,0.2)">
+      <svg width="12" height="12" fill="none" stroke="#F6AA38" stroke-width="1.5"><path d="M6 1.5l1.2 2.8H10l-2.3 1.7.9 2.8L6 7.1 3.4 8.8l.9-2.8L2 4.3h2.8Z"/></svg>
+      <span style="font-size:11px;color:#F6AA38">${legend.badge}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:9999px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)">
+      <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l2 1.5"/></svg>
+      <span style="font-size:11px;color:rgba(255,255,255,0.5)">Avg Pace ${legend.pace}</span>
+    </div>`;
   const content = document.getElementById('legendSetsContent');
-  content.innerHTML = legend.sets.map(set => {
+  content.innerHTML = legend.sets.map((set, si) => {
     const totalDist = set.drills.reduce((s, d) => s + d.distance * d.reps, 0);
-    return `<div class="card-white" style="padding:20px">
-      <div style="font-family:var(--font-head);font-size:16px;color:var(--dark);margin-bottom:4px">${set.name}</div>
-      <div style="font-size:11px;color:rgba(17,16,51,0.3);margin-bottom:16px">${totalDist >= 1000 ? (totalDist / 1000).toFixed(1) + 'km' : totalDist + 'm'} · ${set.drills.length} drills</div>
-      ${set.drills.map((d, i) => {
-        const dt = DRILL_TYPES.find(t => t.value === d.type);
-        return `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(212,236,241,0.6);border-radius:12px;margin-bottom:6px">
-          ${DRILL_ICONS[d.type] || ''}
-          <span style="font-size:12px;color:rgba(17,16,51,0.5);flex:1">${dt ? dt.label : d.type} — ${d.reps > 1 ? d.reps + '×' : ''}${d.distance}m ${d.stroke}</span>
-        </div>`;
-      }).join('')}
-      <div style="display:flex;gap:8px;margin-top:16px">
-        <button onclick="copyLegendSet('${legend.id}','${set.name}')" style="flex:1;padding:12px;border-radius:16px;background:var(--accent);color:white;border:none;font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px">
+    const estMin = Math.round(set.drills.reduce((s, d) => s + (d.paceMin * 60 + d.paceSec) * d.reps * d.distance / 100 / 60 + d.rest * d.reps / 60, 0));
+    const timeStr = set.startHour !== undefined ? (set.startHour > 12 ? set.startHour - 12 : set.startHour) + ':' + String(set.startMinute || 0).padStart(2, '0') + ' ' + (set.startPeriod || (set.startHour < 12 ? 'AM' : 'PM')) : '';
+    return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:24px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,0.2)">SIGNATURE SET ${si + 1}</div>
+        ${timeStr ? `<div style="display:flex;align-items:center;gap:4px"><svg width="12" height="12" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l2 1.5"/></svg><span style="font-size:10px;color:rgba(255,255,255,0.2)">${timeStr}</span></div>` : ''}
+      </div>
+      <div style="font-family:var(--font-head);font-size:20px;color:white;margin-bottom:12px">${set.name}</div>
+      <div style="display:flex;gap:8px;margin-bottom:20px">
+        <span style="padding:5px 12px;border-radius:9999px;background:rgba(152,192,200,0.1);border:1px solid rgba(152,192,200,0.15);font-size:11px;color:#98C0C8">${totalDist >= 1000 ? (totalDist / 1000).toFixed(1) + ' km' : totalDist + ' m'}</span>
+        <span style="padding:5px 12px;border-radius:9999px;background:rgba(152,192,200,0.1);border:1px solid rgba(152,192,200,0.15);font-size:11px;color:#98C0C8">${estMin} min</span>
+        <span style="padding:5px 12px;border-radius:9999px;background:rgba(152,192,200,0.1);border:1px solid rgba(152,192,200,0.15);font-size:11px;color:#98C0C8">${set.drills.length} drills</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px">
+        ${set.drills.map((d, i) => {
+          const dt = DRILL_TYPES.find(t => t.value === d.type);
+          const typeColors = { warmup: '#98C0C8', main: '#61949B', sprint: '#F6AA38', cooldown: '#87ACAA' };
+          const tc = typeColors[d.type] || 'rgba(255,255,255,0.5)';
+          return `<div style="display:flex;align-items:center;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid rgba(255,255,255,0.04)">
+            <span style="width:20px;font-size:11px;color:rgba(255,255,255,0.15)">${i + 1}</span>
+            <span style="width:80px;font-size:12px;color:${tc}">${dt ? dt.label : d.type}</span>
+            <span style="flex:1;font-size:12px;color:rgba(255,255,255,0.7)">${d.reps > 1 ? d.reps + '×' : ''}${d.distance}m ${d.stroke}</span>
+            <span style="font-size:12px;color:rgba(255,255,255,0.25)">${d.paceMin}:${String(d.paceSec).padStart(2, '0')}</span>
+          </div>`;
+        }).join('')}
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="copyLegendSet('${legend.id}','${set.name}')" style="flex:1;padding:14px;border-radius:16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="8" height="8" rx="1.5"/><path d="M4 8H3a1.5 1.5 0 01-1.5-1.5V3A1.5 1.5 0 013 1.5h3.5A1.5 1.5 0 018 3v1"/></svg>
-          Copy to My Sets
+          Copy Set
         </button>
-        <button onclick="selectGhost('legend','${legend.id}');hideLegendSets()" style="flex:1;padding:12px;border-radius:16px;background:rgba(51,79,107,0.08);color:var(--accent);border:none;font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px">
+        <button onclick="selectGhost('legend','${legend.id}');hideLegendSets()" style="flex:1;padding:14px;border-radius:16px;background:#334F6B;border:none;color:white;font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10c2-3 4-5 6-5s4 2 6 5"/></svg>
           Race This
         </button>
@@ -827,6 +866,24 @@ function copyLegendSet(legendId, setName) {
 }
 
 // ── AI Chat ─────────────────────────────────────────────────
+const COACH_RESPONSES = {
+  'yes, recommend a session': 'Based on your profile, I recommend a 2.8km threshold set today: 4×400m freestyle at 1:18 pace with 20s rest. This targets your endurance zone while keeping intensity manageable.',
+  'give me a recovery set': 'Here\'s a recovery set for today: 200m easy warmup, then 6×100m alternating backstroke/freestyle at 1:40 pace with 15s rest. Finish with 200m choice cooldown. Total: 1.2km, ~30 min.',
+  'help me prep for a race': 'Race prep mode! Try this: 400m warmup, 4×50m sprint freestyle at race pace (target 0:28) with 45s rest, then 4×100m at 90% with 30s rest. Finish with 200m easy. Total: 1.6km.',
+  'ask anything': 'I can analyze your splits, suggest sets based on your goals, track your progress trends, or help with technique tips. What would you like to know?',
+  'analyze my splits': 'Looking at your last 10 sessions: your first 100m split averages 1:16, but laps 3-4 slow to 1:24. I recommend negative split training — start at 1:20 and build to 1:14 by the final lap.',
+  'how is my technique': 'Your stroke consistency score is 90/100 — excellent! Your turns score (88) has room for improvement. Focus on tighter tuck turns and explosive push-offs. A 15% improvement here could drop your 200m time by ~2 seconds.',
+  'what should i focus on': 'Your top 3 priorities based on data: 1) Turn speed (88 → target 95), 2) Sprint finish power (last 25m drops 12%), 3) Recovery optimization (rest intervals could be 5s shorter).',
+};
+const COACH_FALLBACKS = [
+  'Based on your recent pace trends, I recommend focusing on negative splits this week. Start slower and build speed through each set.',
+  'Your stroke rate has been consistent at 62 SPM but your distance per stroke could improve. Try adding catch-up drill sets — aim for 58 SPM with longer glide.',
+  'Great question! Your recovery between sets has improved 15% this month. You\'re ready to reduce rest intervals from 20s to 15s on your main sets.',
+  'I\'d suggest incorporating more backstroke into your warm-ups. It balances muscle usage and your shoulder mobility data shows slight asymmetry on the left side.',
+  'Your consistency score is 94 — that\'s elite level! Maintain your current 4-5 sessions per week. I\'ll adjust intensity gradually over the next 3 weeks.',
+  'I can also analyze your recent splits. Your 100m PB progression shows you\'re on track to break 50s by month end if we maintain current training load.',
+];
+
 function sendChat() {
   const input = document.getElementById('chatInput');
   const msg = input.value.trim();
@@ -834,20 +891,26 @@ function sendChat() {
   input.value = '';
   const container = document.getElementById('chatContainer');
   container.innerHTML += `<div class="chat-msg user">${escapeHtml(msg)}</div>`;
+  container.scrollTop = container.scrollHeight;
 
-  // Simulate AI response
+  // Hide chips after first interaction
+  const chips = document.getElementById('coachChips');
+  if (chips) chips.style.display = 'none';
+
   setTimeout(() => {
-    const responses = [
-      'Based on your recent pace trends, I recommend focusing on negative splits this week. Start slower and build speed through each set.',
-      'Your stroke rate has been consistent but your distance per stroke could improve. Try adding some catch-up drill sets.',
-      'Great question! Your recovery between sets has improved 15% this month. Keep maintaining the 8-10 second rest intervals.',
-      'I\'d suggest incorporating more backstroke into your warm-ups to balance muscle usage and reduce shoulder strain.',
-    ];
-    const response = responses[Math.floor(Math.random() * responses.length)];
-    container.innerHTML += `<div class="chat-msg ai">${response}</div>`;
+    const key = msg.toLowerCase();
+    let response = COACH_RESPONSES[key];
+    if (!response) {
+      // Check partial matches
+      for (const [k, v] of Object.entries(COACH_RESPONSES)) {
+        if (key.includes(k.split(' ')[0]) || k.includes(key.split(' ')[0])) { response = v; break; }
+      }
+    }
+    if (!response) response = COACH_FALLBACKS[Math.floor(Math.random() * COACH_FALLBACKS.length)];
+    const icon = `<div class="coach-ai-icon"><svg width="12" height="12" fill="none" stroke="#F6AA38" stroke-width="2"><path d="M6 1v3M6 8v3M1 6h3M8 6h3"/></svg></div>`;
+    container.innerHTML += `<div class="coach-ai-row">${icon}<div class="chat-msg ai">${response}</div></div>`;
     container.scrollTop = container.scrollHeight;
   }, 800);
-  container.scrollTop = container.scrollHeight;
 }
 function escapeHtml(str) {
   const div = document.createElement('div');
@@ -859,8 +922,8 @@ function escapeHtml(str) {
 function renderRadarChart() {
   const el = document.getElementById('radarChart');
   if (!el) return;
-  const dims = ['Speed', 'Endurance', 'Technique', 'Consistency', 'Turns', 'Recovery'];
-  const vals = [82, 78, 91, 88, 65, 74];
+  const dims = ['Speed', 'Endurance', 'Technique', 'Turns', 'Recovery', 'Consistency'];
+  const vals = [85, 78, 90, 88, 72, 94];
   const cx = 120, cy = 120, R = 90, n = dims.length;
   let svg = '';
   [0.25, 0.5, 0.75, 1].forEach(pct => {
@@ -869,11 +932,11 @@ function renderRadarChart() {
       const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
       pts.push(`${cx + R * pct * Math.cos(angle)},${cy + R * pct * Math.sin(angle)}`);
     }
-    svg += `<polygon points="${pts.join(' ')}" fill="none" stroke="rgba(17,16,51,.06)" stroke-width="1"/>`;
+    svg += `<polygon points="${pts.join(' ')}" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1"/>`;
   });
   for (let i = 0; i < n; i++) {
     const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-    svg += `<line x1="${cx}" y1="${cy}" x2="${cx + R * Math.cos(angle)}" y2="${cy + R * Math.sin(angle)}" stroke="rgba(17,16,51,.06)" stroke-width="1"/>`;
+    svg += `<line x1="${cx}" y1="${cy}" x2="${cx + R * Math.cos(angle)}" y2="${cy + R * Math.sin(angle)}" stroke="rgba(255,255,255,.06)" stroke-width="1"/>`;
   }
   const dataPts = [];
   for (let i = 0; i < n; i++) {
@@ -881,18 +944,28 @@ function renderRadarChart() {
     const r = R * (vals[i] / 100);
     dataPts.push(`${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`);
   }
-  svg += `<polygon points="${dataPts.join(' ')}" fill="rgba(51,79,107,.15)" stroke="#334F6B" stroke-width="2"/>`;
+  svg += `<polygon points="${dataPts.join(' ')}" fill="rgba(97,148,155,.2)" stroke="#61949B" stroke-width="2"/>`;
   for (let i = 0; i < n; i++) {
     const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
     const r = R * (vals[i] / 100);
     const x = cx + r * Math.cos(angle), y = cy + r * Math.sin(angle);
-    svg += `<circle cx="${x}" cy="${y}" r="4" fill="white" stroke="#334F6B" stroke-width="2"/>`;
-    const lx = cx + (R + 16) * Math.cos(angle), ly = cy + (R + 16) * Math.sin(angle);
+    svg += `<circle cx="${x}" cy="${y}" r="3" fill="#61949B" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>`;
+    const lx = cx + (R + 18) * Math.cos(angle), ly = cy + (R + 18) * Math.sin(angle);
     const anchor = Math.abs(Math.cos(angle)) < 0.1 ? 'middle' : Math.cos(angle) > 0 ? 'start' : 'end';
-    svg += `<text x="${lx}" y="${ly + 3}" text-anchor="${anchor}" font-size="9" fill="rgba(17,16,51,.4)">${dims[i]}</text>`;
-    svg += `<text x="${lx}" y="${ly + 14}" text-anchor="${anchor}" font-size="9" font-weight="600" fill="#111033">${vals[i]}%</text>`;
+    svg += `<text x="${lx}" y="${ly + 3}" text-anchor="${anchor}" font-size="9" fill="rgba(255,255,255,.4)">${dims[i]}</text>`;
   }
   el.innerHTML = svg;
+  // Render stat pills
+  const statsEl = document.getElementById('radarStats');
+  if (statsEl) {
+    statsEl.innerHTML = dims.map((d, i) => `<div style="text-align:center;padding:10px 4px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px"><div style="font-family:var(--font-head);font-size:20px;color:white">${vals[i]}</div><div style="font-size:9px;color:rgba(255,255,255,0.25);margin-top:2px">${d}</div></div>`).join('');
+  }
+}
+
+function coachQuickAction(action) {
+  const input = document.getElementById('chatInput');
+  input.value = action;
+  sendChat();
 }
 
 // ── Coach Dashboard ─────────────────────────────────────────
@@ -917,50 +990,160 @@ function renderCoachDashboard(tab) {
 }
 
 function renderCoachHome() {
+  setTimeout(() => renderCoachRadar(), 50);
   return `
-    <div class="dark-hdr" style="padding-bottom:48px">
-      <div style="position:absolute;right:20px;top:56px;opacity:.1"><img src="../../images/swym-logo-transparent.png" style="height:20px" /></div>
+    <div class="dark-hdr" style="padding-bottom:32px">
       <div style="position:relative;z-index:10">
-        <div style="font-size:10px;letter-spacing:.2em;color:rgba(255,255,255,.2);margin-bottom:8px">COACH MODE</div>
-        <h1 style="font-family:var(--font-head);font-size:30px;color:white;margin-bottom:20px">Dashboard</h1>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-          <div class="coach-stat"><div style="font-family:var(--font-head);font-size:24px;color:white">4/6</div><div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:4px">Attendance</div></div>
-          <div class="coach-stat"><div style="font-family:var(--font-head);font-size:24px;color:white">3</div><div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:4px">Pending</div></div>
-          <div class="coach-stat"><div style="font-family:var(--font-head);font-size:24px;color:white">2</div><div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:4px">AI Alerts</div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <span style="font-family:var(--font-head);font-size:18px;color:white;opacity:0.8">swym</span>
+          <span style="font-size:9px;letter-spacing:.15em;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.15);border-radius:9999px;padding:6px 14px">COACH MODE</span>
         </div>
+        <h1 style="font-family:var(--font-head);font-size:28px;color:white;line-height:1.2;margin-bottom:8px">Coach Command<br>Center</h1>
+        <div style="font-size:13px;color:rgba(255,255,255,.4)">4 athletes · 6 sessions · <span style="color:var(--gold)">Meet week</span></div>
       </div>
     </div>
-    <div style="padding:0 20px 120px;margin-top:-20px;display:flex;flex-direction:column;gap:16px">
+    <div style="padding:0 20px 120px;margin-top:-12px;display:flex;flex-direction:column;gap:16px">
+
+      <!-- Today's Schedule -->
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v3M11 1v3M2 7h12"/></svg>
+            <span style="font-family:var(--font-head);font-size:16px;color:white">Today's Schedule</span>
+          </div>
+          <span style="font-size:10px;color:#16a34a;background:rgba(22,163,74,.12);padding:4px 10px;border-radius:9999px">Prepared 87%</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:14px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:14px">
+            <div style="text-align:center;min-width:40px"><div style="font-family:var(--font-head);font-size:18px;color:white">6:00</div><div style="font-size:9px;color:rgba(255,255,255,.25)">AM</div></div>
+            <div><div style="font-size:13px;color:white;font-weight:500">Pool Session</div><div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px">Main training block</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:14px">
+            <div style="text-align:center;min-width:40px"><div style="font-family:var(--font-head);font-size:18px;color:white">4:30</div><div style="font-size:9px;color:rgba(255,255,255,.25)">PM</div></div>
+            <div><div style="font-size:13px;color:white;font-weight:500">Dryland Strength</div><div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px">Power & conditioning</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:14px">
+            <div style="text-align:center;min-width:40px"><div style="font-family:var(--font-head);font-size:18px;color:white">7:00</div><div style="font-size:9px;color:rgba(255,255,255,.25)">PM</div></div>
+            <div><div style="font-size:13px;color:white;font-weight:500">Recovery Review</div><div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px">Team check-in</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Shape This Week -->
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:20px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5"><polyline points="2,12 5,6 8,9 11,3 14,8"/></svg>
+          <span style="font-family:var(--font-head);font-size:16px;color:white">Team Shape This Week</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+          <span style="font-size:11px;color:rgba(255,255,255,.3)">Compared to last week</span>
+          <span style="font-size:10px;color:#16a34a;background:rgba(22,163,74,.12);padding:3px 8px;border-radius:9999px;display:flex;align-items:center;gap:3px"><svg width="8" height="8" fill="none" stroke="#16a34a" stroke-width="2"><path d="M1 5l3-3 3 3"/></svg>+6%</span>
+        </div>
+        <canvas id="coachRadar" width="280" height="240" style="display:block;margin:0 auto"></canvas>
+      </div>
+
+      <!-- AI Coach Recommendation -->
       <div class="card-accent" style="padding:20px">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-          <div style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center"><svg width="11" height="11" fill="none" stroke="white" stroke-width="1.5"><path d="M5.5 1v1M5.5 9v1M1 5.5h1M9 5.5h1"/></svg></div>
-          <span style="font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.15em">AI RECOMMENDATIONS</span>
+          <div style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center"><svg width="11" height="11" fill="none" stroke="white" stroke-width="1.5"><path d="M5.5 1v2M5.5 9v2M1 5.5h2M9 5.5h2"/></svg></div>
+          <span style="font-size:11px;color:rgba(255,255,255,.6);letter-spacing:.12em;font-weight:500">AI Coach Recommendation</span>
         </div>
-        <p style="font-size:14px;color:rgba(255,255,255,.95);line-height:1.6">Sonia is taper-ready for Saturday meet. Arjun needs a technique-focused day. Riya shows overload markers — suggest recovery.</p>
+        <p style="font-size:14px;color:rgba(255,255,255,.9);line-height:1.6;margin-bottom:16px">Yesterday load was high. Today <span style="color:white;font-weight:600">recovery + technique</span> is optimal for peak performance.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+          <span style="padding:6px 14px;border-radius:9999px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);font-size:11px">Recovery</span>
+          <span style="padding:6px 14px;border-radius:9999px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);font-size:11px">Turns</span>
+          <span style="padding:6px 14px;border-radius:9999px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);font-size:11px">Starts</span>
+          <span style="padding:6px 14px;border-radius:9999px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);font-size:11px">Low Intensity</span>
+        </div>
+        <button onclick="coachAIPrompt('Weekly plan for team')" style="width:100%;padding:14px;border-radius:9999px;background:white;border:none;color:var(--dark);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer">
+          <svg width="14" height="14" fill="none" stroke="var(--dark)" stroke-width="1.5"><path d="M7 1l1.5 4.5H13l-3.5 2.5L11 13 7 10 3 13l1.5-5L1 5.5h4.5z"/></svg>
+          Generate Team Plan
+        </button>
       </div>
-      <div>
-        <div style="font-size:10px;letter-spacing:.15em;color:rgba(17,16,51,.25);margin-bottom:12px;padding:0 4px">TEAM OVERVIEW</div>
-        ${ATHLETES.map(a => {
-          const fatClass = a.fatigue < 40 ? 'fatigue-low' : a.fatigue < 65 ? 'fatigue-med' : 'fatigue-high';
-          return `<div class="athlete-card">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-              <div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--font-head);background:${a.color};color:${a.color === '#98C0C8' || a.color === '#87ACAA' ? '#111033' : 'white'}">${a.initials}</div>
-              <div style="flex:1"><div style="font-family:var(--font-head);font-size:14px;color:var(--dark)">${a.name}</div><div style="font-size:11px;color:rgba(17,16,51,.3);margin-top:2px">${a.specialty}</div></div>
-            </div>
-            <div style="display:flex;gap:16px;margin-bottom:8px">
-              <div><span style="font-size:10px;color:rgba(17,16,51,.25)">Fatigue</span><div style="font-family:var(--font-head);font-size:14px;color:var(--dark)">${a.fatigue}%</div></div>
-              <div><span style="font-size:10px;color:rgba(17,16,51,.25)">Attendance</span><div style="font-family:var(--font-head);font-size:14px;color:var(--dark)">${a.attendance}</div></div>
-              <div><span style="font-size:10px;color:rgba(17,16,51,.25)">Pace</span><div style="font-family:var(--font-head);font-size:14px;color:var(--dark)">${a.lastPace}</div></div>
-            </div>
-            <div class="fatigue-bar"><div class="fatigue-fill ${fatClass}" style="width:${a.fatigue}%"></div></div>
-          </div>`;
-        }).join('')}
+
+      <!-- Athlete Alerts -->
+      <div style="padding:4px 0">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <svg width="16" height="16" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M8 1L1 14h14L8 1z"/><path d="M8 6v3M8 11.5v.5"/></svg>
+          <span style="font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.3)">ATHLETE ALERTS</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px 20px">
+          <div style="display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#ef4444"></span><span style="font-size:12px;color:rgba(255,255,255,.5)"><strong style="color:rgba(255,255,255,.8)">Riya</strong> fatigue high</span></div>
+          <div style="display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#ef4444"></span><span style="font-size:12px;color:rgba(255,255,255,.5)"><strong style="color:rgba(255,255,255,.8)">Arjun</strong> attendance dip</span></div>
+          <div style="display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#16a34a"></span><span style="font-size:12px;color:rgba(255,255,255,.5)"><strong style="color:rgba(255,255,255,.8)">Sonia</strong> meet taper ready</span></div>
+        </div>
       </div>
-      <button onclick="switchToSwimmerMode()" style="width:100%;padding:14px;border-radius:16px;background:rgba(17,16,51,0.05);border:1px solid rgba(17,16,51,0.08);color:rgba(17,16,51,0.4);font-size:12px;display:flex;align-items:center;justify-content:center;gap:8px">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10c2-3 4-5 6-5s4 2 6 5"/></svg>
-        Switch to Swimmer Mode
-      </button>
+
     </div>`;
+}
+
+function renderCoachRadar() {
+  const canvas = document.getElementById('coachRadar');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const cx = w / 2, cy = h / 2 + 5;
+  const r = Math.min(w, h) / 2 - 30;
+  const labels = ['Freestyle', 'Backstroke', 'Breaststroke', 'Butterfly', 'Recovery', 'Consistency'];
+  const values = [88, 75, 72, 68, 80, 82];
+  const n = labels.length;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Draw grid rings
+  for (let ring = 1; ring <= 4; ring++) {
+    const rr = r * ring / 4;
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+      const x = cx + rr * Math.cos(angle);
+      const y = cy + rr * Math.sin(angle);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Draw axes
+  for (let i = 0; i < n; i++) {
+    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.stroke();
+  }
+
+  // Draw data polygon
+  ctx.beginPath();
+  for (let i = 0; i <= n; i++) {
+    const idx = i % n;
+    const angle = (Math.PI * 2 * idx / n) - Math.PI / 2;
+    const val = values[idx] / 100 * r;
+    const x = cx + val * Math.cos(angle);
+    const y = cy + val * Math.sin(angle);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(97,148,155,0.25)';
+  ctx.fill();
+  ctx.strokeStyle = '#61949B';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Draw labels
+  ctx.font = '10px Inter, sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  for (let i = 0; i < n; i++) {
+    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+    const lx = cx + (r + 18) * Math.cos(angle);
+    const ly = cy + (r + 18) * Math.sin(angle);
+    ctx.fillText(labels[i], lx, ly);
+  }
 }
 
 function renderCoachTeam() {
@@ -1224,4 +1407,19 @@ function initSwimmerScreens() {
 document.addEventListener('DOMContentLoaded', () => {
   const passInput = document.getElementById('inputPass');
   if (passInput) passInput.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  // Restore session
+  try {
+    const saved = JSON.parse(localStorage.getItem('swym_session'));
+    if (saved && saved.role) {
+      currentRole = saved.role;
+      if (saved.mode === 'coach') { enterCoachApp(); }
+      else {
+        viewMode = 'swimmer';
+        document.getElementById('swimmerNav').style.display = '';
+        initSwimmerScreens();
+        const lastTab = localStorage.getItem('swym_tab') || 'home';
+        navTo(lastTab);
+      }
+    }
+  } catch(e) {}
 });
