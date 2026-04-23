@@ -382,7 +382,7 @@ function hideDrillPicker() {
 
 function handleSaveSet() {
   const name = document.getElementById('inputSetName').value || 'Custom Set';
-  todaySet = { name, drills: [...drills], startHour: selectedHour, startMinute: selectedMin, date: new Date().toISOString().split('T')[0] };
+  todaySet = { name, drills: [...drills], startHour: 6, startMinute: 30, startPeriod: 'AM', date: new Date().toISOString().split('T')[0] };
   updateHomeWorkoutCard();
   navTo('home');
 }
@@ -517,20 +517,20 @@ function removeGhost() {
 }
 
 // ── Community ───────────────────────────────────────────────
-function renderCommunity() { renderLeaderboard(); renderLegends(); }
+function renderCommunity() { renderLeaderboard(); renderFeed(); renderLegends(); }
 
 function renderLeaderboard() {
   const el = document.getElementById('leaderboardList');
   if (!el) return;
-  const you = { name: 'Sonia Kumar', initials: 'SK', color: '#61949B', weeklyDistance: 12.4 };
-  const all = [you, ...FRIENDS.filter(f => f.id !== 'f1')].sort((a, b) => b.weeklyDistance - a.weeklyDistance);
+  const you = { name: 'You (Alex)', initials: 'AK', color: '#334F6B', weeklyDistance: 14.3 };
+  const all = [you, ...FRIENDS].sort((a, b) => b.weeklyDistance - a.weeklyDistance);
   el.innerHTML = all.map((f, i) => {
-    const isFirst = i === 0;
-    return `<div class="comm-rank-card ${isFirst ? 'top' : ''}">
-      <div class="comm-rank-num ${isFirst ? 'gold' : 'normal'}">${i + 1}</div>
-      <div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-family:var(--font-head);background:${f.color};color:${f.color === '#87ACAA' ? '#061922' : 'white'}">${f.initials}</div>
-      <div style="flex:1"><div style="font-size:14px;color:white">${f.name}</div><div style="font-size:10px;color:rgba(255,255,255,0.25)">${f.weeklyDistance}km this week</div></div>
-      <button class="comm-race-btn">Race</button>
+    const isYou = f.name.startsWith('You');
+    const medal = i === 0 ? '<span style="color:#F6AA38">★</span>' : (i + 1);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;margin-bottom:6px;${isYou ? 'background:rgba(51,79,107,.08);border:1px solid rgba(51,79,107,.15)' : 'background:rgba(232,241,244,.6)'}">
+      <div style="width:24px;text-align:center;font-family:var(--font-head);font-size:12px;color:${isYou ? 'var(--accent)' : 'rgba(17,16,51,.3)'}">${medal}</div>
+      <div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--font-head);background:${f.color};color:${f.color === '#87ACAA' ? '#061922' : 'white'}">${f.initials}</div>
+      <div style="flex:1"><div style="font-size:14px;color:var(--dark)">${f.name}</div><div style="font-size:10px;color:rgba(17,16,51,.25)">${f.weeklyDistance}km this week</div></div>
     </div>`;
   }).join('');
 }
@@ -562,49 +562,34 @@ function renderLegends() {
   if (!el) return;
   el.innerHTML = LEGENDS.map(l => {
     return `<div class="legend-card" style="margin-bottom:12px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-        <div style="font-family:var(--font-head);font-size:18px;color:white">${l.name}</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="width:48px;height:48px;border-radius:50%;background:#061922;display:flex;align-items:center;justify-content:center;color:white;font-family:var(--font-head);font-size:14px">${l.name.split(' ').map(n => n[0]).join('')}</div>
+        <div style="flex:1">
+          <div style="font-family:var(--font-head);font-size:16px;color:white">${l.name}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px">${l.specialty}</div>
+        </div>
         <div style="background:rgba(246,170,56,0.15);padding:4px 12px;border-radius:9999px"><span style="font-size:10px;color:#F6AA38">${l.badge}</span></div>
       </div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:12px">${l.specialty}</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.25);margin-bottom:16px">Pace: <span style="color:rgba(255,255,255,0.5)">${l.pace}</span> &nbsp;&nbsp; ${l.sets.length} signature set${l.sets.length > 1 ? 's' : ''}</div>
-      <button onclick="viewLegendSets('${l.id}')" class="legend-view-btn">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h12M2 7h8M2 11h10"/></svg> View Sets
-      </button>
-    </div>`;
-  }).join('');
-}
-
-function renderFriends() {
-  const el = document.getElementById('friendsList');
-  if (!el) return;
-  el.innerHTML = FRIENDS.map(f => {
-    return `<div class="comm-rank-card" style="margin-bottom:10px">
-      <div style="width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--font-head);background:${f.color};color:${f.color === '#87ACAA' ? '#061922' : 'white'}">${f.initials}</div>
-      <div style="flex:1">
-        <div style="font-size:14px;color:white">${f.name}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px">${f.lastActivity.action} <span style="color:#98C0C8">${f.lastActivity.detail}</span></div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.15);margin-top:4px">${f.lastActivity.time}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span style="font-size:12px;color:rgba(255,255,255,0.4)">Signature pace: ${l.pace}</span>
+        <span style="font-size:10px;color:rgba(255,255,255,0.2)">${l.sets.length} workout${l.sets.length > 1 ? 's' : ''}</span>
       </div>
-      <button class="comm-race-btn">Race</button>
+      <div style="display:flex;gap:8px">
+        <button onclick="viewLegendSets('${l.id}')" style="flex:1;padding:12px;border-radius:16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h12M2 7h8M2 11h10"/></svg> View Sets
+        </button>
+        <button onclick="selectGhost('legend','${l.id}')" style="flex:1;padding:12px;border-radius:16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10c2-3 4-5 6-5s4 2 6 5"/></svg> Race
+        </button>
+      </div>
     </div>`;
   }).join('');
 }
 
 function setLbTab(btn, tab) {
-  document.querySelectorAll('#lbTabs .comm-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const lbPanel = document.getElementById('tabLeaderboard');
-  const frPanel = document.getElementById('tabFriends');
-  if (tab === 'friends') {
-    if (lbPanel) lbPanel.style.display = 'none';
-    if (frPanel) frPanel.style.display = 'block';
-    renderFriends();
-  } else {
-    if (lbPanel) lbPanel.style.display = 'block';
-    if (frPanel) frPanel.style.display = 'none';
-    renderLeaderboard();
-  }
+  document.querySelectorAll('#lbTabs .ch-tab').forEach(b => { b.classList.remove('on'); b.classList.add('off'); });
+  btn.classList.remove('off'); btn.classList.add('on');
+  renderLeaderboard();
 }
 
 // ── Set Overview ────────────────────────────────────────────
@@ -1129,96 +1114,11 @@ function switchToSwimmerMode() {
   enterSwimmerApp();
 }
 
-// ── Time Picker (24h carousel) ──────────────────────────────
-let selectedHour = 6;
-let selectedMin = 30;
-
-function initTimePicker() {
-  const hourList = document.getElementById('hourList');
-  const minList = document.getElementById('minList');
-  if (!hourList || !minList) return;
-
-  // Build hour items 00-23
-  hourList.innerHTML = '';
-  for (let h = 0; h < 24; h++) {
-    const div = document.createElement('div');
-    div.className = 'time-item';
-    div.dataset.val = h;
-    div.style.fontFamily = 'var(--font-head)';
-    div.style.fontSize = h === selectedHour ? '36px' : '20px';
-    div.style.color = h === selectedHour ? '#111033' : 'rgba(17,16,51,0.15)';
-    div.style.fontWeight = '600';
-    div.style.transition = 'all 0.15s';
-    div.textContent = String(h).padStart(2, '0');
-    hourList.appendChild(div);
-  }
-
-  // Build minute items 00-55 (5-min steps)
-  minList.innerHTML = '';
-  for (let m = 0; m < 60; m += 5) {
-    const div = document.createElement('div');
-    div.className = 'time-item';
-    div.dataset.val = m;
-    div.style.fontFamily = 'var(--font-head)';
-    div.style.fontSize = m === selectedMin ? '36px' : '20px';
-    div.style.color = m === selectedMin ? '#111033' : 'rgba(17,16,51,0.15)';
-    div.style.fontWeight = '600';
-    div.style.transition = 'all 0.15s';
-    div.textContent = String(m).padStart(2, '0');
-    minList.appendChild(div);
-  }
-
-  // Scroll to initial positions
-  const hourScroll = document.getElementById('hourScroll');
-  const minScroll = document.getElementById('minScroll');
-  requestAnimationFrame(() => {
-    hourScroll.scrollTop = selectedHour * 48;
-    minScroll.scrollTop = (selectedMin / 5) * 48;
-  });
-
-  // Snap listeners
-  hourScroll.addEventListener('scroll', () => handleTimeScroll(hourScroll, 'hour'));
-  minScroll.addEventListener('scroll', () => handleTimeScroll(minScroll, 'min'));
-}
-
-let timeScrollTimer = {};
-function handleTimeScroll(el, type) {
-  clearTimeout(timeScrollTimer[type]);
-  timeScrollTimer[type] = setTimeout(() => {
-    const itemH = 48;
-    const idx = Math.round(el.scrollTop / itemH);
-    el.scrollTo({ top: idx * itemH, behavior: 'smooth' });
-
-    if (type === 'hour') {
-      selectedHour = Math.min(23, Math.max(0, idx));
-    } else {
-      selectedMin = Math.min(55, Math.max(0, idx * 5));
-    }
-    updateTimeDisplay();
-    updateTimeItemStyles(el, type === 'hour' ? selectedHour : selectedMin / 5);
-  }, 80);
-}
-
-function updateTimeItemStyles(scrollEl, activeIdx) {
-  const items = scrollEl.querySelectorAll('.time-item');
-  items.forEach((item, i) => {
-    const isActive = i === activeIdx;
-    item.style.fontSize = isActive ? '36px' : '20px';
-    item.style.color = isActive ? '#111033' : 'rgba(17,16,51,0.15)';
-  });
-}
-
-function updateTimeDisplay() {
-  const el = document.getElementById('timeDisplay');
-  if (el) el.textContent = String(selectedHour).padStart(2, '0') + ':' + String(selectedMin).padStart(2, '0');
-}
-
 // ── Init ────────────────────────────────────────────────────
 function initSwimmerScreens() {
   renderDrills();
   renderRadarChart();
   updateHomeWorkoutCard();
-  initTimePicker();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>SWYM – Swim Your Pace</title>
-  <link rel="stylesheet" href="../../css/app.css" />
+  <link rel="stylesheet" href="../../css/app.v2.css" />
 </head>
 <body>
 <div class="phone-frame" id="app">
@@ -136,8 +136,8 @@
       <video autoplay loop muted playsinline preload="auto" src="../../videos/water.mp4"></video>
       <div class="onb-overlay"></div>
       <img src="../../images/swym-logo-transparent.png" alt="SWYM" class="onb-logo-sm" />
-      <h1 style="font-family:var(--font-head);font-size:36px;color:white;margin-bottom:12px;letter-spacing:-0.02em;align-self:stretch;text-align:left">Create Account</h1>
-      <p class="onb-sub-sm" style="align-self:stretch;text-align:left">Start your swim training journey</p>
+      <h1 style="font-family:var(--font-head);font-size:36px;color:white;margin-bottom:12px;letter-spacing:-0.02em">Create Account</h1>
+      <p class="onb-sub-sm">Start your swim training journey</p>
 
       <div class="form-group">
         <label class="form-label">FULL NAME</label>
@@ -179,7 +179,7 @@
         </div>
       </div>
 
-      <div style="color:#f87171;font-size:13px;min-height:20px;margin-bottom:8px;text-align:left" id="signupError"></div>
+      <div style="color:#f87171;font-size:13px;min-height:20px;margin-bottom:8px" id="signupError"></div>
 
       <button class="onb-btn onb-btn-primary" onclick="doSignup()" style="margin-top:8px">
         Create Account
@@ -202,8 +202,8 @@
       <button style="position:absolute;top:24px;left:24px;z-index:20;background:none;border:none;color:rgba(255,255,255,0.5);font-size:14px" onclick="goTo('scrWelcome')">← Back</button>
 
       <img src="../../images/swym-logo-transparent.png" alt="SWYM" style="width:160px;margin-bottom:32px;opacity:0.8" />
-      <h1 style="font-family:var(--font-head);font-size:22px;color:white;margin-bottom:8px;letter-spacing:-0.01em;align-self:stretch;text-align:left">Sign In</h1>
-      <p style="color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:40px;align-self:stretch;text-align:left">Enter your credentials to continue</p>
+      <h1 style="font-family:var(--font-head);font-size:30px;color:white;margin-bottom:8px;letter-spacing:-0.01em">Sign In</h1>
+      <p style="color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:40px">Enter your credentials to continue</p>
 
       <div class="form-group">
         <label class="form-label">Username</label>
@@ -221,7 +221,7 @@
         </div>
       </div>
 
-      <div style="color:#f87171;font-size:14px;min-height:24px;margin-bottom:8px;text-align:left" id="loginError"></div>
+      <div style="color:#f87171;font-size:14px;min-height:24px;margin-bottom:8px;margin-left:4px" id="loginError"></div>
 
       <div class="demo-creds">
         <p>Demo Credentials:</p>
@@ -424,25 +424,6 @@
 
       <input class="sn-input" id="inputSetName" placeholder="Name your set..." value="" />
 
-      <!-- Time Picker Carousel (24h) -->
-      <div class="time-picker-wrap" style="margin-bottom:16px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <div style="display:flex;align-items:center;gap:6px">
-            <svg width="13" height="13" fill="none" stroke="rgba(17,16,51,0.3)" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M6.5 3v3.5l2.5 1.5"/></svg>
-            <span style="font-size:9px;letter-spacing:0.15em;color:rgba(17,16,51,0.3)">START TIME</span>
-          </div>
-          <span style="font-family:var(--font-head);font-size:12px;color:rgba(17,16,51,0.5)" id="timeDisplay">06:30</span>
-        </div>
-        <div class="time-scroll-area">
-          <div class="time-selection-band"><div></div></div>
-          <div class="time-columns">
-            <div class="time-col-scroll" id="hourScroll"><div id="hourList"></div></div>
-            <div class="time-colon">:</div>
-            <div class="time-col-scroll" id="minScroll"><div id="minList"></div></div>
-          </div>
-        </div>
-      </div>
-
       <div class="ss-row">
         <div class="ss-item"><div style="font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.15em;margin-bottom:4px">TOTAL</div><div style="font-family:var(--font-head);font-size:18px;color:white" id="trainTotal">0m</div></div>
         <div class="ss-item"><div style="font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.15em;margin-bottom:4px">EST. TIME</div><div style="font-family:var(--font-head);font-size:18px;color:white" id="trainTime">0 min</div></div>
@@ -542,70 +523,65 @@
   </div>
 
   <!-- ═══════════ COMMUNITY ═══════════ -->
-  <div class="screen" id="scrCommunity" style="background:var(--dark)">
-    <div style="background:linear-gradient(160deg, #1a2240 0%, #111033 40%, #0e1a2e 70%, #111033 100%);padding:48px 24px 32px;position:relative;overflow:hidden;border-radius:0 0 32px 32px;flex-shrink:0">
-      <!-- subtle glow -->
-      <div style="position:absolute;top:-40px;left:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(51,79,107,0.25),transparent 70%);pointer-events:none"></div>
-      <div style="position:absolute;bottom:-20px;right:-20px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(152,192,200,0.08),transparent 70%);pointer-events:none"></div>
-      <div style="position:absolute;right:16px;top:48px;opacity:.1"><img src="../../images/swym-logo-transparent.png" style="height:24px" /></div>
+  <div class="screen" id="scrCommunity">
+    <div class="dark-hdr" style="padding-bottom:48px">
+      <div style="position:absolute;right:16px;top:56px;opacity:.1"><img src="../../images/swym-logo-transparent.png" style="height:24px" /></div>
       <div style="position:relative;z-index:10">
-        <div style="font-size:10px;letter-spacing:.2em;color:rgba(255,255,255,.2);margin-bottom:8px">CONNECT &amp; COMPETE</div>
-        <h1 style="font-family:var(--font-head);font-size:30px;color:white;margin-bottom:28px">Community</h1>
-        <!-- Tabs inside header -->
-        <div style="display:flex;gap:8px" id="lbTabs">
-          <button class="comm-tab active" onclick="setLbTab(this,'leaderboard')">Leaderboard</button>
-          <button class="comm-tab" onclick="setLbTab(this,'friends')">Friends</button>
-        </div>
+        <div style="font-size:10px;letter-spacing:.2em;color:rgba(255,255,255,.2);margin-bottom:8px">CONNECT & COMPETE</div>
+        <h1 style="font-family:var(--font-head);font-size:30px;color:white">Community</h1>
       </div>
     </div>
-    <div style="padding:20px 20px 120px;display:flex;flex-direction:column;gap:20px">
-
-      <!-- Leaderboard Tab Content -->
-      <div id="tabLeaderboard">
-        <div style="font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.2);margin-bottom:12px;padding:0 4px">WEEKLY RANKING</div>
+    <div style="padding:0 20px 120px;margin-top:-20px;display:flex;flex-direction:column;gap:20px">
+      <!-- Leaderboard -->
+      <div class="card-white" style="padding:20px">
+        <div style="display:flex;gap:8px;margin-bottom:16px" id="lbTabs">
+          <button class="ch-tab on" onclick="setLbTab(this,'friends')">Friends</button>
+          <button class="ch-tab off" onclick="setLbTab(this,'club')">Club</button>
+          <button class="ch-tab off" onclick="setLbTab(this,'city')">City</button>
+          <button class="ch-tab off" onclick="setLbTab(this,'global')">Global</button>
+        </div>
         <div id="leaderboardList"></div>
       </div>
 
-      <!-- Friends Tab Content -->
-      <div id="tabFriends" style="display:none">
-        <div id="friendsList"></div>
-      </div>
-
-      <!-- Active Challenges -->
+      <!-- Challenges -->
       <div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:0 4px">
-          <svg width="13" height="13" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"><path d="M6.5 2L8 5.5h3.5L8.5 8l1 3.5L6.5 9 3.5 11.5l1-3.5L1.5 5.5H5Z"/></svg>
-          <span style="font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.2)">ACTIVE CHALLENGES</span>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-          <div class="comm-challenge-card">
-            <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:8px">10km This Week</div>
-            <div style="font-family:var(--font-head);font-size:32px;color:white;margin-bottom:4px">68%</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.25)">6.8 / 10 km</div>
+        <div style="font-size:10px;letter-spacing:.15em;color:rgba(17,16,51,.25);margin-bottom:12px;padding:0 4px">ACTIVE CHALLENGES</div>
+        <div class="challenge-card" style="margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div style="width:40px;height:40px;border-radius:14px;background:rgba(246,170,56,0.15);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" fill="none" stroke="#F6AA38" stroke-width="1.5"><path d="M9 2C6 6 4 8 4 10.5C4 13 6.5 16 9 16s5-3 5-5.5C14 8 12 6 9 2Z"/></svg></div>
+            <div style="flex:1"><div style="font-family:var(--font-head);font-size:14px;color:white">Weekly Distance War</div><div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px">15km target · 3 days left</div></div>
           </div>
-          <div class="comm-challenge-card">
-            <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:8px">5-Day Streak</div>
-            <div style="font-family:var(--font-head);font-size:32px;color:white;margin-bottom:4px">80%</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.25)">4 / 5 days</div>
+          <div class="progress-bar-track" style="margin-bottom:8px">
+            <div class="progress-bar-fill" style="width:73%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.3)">
+            <span>10.9km / 15km</span><span>73%</span>
           </div>
         </div>
-        <div class="comm-progress-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-            <div style="font-family:var(--font-head);font-size:16px;color:white">Your Progress</div>
-            <div style="font-family:var(--font-head);font-size:24px;color:white">68%</div>
+        <div class="challenge-card">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div style="width:40px;height:40px;border-radius:14px;background:rgba(152,192,200,0.15);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" fill="none" stroke="#98C0C8" stroke-width="1.5"><circle cx="9" cy="9" r="6"/><path d="M9 5v4l2.5 1.5"/></svg></div>
+            <div style="flex:1"><div style="font-family:var(--font-head);font-size:14px;color:white">Pace Breaker</div><div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px">Beat your PB by 5s · 7 days left</div></div>
           </div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.25);margin-bottom:12px">6.8 / 10 km</div>
-          <div class="comm-progress-track"><div class="comm-progress-fill" style="width:68%"></div></div>
+          <div class="progress-bar-track" style="margin-bottom:8px">
+            <div class="progress-bar-fill" style="width:40%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.3)">
+            <span>2s off PB</span><span>40%</span>
+          </div>
         </div>
       </div>
 
       <!-- Swim with Legends -->
       <div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:0 4px">
-          <svg width="13" height="13" fill="none" stroke="#F6AA38" stroke-width="1.5"><path d="M6.5 1l1.5 3.5L12 6l-4 1.5L6.5 11 5 7.5 1 6l4-1.5Z"/></svg>
-          <span style="font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.2)">SWIM WITH LEGENDS</span>
-        </div>
+        <div style="font-size:10px;letter-spacing:.15em;color:rgba(17,16,51,.25);margin-bottom:12px;padding:0 4px">SWIM WITH LEGENDS</div>
         <div id="legendsList"></div>
+      </div>
+
+      <!-- Activity Feed -->
+      <div>
+        <div style="font-size:10px;letter-spacing:.15em;color:rgba(17,16,51,.25);margin-bottom:12px;padding:0 4px">FRIENDS ACTIVITY</div>
+        <div id="feedList"></div>
       </div>
     </div>
   </div>
@@ -859,6 +835,6 @@
   </nav>
 
 </div>
-<script src="../../js/app.js"></script>
+<script src="../../js/app.v2.js"></script>
 </body>
 </html>
