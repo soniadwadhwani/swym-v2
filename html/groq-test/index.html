@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Groq Test — swym</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #111033;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .container {
+      width: 100%;
+      max-width: 560px;
+    }
+    h1 {
+      font-family: 'Comfortaa', sans-serif;
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 32px;
+    }
+    .model-select {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: white;
+      font-size: 13px;
+      margin-bottom: 12px;
+      outline: none;
+      appearance: none;
+      cursor: pointer;
+    }
+    .model-select option { background: #1a1a40; color: white; }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+    }
+    textarea::placeholder { color: rgba(255,255,255,0.25); }
+    textarea:focus { border-color: rgba(97,148,155,0.5); }
+    .btn-send {
+      width: 100%;
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #334F6B, #61949B);
+      border: none;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-send:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-send:hover:not(:disabled) { opacity: 0.9; }
+    .response-box {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: none;
+    }
+    .response-box.visible { display: block; }
+    .response-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 12px;
+    }
+    .response-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.85);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .response-meta {
+      margin-top: 12px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.2);
+    }
+    .error { color: #ef4444; }
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Groq API Test</h1>
+    <p class="subtitle">Send a prompt to Groq via the serverless API route</p>
+
+    <select id="model" class="model-select">
+      <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
+      <option value="llama-3.1-8b-instant">Llama 3.1 8B (fast)</option>
+      <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+      <option value="gemma2-9b-it">Gemma 2 9B</option>
+    </select>
+
+    <textarea id="prompt" placeholder="Type your prompt here..."></textarea>
+
+    <button class="btn-send" id="sendBtn" onclick="sendPrompt()">Send to Groq</button>
+
+    <div class="response-box" id="responseBox">
+      <div class="response-label">RESPONSE</div>
+      <div class="response-text" id="responseText"></div>
+      <div class="response-meta" id="responseMeta"></div>
+    </div>
+  </div>
+
+  <script>
+    async function sendPrompt() {
+      const prompt = document.getElementById('prompt').value.trim();
+      if (!prompt) return;
+
+      const btn = document.getElementById('sendBtn');
+      const box = document.getElementById('responseBox');
+      const text = document.getElementById('responseText');
+      const meta = document.getElementById('responseMeta');
+      const model = document.getElementById('model').value;
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Thinking...';
+      box.classList.add('visible');
+      text.textContent = '';
+      text.className = 'response-text';
+      meta.textContent = '';
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt, model }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          text.textContent = data.error || 'Something went wrong';
+          text.classList.add('error');
+        } else {
+          text.textContent = data.reply;
+          const tokens = data.usage
+            ? `${data.usage.prompt_tokens} in / ${data.usage.completion_tokens} out`
+            : '';
+          meta.textContent = `Model: ${data.model || model}${tokens ? ' · ' + tokens + ' tokens' : ''}`;
+        }
+      } catch (err) {
+        text.textContent = 'Network error: ' + err.message;
+        text.classList.add('error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Send to Groq';
+    }
+
+    // Ctrl+Enter to send
+    document.getElementById('prompt').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) sendPrompt();
+    });
+  </script>
+</body>
+</html>

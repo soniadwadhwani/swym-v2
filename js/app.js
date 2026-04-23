@@ -865,26 +865,27 @@ function copyLegendSet(legendId, setName) {
   renderDrills();
 }
 
-// ── AI Chat ─────────────────────────────────────────────────
-const COACH_RESPONSES = {
-  'yes, recommend a session': 'Based on your profile, I recommend a 2.8km threshold set today: 4×400m freestyle at 1:18 pace with 20s rest. This targets your endurance zone while keeping intensity manageable.',
-  'give me a recovery set': 'Here\'s a recovery set for today: 200m easy warmup, then 6×100m alternating backstroke/freestyle at 1:40 pace with 15s rest. Finish with 200m choice cooldown. Total: 1.2km, ~30 min.',
-  'help me prep for a race': 'Race prep mode! Try this: 400m warmup, 4×50m sprint freestyle at race pace (target 0:28) with 45s rest, then 4×100m at 90% with 30s rest. Finish with 200m easy. Total: 1.6km.',
-  'ask anything': 'I can analyze your splits, suggest sets based on your goals, track your progress trends, or help with technique tips. What would you like to know?',
-  'analyze my splits': 'Looking at your last 10 sessions: your first 100m split averages 1:16, but laps 3-4 slow to 1:24. I recommend negative split training — start at 1:20 and build to 1:14 by the final lap.',
-  'how is my technique': 'Your stroke consistency score is 90/100 — excellent! Your turns score (88) has room for improvement. Focus on tighter tuck turns and explosive push-offs. A 15% improvement here could drop your 200m time by ~2 seconds.',
-  'what should i focus on': 'Your top 3 priorities based on data: 1) Turn speed (88 → target 95), 2) Sprint finish power (last 25m drops 12%), 3) Recovery optimization (rest intervals could be 5s shorter).',
-};
-const COACH_FALLBACKS = [
-  'Based on your recent pace trends, I recommend focusing on negative splits this week. Start slower and build speed through each set.',
-  'Your stroke rate has been consistent at 62 SPM but your distance per stroke could improve. Try adding catch-up drill sets — aim for 58 SPM with longer glide.',
-  'Great question! Your recovery between sets has improved 15% this month. You\'re ready to reduce rest intervals from 20s to 15s on your main sets.',
-  'I\'d suggest incorporating more backstroke into your warm-ups. It balances muscle usage and your shoulder mobility data shows slight asymmetry on the left side.',
-  'Your consistency score is 94 — that\'s elite level! Maintain your current 4-5 sessions per week. I\'ll adjust intensity gradually over the next 3 weeks.',
-  'I can also analyze your recent splits. Your 100m PB progression shows you\'re on track to break 50s by month end if we maintain current training load.',
-];
+// ── AI Chat (Groq-powered) ──────────────────────────────────
+const COACH_SYSTEM_PROMPT = `You are swym AI Coach — a world-class swimming coach AI assistant inside the swym app. You are friendly, motivating, and knowledgeable about competitive and recreational swimming.
 
-function sendChat() {
+Your capabilities:
+- Designing swim sets and workouts (warmup, main sets, cooldowns)
+- Analyzing split times and pacing strategy
+- Giving technique tips (freestyle, backstroke, butterfly, breaststroke, turns, starts)
+- Recovery and injury-prevention advice
+- Race preparation and tapering guidance
+- Tracking progress and setting goals
+
+Guidelines:
+- Keep responses concise (2-4 sentences unless the user asks for a full workout).
+- Use swim-specific terminology: splits, pace/100m, SPM, DPS, negative split, etc.
+- When suggesting sets, use format like "4×100m Free @ 1:20 w/ 20s rest".
+- Be encouraging but data-driven.
+- If asked about non-swimming topics, briefly help but steer back to swimming.`;
+
+const coachChatHistory = [];
+
+async function sendChat() {
   const input = document.getElementById('chatInput');
   const msg = input.value.trim();
   if (!msg) return;
@@ -897,20 +898,48 @@ function sendChat() {
   const chips = document.getElementById('coachChips');
   if (chips) chips.style.display = 'none';
 
-  setTimeout(() => {
-    const key = msg.toLowerCase();
-    let response = COACH_RESPONSES[key];
-    if (!response) {
-      // Check partial matches
-      for (const [k, v] of Object.entries(COACH_RESPONSES)) {
-        if (key.includes(k.split(' ')[0]) || k.includes(key.split(' ')[0])) { response = v; break; }
-      }
+  // Show typing indicator
+  const icon = `<div class="coach-ai-icon"><svg width="12" height="12" fill="none" stroke="#F6AA38" stroke-width="2"><path d="M6 1v3M6 8v3M1 6h3M8 6h3"/></svg></div>`;
+  const typingId = 'typing-' + Date.now();
+  container.innerHTML += `<div class="coach-ai-row" id="${typingId}">${icon}<div class="chat-msg ai"><span class="typing-dots"><span>.</span><span>.</span><span>.</span></span></div></div>`;
+  container.scrollTop = container.scrollHeight;
+
+  // Disable send while waiting
+  const sendBtn = input.nextElementSibling;
+  if (sendBtn) sendBtn.disabled = true;
+
+  try {
+    coachChatHistory.push({ role: 'user', content: msg });
+
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: msg,
+        model: 'llama-3.3-70b-versatile',
+        systemPrompt: COACH_SYSTEM_PROMPT,
+      }),
+    });
+
+    const data = await res.json();
+    const typingEl = document.getElementById(typingId);
+    if (typingEl) typingEl.remove();
+
+    if (!res.ok) {
+      container.innerHTML += `<div class="coach-ai-row">${icon}<div class="chat-msg ai" style="color:#ef4444">Sorry, I couldn't respond right now. Please try again.</div></div>`;
+    } else {
+      const reply = data.reply;
+      coachChatHistory.push({ role: 'assistant', content: reply });
+      container.innerHTML += `<div class="coach-ai-row">${icon}<div class="chat-msg ai">${escapeHtml(reply)}</div></div>`;
     }
-    if (!response) response = COACH_FALLBACKS[Math.floor(Math.random() * COACH_FALLBACKS.length)];
-    const icon = `<div class="coach-ai-icon"><svg width="12" height="12" fill="none" stroke="#F6AA38" stroke-width="2"><path d="M6 1v3M6 8v3M1 6h3M8 6h3"/></svg></div>`;
-    container.innerHTML += `<div class="coach-ai-row">${icon}<div class="chat-msg ai">${response}</div></div>`;
-    container.scrollTop = container.scrollHeight;
-  }, 800);
+  } catch (err) {
+    const typingEl = document.getElementById(typingId);
+    if (typingEl) typingEl.remove();
+    container.innerHTML += `<div class="coach-ai-row">${icon}<div class="chat-msg ai" style="color:#ef4444">Network error — check your connection and try again.</div></div>`;
+  }
+
+  if (sendBtn) sendBtn.disabled = false;
+  container.scrollTop = container.scrollHeight;
 }
 function escapeHtml(str) {
   const div = document.createElement('div');
