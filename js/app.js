@@ -220,6 +220,10 @@ function enterSwimmerApp() {
   viewMode = 'swimmer';
   try { localStorage.setItem('swym_session', JSON.stringify({ role: currentRole, mode: 'swimmer' })); } catch(e) {}
   document.getElementById('swimmerNav').style.display = '';
+  document.getElementById('coachBottomNav').style.display = 'none';
+  // Show mode toggle only if user is a coach
+  const modeToggle = document.getElementById('swimmerModeToggle');
+  if (modeToggle) modeToggle.style.display = currentRole === 'coach' ? '' : 'none';
   navTo('home');
   initSwimmerScreens();
 }
@@ -228,6 +232,7 @@ function enterCoachApp() {
   viewMode = 'coach';
   try { localStorage.setItem('swym_session', JSON.stringify({ role: currentRole, mode: 'coach' })); } catch(e) {}
   document.getElementById('swimmerNav').style.display = 'none';
+  document.getElementById('coachBottomNav').style.display = '';
   goTo('scrCoachDash');
   renderCoachDashboard('coachHome');
 }
@@ -236,6 +241,7 @@ function doLogout() {
   hideLogoutModal();
   try { localStorage.removeItem('swym_session'); localStorage.removeItem('swym_tab'); } catch(e) {}
   document.getElementById('swimmerNav').style.display = 'none';
+  document.getElementById('coachBottomNav').style.display = 'none';
   document.getElementById('inputUser').value = '';
   document.getElementById('inputPass').value = '';
   document.getElementById('loginError').textContent = '';
@@ -398,6 +404,110 @@ function handleSaveSet() {
   todaySet = { name, drills: [...drills], startHour: selectedHour, startMinute: selectedMin, date: new Date().toISOString().split('T')[0] };
   updateHomeWorkoutCard();
   navTo('home');
+}
+
+let coachSetAthlete = null;
+
+function coachCreateSet(athleteName) {
+  coachSetAthlete = athleteName;
+  const modal = document.getElementById('coachSetModal');
+  document.getElementById('coachSetModalTitle').textContent = 'Set for ' + athleteName;
+  // Reset modal drills
+  coachModalDrills = [{ id: Date.now().toString(), type: 'warmup', stroke: 'Freestyle', distance: 400, pace: '1:45', rest: 15, reps: 1 }];
+  renderCoachModalDrills();
+  modal.style.display = 'flex';
+}
+
+let coachModalDrills = [];
+
+function renderCoachModalDrills() {
+  const list = document.getElementById('coachSetDrillsList');
+  const totalDist = coachModalDrills.reduce((s, d) => s + d.distance * d.reps, 0);
+  const STROKES_LIST = ['Freestyle', 'Backstroke', 'Breaststroke', 'Butterfly', 'IM', 'Choice'];
+  const DIST_LIST = [25, 50, 75, 100, 150, 200, 300, 400, 500, 800];
+  const TYPE_COLORS = { warmup: '#d4ecf1', main: '#d4ecf1', sprint: '#d4ecf1', drill: '#d4ecf1', cooldown: '#d4ecf1', kick: '#d4ecf1' };
+  const TYPE_LABELS = { warmup: 'Warmup', main: 'Main Set', sprint: 'Sprint', drill: 'Technique', cooldown: 'Cooldown', kick: 'Kick Set' };
+
+  document.getElementById('coachSetTotalDist').textContent = totalDist >= 1000 ? (totalDist / 1000).toFixed(1) + ' km' : totalDist + ' m';
+  document.getElementById('coachSetDrillCount').textContent = coachModalDrills.length + ' drill' + (coachModalDrills.length > 1 ? 's' : '');
+
+  list.innerHTML = coachModalDrills.map((d, i) => `
+    <div style="background:rgba(17,16,51,0.05);border:1px solid rgba(17,16,51,0.08);border-radius:14px;padding:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="width:20px;height:20px;border-radius:6px;background:#334F6B;display:flex;align-items:center;justify-content:center;font-size:9px;color:white;font-weight:700">${i + 1}</span>
+          <span style="font-size:12px;color:#111033;font-weight:500">${TYPE_LABELS[d.type] || d.type}</span>
+        </div>
+        <button onclick="coachModalRemoveDrill('${d.id}')" style="background:none;border:none;color:rgba(17,16,51,.2);cursor:pointer;font-size:14px">✕</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+        ${STROKES_LIST.map(s => `<button onclick="coachModalSetProp('${d.id}','stroke','${s}')" style="padding:4px 10px;border-radius:8px;font-size:10px;border:1px solid ${d.stroke === s ? '#334F6B' : 'rgba(17,16,51,.1)'};background:${d.stroke === s ? 'rgba(51,79,107,.15)' : 'rgba(17,16,51,.03)'};color:${d.stroke === s ? '#334F6B' : 'rgba(17,16,51,.4)'};cursor:pointer">${s}</button>`).join('')}
+      </div>
+      <div style="display:flex;gap:8px">
+        <div style="flex:1">
+          <div style="font-size:9px;color:rgba(17,16,51,.35);margin-bottom:4px">DISTANCE</div>
+          <select onchange="coachModalSetProp('${d.id}','distance',+this.value)" style="width:100%;padding:6px 8px;border-radius:8px;background:white;border:1px solid rgba(17,16,51,.1);color:#111033;font-size:12px;outline:none">
+            ${DIST_LIST.map(v => `<option value="${v}" ${d.distance === v ? 'selected' : ''}>${v}m</option>`).join('')}
+          </select>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:9px;color:rgba(17,16,51,.35);margin-bottom:4px">REPS</div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <button onclick="coachModalAdj('${d.id}','reps',-1)" style="width:26px;height:26px;border-radius:8px;background:white;border:1px solid rgba(17,16,51,.1);color:#111033;cursor:pointer;font-size:13px">−</button>
+            <span style="flex:1;text-align:center;font-size:13px;color:#111033;font-family:var(--font-head)">${d.reps}</span>
+            <button onclick="coachModalAdj('${d.id}','reps',1)" style="width:26px;height:26px;border-radius:8px;background:white;border:1px solid rgba(17,16,51,.1);color:#111033;cursor:pointer;font-size:13px">+</button>
+          </div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:9px;color:rgba(17,16,51,.35);margin-bottom:4px">REST (s)</div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <button onclick="coachModalAdj('${d.id}','rest',-5)" style="width:26px;height:26px;border-radius:8px;background:white;border:1px solid rgba(17,16,51,.1);color:#111033;cursor:pointer;font-size:13px">−</button>
+            <span style="flex:1;text-align:center;font-size:13px;color:#111033;font-family:var(--font-head)">${d.rest}</span>
+            <button onclick="coachModalAdj('${d.id}','rest',5)" style="width:26px;height:26px;border-radius:8px;background:white;border:1px solid rgba(17,16,51,.1);color:#111033;cursor:pointer;font-size:13px">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function coachModalSetProp(id, prop, val) {
+  const d = coachModalDrills.find(d => d.id === id);
+  if (d) { d[prop] = val; renderCoachModalDrills(); }
+}
+
+function coachModalAdj(id, key, delta) {
+  const d = coachModalDrills.find(d => d.id === id);
+  if (!d) return;
+  if (key === 'reps') d.reps = Math.max(1, Math.min(20, d.reps + delta));
+  if (key === 'rest') d.rest = Math.max(0, Math.min(120, d.rest + delta));
+  renderCoachModalDrills();
+}
+
+function coachModalRemoveDrill(id) {
+  coachModalDrills = coachModalDrills.filter(d => d.id !== id);
+  if (!coachModalDrills.length) coachModalDrills.push({ id: Date.now().toString(), type: 'warmup', stroke: 'Freestyle', distance: 400, pace: '1:45', rest: 15, reps: 1 });
+  renderCoachModalDrills();
+}
+
+function coachModalAddDrill(type) {
+  coachModalDrills.push({ id: Date.now().toString(), type, stroke: 'Freestyle', distance: 100, pace: '1:30', rest: 15, reps: 1 });
+  renderCoachModalDrills();
+  // Scroll to bottom
+  const list = document.getElementById('coachSetDrillsList');
+  list.scrollTop = list.scrollHeight;
+}
+
+function coachModalSaveSet() {
+  const name = coachSetAthlete + ' — Custom Set';
+  // Just close the modal for now (in future could save to athlete)
+  document.getElementById('coachSetModal').style.display = 'none';
+  coachSetAthlete = null;
+}
+
+function coachModalClose() {
+  document.getElementById('coachSetModal').style.display = 'none';
+  coachSetAthlete = null;
 }
 
 function updateHomeWorkoutCard() {
@@ -1023,15 +1133,21 @@ function renderCoachHome() {
   return `
     <div class="dark-hdr" style="padding-bottom:32px">
       <div style="position:relative;z-index:10">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px">
           <span style="font-family:var(--font-head);font-size:18px;color:white;opacity:0.8">swym</span>
-          <span style="font-size:9px;letter-spacing:.15em;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.15);border-radius:9999px;padding:6px 14px">COACH MODE</span>
+          <div class="mode-dropdown" style="position:relative">
+            <button onclick="toggleModeDropdown(this)" style="font-size:9px;letter-spacing:.15em;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.15);border-radius:9999px;padding:6px 14px;background:none;cursor:pointer;display:flex;align-items:center;gap:6px">COACH MODE <svg width="8" height="8" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5"><path d="M1 3l3 3 3-3"/></svg></button>
+            <div class="mode-dropdown-menu" style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:rgba(30,32,60,0.95);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:4px;min-width:150px;z-index:100">
+              <div style="padding:8px 12px;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.1em">SWITCH MODE</div>
+              <button onclick="switchToSwimmerMode();closeModeDropdowns()" style="width:100%;padding:10px 12px;background:none;border:none;color:rgba(255,255,255,.7);font-size:12px;text-align:left;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:8px" onmouseenter="this.style.background='rgba(255,255,255,.06)'" onmouseleave="this.style.background='none'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,8 5,3 8,6 11,1 13,8"/><path d="M1 11h12"/></svg>Swimmer Mode</button>
+            </div>
+          </div>
         </div>
-        <h1 style="font-family:var(--font-head);font-size:28px;color:white;line-height:1.2;margin-bottom:8px">Coach Command<br>Center</h1>
+        <h1 style="font-family:var(--font-head);font-size:28px;color:white;line-height:1.2;margin-bottom:8px">Hello, Coach 👋</h1>
         <div style="font-size:13px;color:rgba(255,255,255,.4)">4 athletes · 6 sessions · <span style="color:var(--gold)">Meet week</span></div>
       </div>
     </div>
-    <div style="padding:0 20px 120px;margin-top:-12px;display:flex;flex-direction:column;gap:16px">
+    <div style="padding:0 20px 120px;display:flex;flex-direction:column;gap:16px">
 
       <!-- Today's Schedule -->
       <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:20px">
@@ -1176,163 +1292,682 @@ function renderCoachRadar() {
 }
 
 function renderCoachTeam() {
+  const getStatus = (a) => {
+    if (a.fatigue >= 65) return { label: 'Needs attention', color: '#ef4444', icon: '↘' };
+    if (a.fatigue >= 40) return { label: 'Steady', color: '#f59e0b', icon: '→' };
+    return { label: 'Improving', color: '#22c55e', icon: '↗' };
+  };
+  const getAttendNum = (a) => parseInt(a.attendance);
+  const getDotColor = (val, type) => {
+    if (type === 'fatigue') return val < 40 ? '#22c55e' : val < 65 ? '#f59e0b' : '#ef4444';
+    if (type === 'attend') return val >= 90 ? '#22c55e' : val >= 80 ? '#f59e0b' : '#ef4444';
+    return '#98C0C8';
+  };
+
   return `
-    <div class="dark-hdr" style="padding-bottom:32px">
-      <div style="position:relative;z-index:10">
-        <div style="font-size:10px;letter-spacing:.2em;color:rgba(255,255,255,.2);margin-bottom:8px">TEAM MANAGEMENT</div>
-        <h1 style="font-family:var(--font-head);font-size:30px;color:white">Team</h1>
-      </div>
+    <div style="padding:48px 24px 24px;background:var(--dark)">
+      <h1 style="font-family:var(--font-head);font-size:28px;color:white;margin-bottom:6px">Team Roster</h1>
+      <div style="font-size:13px;color:rgba(255,255,255,.4)"><span style="color:white;font-weight:600">${ATHLETES.length} athletes</span> in your squad</div>
     </div>
-    <div style="padding:0 20px 120px;margin-top:-12px;display:flex;flex-direction:column;gap:16px">
+    <div style="padding:0 20px 120px;display:flex;flex-direction:column;gap:14px;background:var(--dark)">
+      <!-- Search -->
+      <div style="position:relative">
+        <input id="teamSearch" type="text" placeholder="Search athletes..." oninput="filterTeamCards(this.value)" style="width:100%;padding:12px 16px;border-radius:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);color:white;font-size:13px;outline:none;font-family:var(--font-body)" />
+      </div>
+
       ${ATHLETES.map(a => {
-        const fatClass = a.fatigue < 40 ? 'fatigue-low' : a.fatigue < 65 ? 'fatigue-med' : 'fatigue-high';
-        return `<div class="athlete-card" style="cursor:default">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-            <div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--font-head);background:${a.color};color:${a.color === '#98C0C8' ? '#111033' : 'white'}">${a.initials}</div>
-            <div style="flex:1"><div style="font-family:var(--font-head);font-size:14px;color:var(--dark)">${a.name}</div><div style="font-size:11px;color:rgba(17,16,51,.3);margin-top:2px">${a.specialty}</div></div>
+        const status = getStatus(a);
+        const attendNum = getAttendNum(a);
+        const pace = a.lastPace.split('/')[0];
+        return `<div class="team-athlete-card" data-name="${a.name.toLowerCase()}" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:20px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+            <div style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;font-family:var(--font-head);background:${a.color};color:${a.color === '#98C0C8' ? '#111033' : 'white'}">${a.initials}</div>
+            <div>
+              <div style="font-family:var(--font-head);font-size:15px;color:white">${a.name}</div>
+              <div style="display:flex;align-items:center;gap:4px;margin-top:3px"><span style="color:${status.color};font-size:11px">${status.icon}</span><span style="font-size:11px;color:${status.color};font-style:italic">${status.label}</span></div>
+            </div>
           </div>
-          <div style="display:flex;gap:12px;margin-bottom:8px">
-            <div style="flex:1;text-align:center;padding:8px;background:var(--bg);border-radius:12px"><div style="font-family:var(--font-head);font-size:16px;color:var(--dark)">${a.fatigue}%</div><div style="font-size:8px;color:rgba(17,16,51,0.2);margin-top:2px">Fatigue</div></div>
-            <div style="flex:1;text-align:center;padding:8px;background:var(--bg);border-radius:12px"><div style="font-family:var(--font-head);font-size:16px;color:var(--dark)">${a.attendance}</div><div style="font-size:8px;color:rgba(17,16,51,0.2);margin-top:2px">Attendance</div></div>
-            <div style="flex:1;text-align:center;padding:8px;background:var(--bg);border-radius:12px"><div style="font-family:var(--font-head);font-size:16px;color:var(--dark)">${a.lastPace}</div><div style="font-size:8px;color:rgba(17,16,51,0.2);margin-top:2px">Pace</div></div>
+          <div style="display:flex;gap:10px;margin-bottom:16px">
+            <div style="flex:1;text-align:center;padding:10px 6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:12px">
+              <div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:4px"><span style="width:6px;height:6px;border-radius:50%;background:${getDotColor(a.fatigue, 'fatigue')}"></span><span style="font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.05em">FATIGUE</span></div>
+              <div style="font-family:var(--font-head);font-size:18px;color:white">${a.fatigue}%</div>
+            </div>
+            <div style="flex:1;text-align:center;padding:10px 6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:12px">
+              <div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:4px"><span style="width:6px;height:6px;border-radius:50%;background:${getDotColor(attendNum, 'attend')}"></span><span style="font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.05em">ATTEND</span></div>
+              <div style="font-family:var(--font-head);font-size:18px;color:white">${attendNum}%</div>
+            </div>
+            <div style="flex:1;text-align:center;padding:10px 6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:12px">
+              <div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:4px"><span style="font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.05em">BEST PACE</span></div>
+              <div style="font-family:var(--font-head);font-size:18px;color:white">${pace}</div>
+            </div>
           </div>
-          <div class="fatigue-bar"><div class="fatigue-fill ${fatClass}" style="width:${a.fatigue}%"></div></div>
-          <div style="margin-top:8px;font-size:12px;color:rgba(17,16,51,.4);font-style:italic">"${a.aiNote}"</div>
+          <div style="display:flex;gap:10px">
+            <button onclick="coachCreateSet('${a.name}')" style="flex:1;padding:10px;border-radius:12px;background:rgba(51,79,107,0.8);border:none;color:white;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="5"/><path d="M6 4v4M4 6h4"/></svg>Create Set</button>
+            <button onclick="coachViewAthlete('${a.id}')" style="flex:1;padding:10px;border-radius:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,.6);font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="5"/><path d="M6 4v1M6 7v2"/></svg>View Details</button>
+          </div>
         </div>`;
       }).join('')}
     </div>`;
 }
 
-function renderCoachAI() {
-  return `
-    <div class="dark-hdr" style="padding-bottom:32px">
-      <div style="position:relative;z-index:10">
-        <div style="font-size:10px;letter-spacing:.2em;color:rgba(255,255,255,.2);margin-bottom:8px">AI ASSISTANT</div>
-        <h1 style="font-family:var(--font-head);font-size:30px;color:white">AI Coach</h1>
+function filterTeamCards(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('.team-athlete-card').forEach(card => {
+    card.style.display = card.dataset.name.includes(q) ? '' : 'none';
+  });
+}
+
+// Athlete session history (mock data)
+const ATHLETE_HISTORY = {
+  a1: [
+    { date: 'Apr 22', name: 'Endurance Base', dist: '2.8km', drills: 5, pace: '1:22', focus: 'Distance' },
+    { date: 'Apr 20', name: 'Threshold Set', dist: '2.4km', drills: 4, pace: '1:20', focus: 'Speed' },
+    { date: 'Apr 18', name: 'Recovery Swim', dist: '1.2km', drills: 3, pace: '1:40', focus: 'Recovery' },
+    { date: 'Apr 16', name: 'Race Pace Sim', dist: '2.0km', drills: 6, pace: '1:18', focus: 'Competition' },
+    { date: 'Apr 14', name: 'Technique Day', dist: '1.8km', drills: 5, pace: '1:35', focus: 'Technique' },
+  ],
+  a2: [
+    { date: 'Apr 21', name: 'Sprint Intervals', dist: '1.6km', drills: 6, pace: '0:36', focus: 'Sprint' },
+    { date: 'Apr 19', name: 'Power Block', dist: '1.2km', drills: 4, pace: '0:38', focus: 'Power' },
+    { date: 'Apr 15', name: 'Technique + Drill', dist: '1.4km', drills: 5, pace: '0:42', focus: 'Technique' },
+    { date: 'Apr 12', name: 'Speed Endurance', dist: '1.8km', drills: 4, pace: '0:40', focus: 'Endurance' },
+  ],
+  a3: [
+    { date: 'Apr 22', name: 'Backstroke Focus', dist: '2.2km', drills: 5, pace: '1:28', focus: 'Backstroke' },
+    { date: 'Apr 20', name: 'Mixed Strokes', dist: '2.0km', drills: 4, pace: '1:32', focus: 'Variety' },
+    { date: 'Apr 18', name: 'Endurance Build', dist: '2.6km', drills: 5, pace: '1:30', focus: 'Distance' },
+    { date: 'Apr 17', name: 'High Intensity', dist: '1.8km', drills: 6, pace: '1:24', focus: 'Speed' },
+    { date: 'Apr 15', name: 'Recovery Easy', dist: '1.0km', drills: 2, pace: '1:45', focus: 'Recovery' },
+  ],
+  a4: [
+    { date: 'Apr 22', name: 'IM Training', dist: '2.4km', drills: 6, pace: '1:18', focus: 'IM' },
+    { date: 'Apr 20', name: 'Fly + Back Focus', dist: '2.0km', drills: 5, pace: '1:22', focus: 'Strokes' },
+    { date: 'Apr 18', name: 'Endurance IM', dist: '2.8km', drills: 4, pace: '1:20', focus: 'Distance' },
+    { date: 'Apr 16', name: 'Sprint IM', dist: '1.4km', drills: 6, pace: '1:14', focus: 'Speed' },
+  ],
+};
+
+function coachViewAthlete(id) {
+  const a = ATHLETES.find(x => x.id === id);
+  if (!a) return;
+  const history = ATHLETE_HISTORY[id] || [];
+  const status = a.fatigue >= 65 ? { label: 'Needs attention', color: '#ef4444' } : a.fatigue >= 40 ? { label: 'Steady', color: '#f59e0b' } : { label: 'Improving', color: '#22c55e' };
+  const recentSet = history[0];
+
+  const modal = document.getElementById('athleteDetailModal');
+  const content = document.getElementById('athleteDetailContent');
+
+  content.innerHTML = `
+    <!-- Athlete Summary -->
+    <div style="text-align:center;padding:8px 0 16px">
+      <div style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;font-family:var(--font-head);background:${a.color};color:${a.color === '#98C0C8' ? '#111033' : 'white'};margin:0 auto 12px">${a.initials}</div>
+      <div style="font-family:var(--font-head);font-size:20px;color:#111033">${a.name}</div>
+      <div style="font-size:12px;color:rgba(17,16,51,.4);margin-top:4px">${a.specialty}</div>
+      <div style="display:inline-flex;align-items:center;gap:4px;margin-top:8px;padding:4px 12px;border-radius:9999px;background:${status.color}15;border:1px solid ${status.color}30">
+        <span style="width:6px;height:6px;border-radius:50%;background:${status.color}"></span>
+        <span style="font-size:11px;color:${status.color}">${status.label}</span>
       </div>
     </div>
-    <div style="padding:0 20px 120px;margin-top:-12px;display:flex;flex-direction:column;gap:16px">
-      <div style="font-size:10px;color:rgba(17,16,51,0.25);letter-spacing:0.15em;margin-bottom:4px;padding:0 4px">QUICK PROMPTS</div>
-      <div class="prompt-chips">
-        <button class="prompt-chip" onclick="coachAIPrompt('Generate recovery plan for Riya')">Recovery plan for Riya</button>
-        <button class="prompt-chip" onclick="coachAIPrompt('Sprint program for Arjun')">Sprint program for Arjun</button>
-        <button class="prompt-chip" onclick="coachAIPrompt('Weekly plan for team')">Weekly team plan</button>
-        <button class="prompt-chip" onclick="coachAIPrompt('Taper strategy for Sonia')">Taper for Sonia</button>
+
+    <!-- Stats Grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px">
+      <div style="text-align:center;padding:12px 8px;background:rgba(17,16,51,0.05);border:1px solid rgba(17,16,51,0.08);border-radius:12px">
+        <div style="font-family:var(--font-head);font-size:18px;color:#111033">${a.weeklyDist}</div>
+        <div style="font-size:9px;color:rgba(17,16,51,.35);margin-top:2px">THIS WEEK</div>
       </div>
-      <div class="card-white" style="padding:20px" id="coachAIResult">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-          <div style="width:24px;height:24px;border-radius:50%;background:rgba(51,79,107,0.12);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" fill="none" stroke="#334F6B" stroke-width="1.5"><path d="M6 1v2M6 9v2M1 6h2M9 6h2"/></svg></div>
-          <span style="font-size:10px;color:rgba(17,16,51,.25);letter-spacing:.15em">AI RESPONSE</span>
+      <div style="text-align:center;padding:12px 8px;background:rgba(17,16,51,0.05);border:1px solid rgba(17,16,51,0.08);border-radius:12px">
+        <div style="font-family:var(--font-head);font-size:18px;color:#111033">${a.sessions}</div>
+        <div style="font-size:9px;color:rgba(17,16,51,.35);margin-top:2px">SESSIONS</div>
+      </div>
+      <div style="text-align:center;padding:12px 8px;background:rgba(17,16,51,0.05);border:1px solid rgba(17,16,51,0.08);border-radius:12px">
+        <div style="font-family:var(--font-head);font-size:18px;color:#111033">${a.fatigue}%</div>
+        <div style="font-size:9px;color:rgba(17,16,51,.35);margin-top:2px">FATIGUE</div>
+      </div>
+    </div>
+
+    <!-- AI Note -->
+    <div style="padding:14px 16px;background:rgba(17,16,51,0.05);border:1px solid rgba(17,16,51,0.08);border-radius:14px;margin-bottom:20px;display:flex;align-items:flex-start;gap:10px">
+      <svg width="14" height="14" fill="none" stroke="#334F6B" stroke-width="1.5" style="flex-shrink:0;margin-top:2px"><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.8 2.8l1.4 1.4M9.8 9.8l1.4 1.4"/></svg>
+      <div style="font-size:13px;color:rgba(17,16,51,.6);line-height:1.5;font-style:italic">"${a.aiNote}"</div>
+    </div>
+
+    ${recentSet ? `
+    <!-- Recent Set -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:10px;letter-spacing:.12em;color:rgba(17,16,51,.3);margin-bottom:10px">RECENT SET</div>
+      <div style="padding:16px;background:rgba(17,16,51,0.05);border:1px solid rgba(17,16,51,0.08);border-radius:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-size:14px;color:#111033;font-weight:500">${recentSet.name}</div>
+          <span style="font-size:10px;color:rgba(17,16,51,.35)">${recentSet.date}</span>
         </div>
-        <p style="font-size:14px;color:rgba(17,16,51,0.6);line-height:1.6">Select a prompt above or type your own to generate a training plan.</p>
+        <div style="display:flex;gap:16px">
+          <div><span style="font-family:var(--font-head);font-size:15px;color:#111033">${recentSet.dist}</span><span style="font-size:10px;color:rgba(17,16,51,.35);margin-left:4px">distance</span></div>
+          <div><span style="font-family:var(--font-head);font-size:15px;color:#111033">${recentSet.pace}</span><span style="font-size:10px;color:rgba(17,16,51,.35);margin-left:4px">pace</span></div>
+          <div><span style="font-family:var(--font-head);font-size:15px;color:#111033">${recentSet.drills}</span><span style="font-size:10px;color:rgba(17,16,51,.35);margin-left:4px">drills</span></div>
+        </div>
+      </div>
+    </div>` : ''}
+
+    <!-- Session History -->
+    <div>
+      <div style="font-size:10px;letter-spacing:.12em;color:rgba(17,16,51,.3);margin-bottom:10px">SESSION HISTORY</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${history.map(h => `
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(17,16,51,0.04);border:1px solid rgba(17,16,51,0.06);border-radius:12px">
+            <div style="min-width:44px;text-align:center">
+              <div style="font-size:12px;color:#111033;font-weight:500">${h.date.split(' ')[1]}</div>
+              <div style="font-size:9px;color:rgba(17,16,51,.3)">${h.date.split(' ')[0]}</div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:13px;color:#111033">${h.name}</div>
+              <div style="font-size:11px;color:rgba(17,16,51,.35);margin-top:2px">${h.dist} · ${h.drills} drills · ${h.focus}</div>
+            </div>
+            <div style="font-family:var(--font-head);font-size:13px;color:#334F6B">${h.pace}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  modal.style.display = 'flex';
+}
+
+function closeAthleteDetail() {
+  document.getElementById('athleteDetailModal').style.display = 'none';
+}
+
+const coachAIChatHistory = [];
+
+function renderCoachAI() {
+  return `
+    <div style="background:linear-gradient(160deg, #1a2240 0%, #111033 40%, #0e1a2e 70%, #111033 100%);padding:48px 24px 28px;position:relative;overflow:hidden;border-radius:0 0 32px 32px;flex-shrink:0">
+      <div style="position:absolute;top:-40px;left:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(51,79,107,0.25),transparent 70%);pointer-events:none"></div>
+      <div style="position:absolute;bottom:-20px;right:-20px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(152,192,200,0.08),transparent 70%);pointer-events:none"></div>
+      <div style="position:relative;z-index:10">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <span style="font-size:11px;letter-spacing:.1em;color:rgba(255,255,255,.25);font-family:var(--font-head)">swym</span>
+          <span style="font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.2)">AI COACH</span>
+        </div>
+        <h1 style="font-family:var(--font-head);font-size:28px;color:white;margin-bottom:6px">AI Coach</h1>
+        <p style="font-size:13px;color:rgba(255,255,255,0.3)">Generate intelligent training plans for your team</p>
+      </div>
+    </div>
+
+    <div style="padding:16px 20px 120px;display:flex;flex-direction:column;gap:16px">
+      <!-- AI Chat Card -->
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:20px">
+        <!-- Coach AI identity -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+          <div style="width:44px;height:44px;border-radius:50%;background:rgba(212,236,241,0.15);display:flex;align-items:center;justify-content:center">
+            <svg width="20" height="20" fill="none" stroke="#d4ecf1" stroke-width="1.5"><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.9 4.9l1.4 1.4M13.7 13.7l1.4 1.4M15.1 4.9l-1.4 1.4M6.3 13.7l-1.4 1.4"/></svg>
+          </div>
+          <div>
+            <div style="font-size:15px;color:white;font-weight:500">AI Coach</div>
+            <div style="display:flex;align-items:center;gap:4px"><div style="width:6px;height:6px;border-radius:50%;background:#4ade80"></div><span style="font-size:10px;color:rgba(255,255,255,0.25)">Online</span></div>
+          </div>
+        </div>
+        <!-- Chat messages -->
+        <div class="chat-container" id="coachAIChatContainer" style="max-height:300px;overflow-y:auto">
+          <div class="coach-ai-row"><div class="coach-ai-icon"><svg width="12" height="12" fill="none" stroke="#d4ecf1" stroke-width="2"><path d="M6 1v3M6 8v3M1 6h3M8 6h3"/></svg></div><div class="chat-msg ai">Hey Coach! I have your team's data loaded. Ask me to create training plans, analyze performance, or generate sets for your ${ATHLETES.length} athletes.</div></div>
+        </div>
+        <!-- Quick action chips -->
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0" id="coachAIChips">
+          <button onclick="coachAIQuick('Create a recovery day session')" class="coach-chip">Recovery Day</button>
+          <button onclick="coachAIQuick('Design a sprint set')" class="coach-chip">Sprint Set</button>
+          <button onclick="coachAIQuick('Create a meet taper plan')" class="coach-chip">Meet Taper</button>
+          <button onclick="coachAIQuick('Fix turns drill set')" class="coach-chip">Fix Turns</button>
+        </div>
+        <!-- Input -->
+        <div style="display:flex;gap:8px">
+          <input id="coachAIInput" placeholder="Ask AI Coach..." onkeydown="if(event.key==='Enter')coachAISend()" style="flex:1;padding:12px 16px;border-radius:16px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.04);font-size:13px;color:white;font-family:var(--font-body);outline:none" />
+          <button onclick="coachAISend()" style="width:44px;height:44px;border-radius:50%;background:#d4ecf1;border:none;color:#111033;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform 0.1s;cursor:pointer" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform=''"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2L7 9M14 2l-5 12-2-5-5-2 12-5z"/></svg></button>
+        </div>
       </div>
     </div>`;
 }
 
-function coachAIPrompt(prompt) {
-  const el = document.getElementById('coachAIResult');
-  el.innerHTML = `
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-      <div style="width:24px;height:24px;border-radius:50%;background:rgba(51,79,107,0.12);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" fill="none" stroke="#334F6B" stroke-width="1.5"><path d="M6 1v2M6 9v2M1 6h2M9 6h2"/></svg></div>
-      <span style="font-size:10px;color:rgba(17,16,51,.25);letter-spacing:.15em">AI RESPONSE</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-      <div class="spinner" style="width:16px;height:16px;border-width:2px"></div>
-      <span style="font-size:12px;color:rgba(17,16,51,0.4)">Generating plan...</span>
-    </div>`;
+function coachAIQuick(prompt) {
+  const input = document.getElementById('coachAIInput');
+  if (input) input.value = prompt;
+  coachAISend();
+}
 
-  setTimeout(() => {
-    const plans = {
-      'Generate recovery plan for Riya': 'Riya shows overload markers — here\'s a 3-day recovery plan:\n\n• Day 1: 400m easy swim, technique focus only\n• Day 2: Rest day, light stretching\n• Day 3: 800m graduated return, 1:40/100m pace cap',
-      'Sprint program for Arjun': 'Arjun\'s sprint plateau can be broken with this 2-week block:\n\n• Week 1: 8×50m at 95% effort, 45s rest\n• Week 2: 6×25m max effort + 4×100m descending',
-      'Weekly plan for team': 'Team weekly plan:\n\n• Mon: Endurance base (2.5km)\n• Tue: Technique + drill work\n• Wed: Sprint intervals\n• Thu: Recovery swim\n• Fri: Race pace simulation\n• Sat: Competition or time trial',
-      'Taper strategy for Sonia': 'Sonia\'s Saturday meet taper:\n\n• Today: 50% volume, race pace 2×100m\n• Tomorrow: 30% volume, technique only\n• Friday: Warm-up pace + 2×50m race effort\n• Saturday: Race day protocol',
-    };
-    const plan = plans[prompt] || 'Here\'s a custom plan based on your team\'s current data...';
-    el.innerHTML = `
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-        <div style="width:24px;height:24px;border-radius:50%;background:rgba(51,79,107,0.12);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" fill="none" stroke="#334F6B" stroke-width="1.5"><path d="M6 1v2M6 9v2M1 6h2M9 6h2"/></svg></div>
-        <span style="font-size:10px;color:rgba(17,16,51,.25);letter-spacing:.15em">AI RESPONSE</span>
-      </div>
-      <p style="font-size:14px;color:rgba(17,16,51,0.7);line-height:1.6;white-space:pre-line">${plan}</p>
-      <div style="display:flex;gap:8px;margin-top:16px">
-        <button style="flex:1;padding:10px;border-radius:12px;background:var(--accent);color:white;border:none;font-size:12px">Save Plan</button>
-        <button style="flex:1;padding:10px;border-radius:12px;background:var(--bg);color:rgba(17,16,51,0.5);border:none;font-size:12px">Send to Athlete</button>
-      </div>`;
-  }, 1200);
+async function coachAISend() {
+  const input = document.getElementById('coachAIInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  const container = document.getElementById('coachAIChatContainer');
+
+  // Add user message
+  container.innerHTML += `<div class="chat-msg user">${escapeHtml(msg)}</div>`;
+  container.scrollTop = container.scrollHeight;
+
+  // Hide chips after first message
+  const chips = document.getElementById('coachAIChips');
+  if (chips) chips.style.display = 'none';
+
+  // Typing indicator
+  const icon = `<div class="coach-ai-icon"><svg width="12" height="12" fill="none" stroke="#d4ecf1" stroke-width="2"><path d="M6 1v3M6 8v3M1 6h3M8 6h3"/></svg></div>`;
+  const typingId = 'coachAITyping-' + Date.now();
+  container.innerHTML += `<div class="coach-ai-row" id="${typingId}">${icon}<div class="chat-msg ai"><span class="typing-dots"><span>.</span><span>.</span><span>.</span></span></div></div>`;
+  container.scrollTop = container.scrollHeight;
+
+  // Disable send
+  const sendBtn = input.nextElementSibling;
+  if (sendBtn) sendBtn.disabled = true;
+
+  const coachContext = `You are the AI Coach inside swym — a swim coaching app. The coach has ${ATHLETES.length} athletes: ${ATHLETES.map(a => a.name + ' (' + a.specialty + ', fatigue: ' + a.fatigue + '%, weekly distance: ' + a.weeklyDist + ')').join(', ')}. Generate training plans, workout sets, and coaching advice. Use swim-specific format like "4×100m Free @ 1:20 w/ 20s rest". Keep responses concise (2-4 sentences unless asked for a full plan). Be encouraging but data-driven.`;
+
+  try {
+    coachAIChatHistory.push({ role: 'user', content: msg });
+
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: msg,
+        model: 'llama-3.3-70b-versatile',
+        systemPrompt: coachContext,
+      }),
+    });
+
+    const data = await res.json();
+    const typingEl = document.getElementById(typingId);
+    if (typingEl) typingEl.remove();
+
+    if (!res.ok) {
+      container.innerHTML += `<div class="coach-ai-row">${icon}<div class="chat-msg ai" style="color:#ef4444">Sorry, I couldn't respond right now. Please try again.</div></div>`;
+    } else {
+      const reply = data.reply;
+      coachAIChatHistory.push({ role: 'assistant', content: reply });
+      container.innerHTML += `<div class="coach-ai-row">${icon}<div class="chat-msg ai">${escapeHtml(reply)}</div></div>`;
+    }
+  } catch (err) {
+    const typingEl = document.getElementById(typingId);
+    if (typingEl) typingEl.remove();
+    container.innerHTML += `<div class="coach-ai-row">${icon}<div class="chat-msg ai" style="color:#ef4444">Network error — check your connection and try again.</div></div>`;
+  }
+
+  if (sendBtn) sendBtn.disabled = false;
+  container.scrollTop = container.scrollHeight;
+}
+
+function coachAIReset() {
+  const el = document.getElementById('coachAIResult');
+  if (el) { el.style.display = 'none'; el.innerHTML = ''; }
+  const chips = document.getElementById('coachAIChips');
+  if (chips) chips.style.display = 'flex';
 }
 
 function renderCoachData() {
+  setTimeout(() => {
+    renderAttendanceChart();
+    renderPaceChart();
+    renderStrokeChart();
+    renderFatigueChart();
+  }, 60);
   return `
-    <div class="dark-hdr" style="padding-bottom:32px">
-      <div style="position:relative;z-index:10">
-        <div style="font-size:10px;letter-spacing:.2em;color:rgba(255,255,255,.2);margin-bottom:8px">TEAM ANALYTICS</div>
-        <h1 style="font-family:var(--font-head);font-size:30px;color:white">Data</h1>
+    <div style="padding:48px 24px 16px;background:var(--dark)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <svg width="22" height="22" fill="none" stroke="#d4ecf1" stroke-width="1.5"><rect x="3" y="10" width="4" height="8" rx="1"/><rect x="9" y="5" width="4" height="13" rx="1"/><rect x="15" y="2" width="4" height="16" rx="1"/></svg>
+        <h1 style="font-family:var(--font-head);font-size:26px;color:white">Analytics</h1>
       </div>
+      <p style="font-size:11px;color:rgba(255,255,255,.3)">Performance insights and team metrics</p>
     </div>
-    <div style="padding:0 20px 120px;margin-top:-12px;display:flex;flex-direction:column;gap:16px">
-      <div class="card-white" style="padding:20px">
-        <div style="font-size:10px;color:rgba(17,16,51,0.25);letter-spacing:0.15em;margin-bottom:12px">TEAM ATTENDANCE (THIS WEEK)</div>
-        <div class="bars">
-          ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((d, i) => {
-            const heights = [85, 100, 70, 90, 75];
-            return `<div class="bar-col"><div class="bar-fill" style="height:${heights[i]}%"></div><span style="font-size:9px;color:rgba(17,16,51,0.3)">${d}</span></div>`;
+    <div style="padding:0 20px 120px;display:flex;flex-direction:column;gap:16px;background:var(--dark)">
+      <!-- Attendance Trends -->
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"><path d="M11 14v-1a3 3 0 00-3-3H6a3 3 0 00-3 3v1"/><circle cx="7" cy="5" r="3"/></svg>
+            <span style="font-family:var(--font-head);font-size:15px;color:white">Attendance Trends</span>
+          </div>
+          <span style="font-size:10px;color:#4ade80;background:rgba(74,222,128,.1);padding:3px 10px;border-radius:9999px">↗ +4%</span>
+        </div>
+        <canvas id="attendanceChart" width="320" height="160" style="display:block;width:100%;height:160px"></canvas>
+      </div>
+
+      <!-- Pace Improvement -->
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"><path d="M2 12l4-5 3 3 5-7"/></svg>
+            <span style="font-family:var(--font-head);font-size:15px;color:white">Pace Improvement</span>
+          </div>
+          <span style="font-size:10px;color:#4ade80;background:rgba(74,222,128,.1);padding:3px 10px;border-radius:9999px">↗ -10s avg</span>
+        </div>
+        <canvas id="paceChart" width="320" height="160" style="display:block;width:100%;height:160px"></canvas>
+      </div>
+
+      <!-- Stroke Comparison -->
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"><path d="M2 10c2-3 4-5 6-5s4 2 6 5"/></svg>
+            <span style="font-family:var(--font-head);font-size:15px;color:white">Stroke Comparison</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:2px;background:#d4ecf1"></div><span style="font-size:8px;color:rgba(255,255,255,.4)">Team Avg</span></div>
+            <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:#98C0C8"></div><span style="font-size:8px;color:rgba(255,255,255,.4)">Target</span></div>
+          </div>
+        </div>
+        <canvas id="strokeChart" width="320" height="180" style="display:block;width:100%;height:180px"></canvas>
+      </div>
+
+      <!-- Fatigue This Week -->
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"><path d="M2 12l4-5 3 3 5-7"/></svg>
+          <span style="font-family:var(--font-head);font-size:15px;color:white">Fatigue This Week</span>
+        </div>
+        <canvas id="fatigueChart" width="320" height="160" style="display:block;width:100%;height:160px"></canvas>
+      </div>
+
+      <!-- Athlete Comparison -->
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+          <svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"><path d="M11 14v-1a3 3 0 00-3-3H6a3 3 0 00-3 3v1"/><circle cx="7" cy="5" r="3"/></svg>
+          <span style="font-family:var(--font-head);font-size:15px;color:white">Athlete Comparison</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          ${ATHLETES.map(a => {
+            const stats = {Speed: 85+Math.floor(Math.random()*10), Endurance: 80+Math.floor(Math.random()*12), Technique: 78+Math.floor(Math.random()*10), Recovery: 75+Math.floor(Math.random()*18), Consistency: 85+Math.floor(Math.random()*12)};
+            return `<div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
+                <div style="width:8px;height:8px;border-radius:50%;background:${a.color}"></div>
+                <span style="font-size:13px;font-weight:500;color:white">${a.name.split(' ')[0]}</span>
+              </div>
+              ${Object.entries(stats).map(([k,v]) => `<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+                <span style="font-size:10px;color:rgba(255,255,255,.35);width:65px">${k}</span>
+                <div style="flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:9999px;overflow:hidden"><div style="height:100%;width:${v}%;background:linear-gradient(90deg,#d4ecf1,#98C0C8);border-radius:9999px"></div></div>
+                <span style="font-size:10px;color:rgba(255,255,255,.5);width:22px;text-align:right">${v}</span>
+              </div>`).join('')}
+            </div>`;
           }).join('')}
         </div>
       </div>
-      <div class="card-white" style="padding:20px">
-        <div style="font-size:10px;color:rgba(17,16,51,0.25);letter-spacing:0.15em;margin-bottom:12px">PACE IMPROVEMENT (4 WEEKS)</div>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          ${ATHLETES.map(a => `<div style="display:flex;align-items:center;gap:12px">
-            <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-family:var(--font-head);background:${a.color};color:${a.color === '#98C0C8' ? '#111033' : 'white'}">${a.initials}</div>
-            <div style="flex:1"><div style="height:6px;background:var(--bg);border-radius:9999px;overflow:hidden"><div style="height:100%;width:${60 + Math.random() * 30}%;background:linear-gradient(90deg,var(--accent),var(--accent-light));border-radius:9999px"></div></div></div>
-            <span style="font-size:10px;color:#16a34a">-${Math.floor(2 + Math.random() * 6)}s</span>
-          </div>`).join('')}
-        </div>
-      </div>
-      <div class="card-white" style="padding:20px">
-        <div style="font-size:10px;color:rgba(17,16,51,0.25);letter-spacing:0.15em;margin-bottom:12px">FATIGUE LEVELS</div>
-        ${ATHLETES.map(a => {
-          const fatClass = a.fatigue < 40 ? 'fatigue-low' : a.fatigue < 65 ? 'fatigue-med' : 'fatigue-high';
-          return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-            <span style="font-size:12px;color:rgba(17,16,51,0.5);width:80px">${a.name.split(' ')[0]}</span>
-            <div style="flex:1"><div class="fatigue-bar"><div class="fatigue-fill ${fatClass}" style="width:${a.fatigue}%"></div></div></div>
-            <span style="font-size:12px;font-family:var(--font-head);color:var(--dark)">${a.fatigue}%</span>
-          </div>`;
-        }).join('')}
-      </div>
     </div>`;
+}
+
+function renderAttendanceChart() {
+  const c = document.getElementById('attendanceChart');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const data = [90, 88, 93, 95, 91, 94, 92];
+  const labels = ['W1','W2','W3','W4','W5','W6','W7'];
+  const min = 80, max = 100;
+  const pad = {t:10,r:10,b:24,l:30};
+  const cw = W-pad.l-pad.r, ch = H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.t + ch * i / 4;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W-pad.r, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '9px Inter,sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(Math.round(max - (max-min)*i/4), pad.l-6, y+3);
+  }
+  // Labels
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(255,255,255,0.2)';
+  labels.forEach((l,i) => ctx.fillText(l, pad.l + cw*i/(labels.length-1), H-4));
+  // Line
+  ctx.beginPath();
+  data.forEach((v,i) => {
+    const x = pad.l + cw*i/(data.length-1);
+    const y = pad.t + ch*(1-(v-min)/(max-min));
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle = '#d4ecf1';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  // Dots
+  data.forEach((v,i) => {
+    const x = pad.l + cw*i/(data.length-1);
+    const y = pad.t + ch*(1-(v-min)/(max-min));
+    ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2);
+    ctx.fillStyle = '#d4ecf1'; ctx.fill();
+  });
+}
+
+function renderPaceChart() {
+  const c = document.getElementById('paceChart');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const data = [93, 91, 89, 87, 85, 84, 82];
+  const labels = ['W1','W2','W3','W4','W5','W6','W7'];
+  const min = 75, max = 95;
+  const pad = {t:10,r:10,b:24,l:44};
+  const cw = W-pad.l-pad.r, ch = H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.t + ch * i / 4;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W-pad.r, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '9px Inter,sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(Math.round(max - (max-min)*i/4), pad.l-6, y+3);
+  }
+  // Y axis label
+  ctx.save();
+  ctx.translate(10, pad.t+ch/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillStyle = 'rgba(255,255,255,0.2)';
+  ctx.font = '8px Inter,sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('sec/100m', 0, 0);
+  ctx.restore();
+  // Labels
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(255,255,255,0.2)';
+  labels.forEach((l,i) => ctx.fillText(l, pad.l + cw*i/(labels.length-1), H-4));
+  // Line
+  ctx.beginPath();
+  data.forEach((v,i) => {
+    const x = pad.l + cw*i/(data.length-1);
+    const y = pad.t + ch*(1-(v-min)/(max-min));
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle = '#4ade80';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  // Dots
+  data.forEach((v,i) => {
+    const x = pad.l + cw*i/(data.length-1);
+    const y = pad.t + ch*(1-(v-min)/(max-min));
+    ctx.beginPath(); ctx.arc(x,y,3.5,0,Math.PI*2);
+    ctx.fillStyle = '#4ade80'; ctx.fill();
+  });
+}
+
+function renderStrokeChart() {
+  const c = document.getElementById('strokeChart');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const strokes = ['Backstroke','Butterfly'];
+  const teamAvg = [78, 65];
+  const target = [85, 72];
+  const max = 100;
+  const pad = {t:10,r:10,b:24,l:30};
+  const cw = W-pad.l-pad.r, ch = H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.t + ch * i / 4;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W-pad.r, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '9px Inter,sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(Math.round(max - max*i/4), pad.l-6, y+3);
+  }
+  // Bars
+  const groupW = cw / strokes.length;
+  const barW = 20;
+  strokes.forEach((s, gi) => {
+    const gx = pad.l + groupW * gi + groupW/2;
+    // Team Avg bar
+    const h1 = ch * teamAvg[gi] / max;
+    ctx.fillStyle = '#d4ecf1';
+    ctx.beginPath();
+    const x1 = gx - barW - 2;
+    ctx.roundRect(x1, pad.t+ch-h1, barW, h1, [3,3,0,0]);
+    ctx.fill();
+    // Target bar
+    const h2 = ch * target[gi] / max;
+    ctx.fillStyle = '#98C0C8';
+    ctx.beginPath();
+    ctx.roundRect(gx + 2, pad.t+ch-h2, barW, h2, [3,3,0,0]);
+    ctx.fill();
+    // Label
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.font = '9px Inter,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(s, gx, H-4);
+  });
+}
+
+function renderFatigueChart() {
+  const c = document.getElementById('fatigueChart');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const data = [30, 35, 42, 55, 45, 28, 22];
+  const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const max = 100;
+  const pad = {t:10,r:10,b:24,l:30};
+  const cw = W-pad.l-pad.r, ch = H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.t + ch * i / 4;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W-pad.r, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '9px Inter,sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(Math.round(max - max*i/4), pad.l-6, y+3);
+  }
+  // Bars
+  const barW = 18;
+  const gap = cw / data.length;
+  data.forEach((v,i) => {
+    const x = pad.l + gap*i + gap/2 - barW/2;
+    const h = ch * v / max;
+    ctx.fillStyle = '#f6aa38';
+    ctx.beginPath();
+    ctx.roundRect(x, pad.t+ch-h, barW, h, [3,3,0,0]);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '8px Inter,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(labels[i], pad.l + gap*i + gap/2, H-4);
+  });
 }
 
 function renderCoachProfile() {
   return `
-    <div class="dark-hdr" style="padding-bottom:80px">
-      <div style="position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:16px">
-        <div style="position:relative;margin-bottom:16px">
-          <div class="avatar-lg" style="background:linear-gradient(135deg,#1A343B,#2A324E)">CK</div>
+    <div style="padding:48px 24px 24px;background:var(--dark)">
+      <!-- Logo -->
+      <div style="margin-bottom:24px"><span style="font-family:var(--font-head);font-size:18px;color:white;opacity:0.8">swym</span></div>
+      <!-- Profile Card -->
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
+        <div style="width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,#334F6B,#98C0C8);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;font-family:var(--font-head);color:white">AC</div>
+        <div>
+          <h1 style="font-family:var(--font-head);font-size:20px;color:white;margin-bottom:2px">Alex Chen</h1>
+          <div style="font-size:12px;color:rgba(255,255,255,.35)">Head Coach</div>
+          <span style="display:inline-block;margin-top:4px;font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.15);border-radius:9999px;padding:3px 10px">Pro Member</span>
         </div>
-        <h1 style="font-family:var(--font-head);font-size:24px;color:white;margin-bottom:4px">Coach Kumar</h1>
-        <p style="font-size:12px;color:rgba(255,255,255,.25)">Head Coach · Swim City Club</p>
+      </div>
+      <!-- Stats Row -->
+      <div style="display:flex;gap:1px;background:rgba(255,255,255,0.06);border-radius:14px;overflow:hidden;margin-bottom:24px">
+        <div style="flex:1;text-align:center;padding:14px 8px;background:rgba(255,255,255,0.03)">
+          <div style="font-family:var(--font-head);font-size:20px;color:white">${ATHLETES.length}</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.25);margin-top:2px">Athletes</div>
+        </div>
+        <div style="flex:1;text-align:center;padding:14px 8px;background:rgba(255,255,255,0.03)">
+          <div style="font-family:var(--font-head);font-size:20px;color:white">2.5</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.25);margin-top:2px">Years</div>
+        </div>
+        <div style="flex:1;text-align:center;padding:14px 8px;background:rgba(255,255,255,0.03)">
+          <div style="font-family:var(--font-head);font-size:20px;color:white">142</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.25);margin-top:2px">Sessions</div>
+        </div>
       </div>
     </div>
-    <div style="padding:0 20px 120px;margin-top:-40px;display:flex;flex-direction:column;gap:16px">
-      <div class="card-white" style="padding:20px">
-        <div style="font-size:10px;letter-spacing:.15em;color:rgba(17,16,51,.25);margin-bottom:12px">TEAM INFO</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div style="text-align:center;padding:12px;background:var(--bg);border-radius:16px"><div style="font-family:var(--font-head);font-size:20px;color:var(--dark)">${ATHLETES.length}</div><div style="font-size:9px;color:rgba(17,16,51,0.3);margin-top:2px">Athletes</div></div>
-          <div style="text-align:center;padding:12px;background:var(--bg);border-radius:16px"><div style="font-family:var(--font-head);font-size:20px;color:var(--dark)">91%</div><div style="font-size:9px;color:rgba(17,16,51,0.3);margin-top:2px">Avg Attendance</div></div>
+    <div style="padding:0 20px 120px;display:flex;flex-direction:column;gap:16px;background:var(--dark)">
+      <!-- ACCOUNT Section -->
+      <div>
+        <div style="font-size:10px;letter-spacing:.12em;color:#d4ecf1;margin-bottom:10px;padding-left:4px">ACCOUNT</div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden">
+          <button style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:none;border:none;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:12px"><svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M3 14a5 5 0 0110 0"/></svg><span style="font-size:13px;color:rgba(255,255,255,.7)">Edit Profile</span></div>
+            <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"><path d="M4 1l5 5-5 5"/></svg>
+          </button>
+          <div style="height:1px;background:rgba(255,255,255,0.06);margin:0 16px"></div>
+          <button style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:none;border:none;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:12px"><svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"><path d="M8 2a2 2 0 012 2v2a2 2 0 01-4 0V4a2 2 0 012-2z"/><path d="M13 9a5 5 0 01-10 0"/><path d="M8 14v1"/></svg><span style="font-size:13px;color:rgba(255,255,255,.7)">Notifications</span></div>
+            <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"><path d="M4 1l5 5-5 5"/></svg>
+          </button>
+          <div style="height:1px;background:rgba(255,255,255,0.06);margin:0 16px"></div>
+          <button style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:none;border:none;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:12px"><svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"><path d="M2 8a6 6 0 0112 0"/><path d="M8 2v2M3 5l1 1M13 5l-1 1"/><circle cx="8" cy="10" r="2"/></svg><span style="font-size:13px;color:rgba(255,255,255,.7)">Subscription</span></div>
+            <div style="display:flex;align-items:center;gap:8px"><span style="font-size:9px;letter-spacing:.08em;color:var(--gold);background:rgba(246,170,56,.12);padding:3px 8px;border-radius:9999px">Pro</span><svg width="12" height="12" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"><path d="M4 1l5 5-5 5"/></svg></div>
+          </button>
         </div>
       </div>
-      <div class="card-white" style="padding:0;overflow:hidden">
-        <button class="menu-item"><div style="display:flex;align-items:center;gap:12px"><svg width="16" height="16" fill="none" stroke="rgba(17,16,51,.3)" stroke-width="1.5"><circle cx="8" cy="8" r="2"/><path d="M12.5 8a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg><span style="font-size:14px;color:rgba(17,16,51,.7)">Settings</span></div><svg width="14" height="14" fill="none" stroke="rgba(17,16,51,.15)" stroke-width="1.5"><path d="M5 2l5 5-5 5"/></svg></button>
-        <div class="divider"></div>
-        <button class="menu-item"><div style="display:flex;align-items:center;gap:12px"><svg width="16" height="16" fill="none" stroke="rgba(17,16,51,.3)" stroke-width="1.5"><path d="M8 2a2 2 0 012 2v3a2 2 0 01-4 0V4a2 2 0 012-2z"/><path d="M4 9v1a4 4 0 008 0V9"/></svg><span style="font-size:14px;color:rgba(17,16,51,.7)">Notifications</span></div><svg width="14" height="14" fill="none" stroke="rgba(17,16,51,.15)" stroke-width="1.5"><path d="M5 2l5 5-5 5"/></svg></button>
+
+      <!-- TEAM Section -->
+      <div>
+        <div style="font-size:10px;letter-spacing:.12em;color:#d4ecf1;margin-bottom:10px;padding-left:4px">TEAM</div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden">
+          <button onclick="coachTabTo('coachTeam')" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:none;border:none;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:12px"><svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"><path d="M11 14v-1a3 3 0 00-3-3H6a3 3 0 00-3 3v1"/><circle cx="7" cy="5" r="3"/><path d="M15 14v-1a2.5 2.5 0 00-2-2.4"/></svg><span style="font-size:13px;color:rgba(255,255,255,.7)">Connected Athletes</span></div>
+            <div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;color:rgba(255,255,255,.3);background:rgba(255,255,255,.06);padding:3px 8px;border-radius:9999px">${ATHLETES.length}</span><svg width="12" height="12" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"><path d="M4 1l5 5-5 5"/></svg></div>
+          </button>
+          <div style="height:1px;background:rgba(255,255,255,0.06);margin:0 16px"></div>
+          <button style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:none;border:none;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:12px"><svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"><rect x="3" y="3" width="10" height="10" rx="2"/><path d="M8 6v4M6 8h4"/></svg><span style="font-size:13px;color:rgba(255,255,255,.7)">Privacy & Safety</span></div>
+            <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"><path d="M4 1l5 5-5 5"/></svg>
+          </button>
+        </div>
       </div>
-      <button onclick="switchToSwimmerMode()" style="width:100%;padding:14px;border-radius:16px;background:rgba(17,16,51,0.05);border:1px solid rgba(17,16,51,0.08);color:rgba(17,16,51,0.4);font-size:12px;display:flex;align-items:center;justify-content:center;gap:8px">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10c2-3 4-5 6-5s4 2 6 5"/></svg>
-        Switch to Swimmer Mode
+
+      <!-- SUPPORT Section -->
+      <div>
+        <div style="font-size:10px;letter-spacing:.12em;color:#d4ecf1;margin-bottom:10px;padding-left:4px">SUPPORT</div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden">
+          <button style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:none;border:none;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:12px"><svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v1M8 8v3"/></svg><span style="font-size:13px;color:rgba(255,255,255,.7)">Help Center</span></div>
+            <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"><path d="M4 1l5 5-5 5"/></svg>
+          </button>
+          <div style="height:1px;background:rgba(255,255,255,0.06);margin:0 16px"></div>
+          <button style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:none;border:none;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:12px"><svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5.5a1.5 1.5 0 011.5 1.5c0 1-1.5 1-1.5 2M8 11.5v.5"/></svg><span style="font-size:13px;color:rgba(255,255,255,.7)">App Settings</span></div>
+            <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"><path d="M4 1l5 5-5 5"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Logout -->
+      <button onclick="doLogout()" style="width:100%;padding:14px;border-radius:16px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);color:#ef4444;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3l4 4-4 4M13 7H5M5 1H3a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
+        Logout
       </button>
-      <button class="btn-signout" onclick="doLogout()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3l4 4-4 4M13 7H5M5 1H3a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>SIGN OUT</button>
+
+      <div style="text-align:center;font-size:10px;color:rgba(255,255,255,.15);padding:8px 0">SWYM Coach v2.1.0</div>
     </div>`;
 }
 
@@ -1340,6 +1975,22 @@ function switchToSwimmerMode() {
   viewMode = 'swimmer';
   enterSwimmerApp();
 }
+
+function toggleModeDropdown(btn) {
+  const menu = btn.nextElementSibling;
+  const isOpen = menu.style.display !== 'none';
+  closeModeDropdowns();
+  if (!isOpen) menu.style.display = 'block';
+}
+
+function closeModeDropdowns() {
+  document.querySelectorAll('.mode-dropdown-menu').forEach(m => m.style.display = 'none');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.mode-dropdown')) closeModeDropdowns();
+});
 
 // ── Time Picker (24h carousel) ──────────────────────────────
 let selectedHour = 6;
@@ -1445,6 +2096,9 @@ document.addEventListener('DOMContentLoaded', () => {
       else {
         viewMode = 'swimmer';
         document.getElementById('swimmerNav').style.display = '';
+        // Show mode toggle for coaches in swimmer mode
+        const modeToggle = document.getElementById('swimmerModeToggle');
+        if (modeToggle) modeToggle.style.display = currentRole === 'coach' ? '' : 'none';
         initSwimmerScreens();
         const lastTab = localStorage.getItem('swym_tab') || 'home';
         navTo(lastTab);
