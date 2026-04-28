@@ -9,6 +9,8 @@ let currentScreen = 'scrWelcome';
 let viewMode = 'swimmer'; // 'swimmer' or 'coach'
 let coachTab = 'coachHome';
 let feedLikes = {};
+let coachFeedbackRating = 0;
+let feedbackReturnTarget = 'coachProfile';
 
 // Drill state
 let drills = [{ id: '1', type: 'warmup', stroke: 'Freestyle', distance: 400, paceMin: 1, paceSec: 45, rest: 15, reps: 1 }];
@@ -882,6 +884,9 @@ function renderRadarChart() {
 
 // ── Coach Dashboard ─────────────────────────────────────────
 function coachTabTo(tab) {
+  if (tab === 'coachFeedback') {
+    feedbackReturnTarget = 'coachProfile';
+  }
   coachTab = tab;
   document.querySelectorAll('#coachBottomNav .nav-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.tab === tab);
@@ -897,6 +902,7 @@ function renderCoachDashboard(tab) {
     case 'coachAI': el.innerHTML = renderCoachAI(); break;
     case 'coachData': el.innerHTML = renderCoachData(); break;
     case 'coachProfile': el.innerHTML = renderCoachProfile(); break;
+    case 'coachFeedback': el.innerHTML = renderCoachFeedback(); break;
     default: el.innerHTML = renderCoachHome();
   }
 }
@@ -1105,8 +1111,217 @@ function renderCoachProfile() {
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10c2-3 4-5 6-5s4 2 6 5"/></svg>
         Switch to Swimmer Mode
       </button>
+      <button onclick="coachTabTo('coachFeedback')" style="width:100%;padding:14px;border-radius:16px;background:rgba(17,16,51,0.05);border:1px solid rgba(17,16,51,0.08);color:rgba(17,16,51,0.5);font-size:12px;display:flex;align-items:center;justify-content:center;gap:8px">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h10v7H6l-4 3V3z"/></svg>
+        FEEDBACK
+      </button>
       <button class="btn-signout" onclick="doLogout()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3l4 4-4 4M13 7H5M5 1H3a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>SIGN OUT</button>
     </div>`;
+}
+
+function renderCoachFeedback() {
+  coachFeedbackRating = 0;
+
+  setTimeout(() => {
+    loadCoachFeedbackRows();
+    updateCoachFeedbackStars();
+  }, 0);
+
+  return `
+    <div class="dark-hdr" style="padding-bottom:26px">
+      <div style="position:relative;z-index:10">
+        <button class="btn-back" onclick="feedbackBack()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2L4 7l5 5"/></svg>Back</button>
+        <div style="font-size:10px;letter-spacing:.2em;color:rgba(255,255,255,.2);margin-bottom:8px">SUPPORT</div>
+        <h1 style="font-family:var(--font-head);font-size:26px;color:white">Feedback</h1>
+      </div>
+    </div>
+    <div style="padding:0 20px 120px;margin-top:-12px;display:flex;flex-direction:column;gap:16px">
+      <div class="card-white" style="padding:20px">
+        <div style="font-size:12px;color:rgba(17,16,51,.6);margin-bottom:8px">Star rating</div>
+        <div style="display:flex;gap:6px;margin-bottom:14px">
+          ${[1, 2, 3, 4, 5].map((n) => `<button id="coachFeedbackStar${n}" onclick="coachFeedbackSetRating(${n})" style="width:34px;height:34px;border-radius:10px;border:1px solid rgba(17,16,51,.12);background:rgba(17,16,51,.02);color:rgba(17,16,51,.35);font-size:20px;cursor:pointer">★</button>`).join('')}
+        </div>
+
+        <div style="font-size:12px;color:rgba(17,16,51,.6);margin-bottom:8px">Feedback</div>
+        <textarea id="coachFeedbackText" rows="4" placeholder="Write your feedback" style="width:100%;padding:12px 14px;border-radius:12px;background:var(--bg);border:1px solid rgba(17,16,51,0.08);color:var(--dark);font-size:13px;outline:none;font-family:var(--font-body);resize:vertical"></textarea>
+
+        <div style="font-size:12px;color:rgba(17,16,51,.6);margin:12px 0 8px">Name</div>
+        <input id="coachFeedbackName" placeholder="Your name" style="width:100%;padding:12px 14px;border-radius:12px;background:var(--bg);border:1px solid rgba(17,16,51,0.08);color:var(--dark);font-size:13px;outline:none;font-family:var(--font-body)" />
+
+        <div id="coachFeedbackMsg" style="min-height:18px;font-size:12px;color:rgba(17,16,51,.45);margin:12px 0 6px"></div>
+
+        <button id="coachFeedbackSubmitBtn" onclick="coachFeedbackSubmit()" style="width:100%;padding:12px;border-radius:12px;background:#334F6B;border:none;color:white;font-size:13px;font-weight:600;cursor:pointer">Submit</button>
+      </div>
+
+      <div>
+        <div style="font-size:10px;letter-spacing:.15em;color:rgba(17,16,51,.25);margin-bottom:10px;padding:0 4px">RECENT FEEDBACK</div>
+        <div id="coachFeedbackRows" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+    </div>`;
+}
+
+function coachFeedbackSetRating(value) {
+  coachFeedbackRating = value;
+  updateCoachFeedbackStars();
+}
+
+function updateCoachFeedbackStars() {
+  for (let i = 1; i <= 5; i++) {
+    const star = document.getElementById(`coachFeedbackStar${i}`);
+    if (!star) continue;
+    if (i <= coachFeedbackRating) {
+      star.style.color = '#F6AA38';
+      star.style.borderColor = 'rgba(246,170,56,0.4)';
+      star.style.background = 'rgba(246,170,56,0.12)';
+    } else {
+      star.style.color = 'rgba(17,16,51,.35)';
+      star.style.borderColor = 'rgba(17,16,51,.12)';
+      star.style.background = 'rgba(17,16,51,.02)';
+    }
+  }
+}
+
+function renderCoachFeedbackRows(rows) {
+  const container = document.getElementById('coachFeedbackRows');
+  if (!container) return;
+
+  if (!rows || !rows.length) {
+    container.innerHTML = '<div style="font-size:12px;color:rgba(17,16,51,.45);padding:0 4px">No feedback yet.</div>';
+    return;
+  }
+
+  container.innerHTML = rows.map((row) => {
+    const stars = [1, 2, 3, 4, 5].map((n) => `<span style="color:${n <= (row.rating || 0) ? '#F6AA38' : 'rgba(17,16,51,.18)'}">★</span>`).join('');
+    return `<div class="card-white" style="padding:12px 14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">
+        <div style="font-size:13px;color:var(--dark)">${escapeHtml(row.name || 'Anonymous')}</div>
+        <div style="font-size:10px;color:rgba(17,16,51,.35)">${escapeHtml(formatCoachFeedbackTime(row.timestamp || ''))}</div>
+      </div>
+      <div style="font-size:12px;letter-spacing:.08em;margin-bottom:6px">${stars}</div>
+      <div style="font-size:12px;color:rgba(17,16,51,.7);line-height:1.55;white-space:pre-wrap">${escapeHtml(row.feedback || '')}</div>
+    </div>`;
+  }).join('');
+}
+
+function formatCoachFeedbackTime(ts) {
+  if (!ts) return 'Unknown date';
+  const d = new Date(ts);
+  if (Number.isNaN(d.getTime())) return ts;
+  return d.toLocaleString();
+}
+
+async function loadCoachFeedbackRows() {
+  const msg = document.getElementById('coachFeedbackMsg');
+  const rowsEl = document.getElementById('coachFeedbackRows');
+  if (rowsEl) {
+    rowsEl.innerHTML = '<div style="font-size:12px;color:rgba(17,16,51,.45);padding:0 4px">Loading feedback...</div>';
+  }
+  if (msg) {
+    msg.style.color = 'rgba(17,16,51,.45)';
+    msg.textContent = '';
+  }
+
+  try {
+    const res = await fetch('/api/feedback');
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error || 'Unable to load feedback');
+    renderCoachFeedbackRows(Array.isArray(data.rows) ? data.rows : []);
+  } catch (err) {
+    if (msg) {
+      msg.style.color = '#dc2626';
+      msg.textContent = err.message || 'Unable to load feedback';
+    }
+    if (rowsEl) {
+      rowsEl.innerHTML = '<div style="font-size:12px;color:rgba(17,16,51,.45);padding:0 4px">No feedback yet.</div>';
+    }
+  }
+}
+
+async function coachFeedbackSubmit() {
+  const msg = document.getElementById('coachFeedbackMsg');
+  const textEl = document.getElementById('coachFeedbackText');
+  const nameEl = document.getElementById('coachFeedbackName');
+  const btn = document.getElementById('coachFeedbackSubmitBtn');
+
+  const feedback = (textEl?.value || '').trim();
+  const name = (nameEl?.value || '').trim();
+
+  if (!coachFeedbackRating) {
+    if (msg) {
+      msg.style.color = '#dc2626';
+      msg.textContent = 'Please select a star rating.';
+    }
+    return;
+  }
+
+  if (!feedback) {
+    if (msg) {
+      msg.style.color = '#dc2626';
+      msg.textContent = 'Please write your feedback.';
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    btn.style.opacity = '0.75';
+  }
+
+  if (msg) {
+    msg.style.color = 'rgba(17,16,51,.45)';
+    msg.textContent = '';
+  }
+
+  try {
+    const res = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rating: coachFeedbackRating, feedback, name }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error || 'Unable to submit feedback');
+
+    if (msg) {
+      msg.style.color = '#16a34a';
+      msg.textContent = 'Thanks! Your feedback was submitted.';
+    }
+
+    if (textEl) textEl.value = '';
+    if (nameEl) nameEl.value = '';
+    coachFeedbackRating = 0;
+    updateCoachFeedbackStars();
+    renderCoachFeedbackRows(Array.isArray(data.rows) ? data.rows : []);
+  } catch (err) {
+    if (msg) {
+      msg.style.color = '#dc2626';
+      msg.textContent = err.message || 'Unable to submit feedback';
+    }
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Submit';
+      btn.style.opacity = '1';
+    }
+  }
+}
+
+function openFeedbackFromSwimmer() {
+  feedbackReturnTarget = 'swimmerProfile';
+  const nav = document.getElementById('swimmerNav');
+  if (nav) nav.style.display = 'none';
+  goTo('scrCoachDash');
+  renderCoachDashboard('coachFeedback');
+}
+
+function feedbackBack() {
+  if (feedbackReturnTarget === 'swimmerProfile') {
+    const nav = document.getElementById('swimmerNav');
+    if (nav) nav.style.display = '';
+    navTo('profile');
+    return;
+  }
+  coachTabTo('coachProfile');
 }
 
 function switchToSwimmerMode() {

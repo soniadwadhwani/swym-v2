@@ -10,6 +10,7 @@ let viewMode = 'swimmer'; // 'swimmer' or 'coach'
 let coachTab = 'coachHome';
 let feedLikes = {};
 let coachFeedbackRating = 0;
+let feedbackReturnTarget = 'coachProfile';
 
 // Drill state
 let drills = [{ id: '1', type: 'warmup', stroke: 'Freestyle', distance: 400, paceMin: 1, paceSec: 45, rest: 15, reps: 1 }];
@@ -1110,6 +1111,9 @@ function coachQuickAction(action) {
 
 // ── Coach Dashboard ─────────────────────────────────────────
 function coachTabTo(tab) {
+  if (tab === 'coachFeedback') {
+    feedbackReturnTarget = 'coachProfile';
+  }
   coachTab = tab;
   document.querySelectorAll('#coachBottomNav .nav-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.tab === tab);
@@ -1993,7 +1997,7 @@ function renderCoachFeedback() {
 
   return `
     <div style="padding:48px 24px 20px;background:var(--dark)">
-      <button onclick="coachTabTo('coachProfile')" style="display:inline-flex;align-items:center;gap:8px;background:none;border:none;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;margin-bottom:14px">
+      <button onclick="feedbackBack()" style="display:inline-flex;align-items:center;gap:8px;background:none;border:none;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;margin-bottom:14px">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2L4 7l5 5"/></svg>
         Back
       </button>
@@ -2169,6 +2173,24 @@ async function coachFeedbackSubmit() {
       btn.style.opacity = '1';
     }
   }
+}
+
+function openFeedbackFromSwimmer() {
+  feedbackReturnTarget = 'swimmerProfile';
+  const nav = document.getElementById('swimmerNav');
+  if (nav) nav.style.display = 'none';
+  goTo('scrCoachDash');
+  renderCoachDashboard('coachFeedback');
+}
+
+function feedbackBack() {
+  if (feedbackReturnTarget === 'swimmerProfile') {
+    const nav = document.getElementById('swimmerNav');
+    if (nav) nav.style.display = '';
+    navTo('profile');
+    return;
+  }
+  coachTabTo('coachProfile');
 }
 
 function toggleModeDropdown(btn) {
