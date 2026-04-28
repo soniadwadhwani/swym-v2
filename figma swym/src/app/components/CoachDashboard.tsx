@@ -5,6 +5,7 @@ import { CoachTeam } from './CoachTeam';
 import { CoachAI } from './CoachAI';
 import { CoachAnalytics } from './CoachAnalytics';
 import { CoachProfile } from './CoachProfile';
+import { CoachFeedback } from './CoachFeedback';
 
 interface CoachDashboardProps {
   onSwitchToSwimmer?: () => void;
@@ -13,9 +14,11 @@ interface CoachDashboardProps {
 export function CoachDashboard({ onSwitchToSwimmer }: CoachDashboardProps) {
   const [activeTab, setActiveTab] = useState<'home' | 'team' | 'ai' | 'analytics' | 'profile'>('home');
   const [aiAutoGenerate, setAiAutoGenerate] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const handleGeneratePlan = () => {
     setAiAutoGenerate(true);
+    setShowFeedback(false);
     setActiveTab('ai');
   };
 
@@ -30,7 +33,9 @@ export function CoachDashboard({ onSwitchToSwimmer }: CoachDashboardProps) {
       case 'analytics':
         return <CoachAnalytics />;
       case 'profile':
-        return <CoachProfile onLogout={() => {}} />;
+        return showFeedback
+          ? <CoachFeedback onBack={() => setShowFeedback(false)} />
+          : <CoachProfile onLogout={() => {}} onOpenFeedback={() => setShowFeedback(true)} />;
       default:
         return <CoachHome onGeneratePlan={handleGeneratePlan} onSwitchToSwimmer={onSwitchToSwimmer} />;
     }
@@ -49,6 +54,7 @@ export function CoachDashboard({ onSwitchToSwimmer }: CoachDashboardProps) {
             onClick={() => {
               setActiveTab('home');
               setAiAutoGenerate(false);
+              setShowFeedback(false);
             }}
             className={`flex items-center gap-1.5 py-2.5 px-3.5 rounded-full transition-all duration-300 ${
               activeTab === 'home'
@@ -67,6 +73,7 @@ export function CoachDashboard({ onSwitchToSwimmer }: CoachDashboardProps) {
             onClick={() => {
               setActiveTab('team');
               setAiAutoGenerate(false);
+              setShowFeedback(false);
             }}
             className={`flex items-center gap-1.5 py-2.5 px-3.5 rounded-full transition-all duration-300 ${
               activeTab === 'team'
@@ -85,6 +92,7 @@ export function CoachDashboard({ onSwitchToSwimmer }: CoachDashboardProps) {
             onClick={() => {
               setActiveTab('ai');
               setAiAutoGenerate(false);
+              setShowFeedback(false);
             }}
             className={`flex items-center gap-1.5 py-2.5 px-3.5 rounded-full transition-all duration-300 ${
               activeTab === 'ai'
@@ -103,6 +111,7 @@ export function CoachDashboard({ onSwitchToSwimmer }: CoachDashboardProps) {
             onClick={() => {
               setActiveTab('analytics');
               setAiAutoGenerate(false);
+              setShowFeedback(false);
             }}
             className={`flex items-center gap-1.5 py-2.5 px-3.5 rounded-full transition-all duration-300 ${
               activeTab === 'analytics'
