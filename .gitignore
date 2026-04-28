@@ -2,6 +2,7 @@
 .env.local
 node_modules/
 .vercel/
+.secrets/
 
 # Google service account credential files
 *-service-account.json

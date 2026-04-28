@@ -26,49 +26,72 @@ function normalizeFeedbackRows(values) {
 
 async function readFeedbackRows() {
   const { accessToken, spreadsheetId, sheetName } = await getSheetsClient();
-  const range = encodeURIComponent(`${sheetName}!A:D`);
+  const preferredRange = `${sheetName}!A:D`;
+  const fallbackRange = 'A:D';
 
-  const response = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}`,
-    {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
+  const fetchRows = async (range) => {
+    const response = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       },
-    },
-  );
+    );
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Failed to read Google Sheet rows: ${errorText}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText);
+    }
+
+    const data = await response.json();
+    return normalizeFeedbackRows(data.values || []);
+  };
+
+  try {
+    return await fetchRows(preferredRange);
+  } catch (err) {
+    if (String(err.message || '').includes('Unable to parse range')) {
+      return await fetchRows(fallbackRange);
+    }
+    throw new Error(`Failed to read Google Sheet rows: ${err.message}`);
   }
-
-  const data = await response.json();
-  return normalizeFeedbackRows(data.values || []);
 }
 
 async function appendFeedbackRow({ rating, feedback, name }) {
   const { accessToken, spreadsheetId, sheetName } = await getSheetsClient();
-  const range = encodeURIComponent(`${sheetName}!A:D`);
   const timestamp = new Date().toISOString();
 
-  const response = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
+  const appendRows = async (range) => {
+    const response = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          values: [[timestamp, rating, feedback, name]],
+        }),
       },
-      body: JSON.stringify({
-        values: [[timestamp, rating, feedback, name]],
-      }),
-    },
-  );
+    );
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Failed to append Google Sheet row: ${errorText}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText);
+    }
+  };
+
+  try {
+    await appendRows(`${sheetName}!A:D`);
+  } catch (err) {
+    if (String(err.message || '').includes('Unable to parse range')) {
+      await appendRows('A:D');
+      return;
+    }
+    throw new Error(`Failed to append Google Sheet row: ${err.message}`);
   }
 }
 
