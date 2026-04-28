@@ -2,3 +2,7 @@
 .env.local
 node_modules/
 .vercel/
+
+# Google service account credential files
+*-service-account.json
+swym-*.json

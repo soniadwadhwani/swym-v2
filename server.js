@@ -36,38 +36,69 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon',
 };
 
-// Import the serverless function
-const chatHandler = require('./api/chat');
+function sendApiResponse(res, statusCode, data) {
+  res.writeHead(statusCode, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+  });
+  res.end(JSON.stringify(data));
+}
+
+function getApiModulePath(urlPath) {
+  const cleanPath = urlPath.split('?')[0];
+  if (!cleanPath.startsWith('/api/')) return null;
+  const endpoint = cleanPath.slice('/api/'.length);
+  if (!endpoint) return null;
+  return path.join(__dirname, 'api', `${endpoint}.js`);
+}
+
+async function parseRequestBody(req) {
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      if (!body) {
+        resolve({});
+        return;
+      }
+
+      try {
+        resolve(JSON.parse(body));
+      } catch (err) {
+        reject(new Error('Invalid JSON body'));
+      }
+    });
+    req.on('error', reject);
+  });
+}
 
 const server = http.createServer(async (req, res) => {
   // Handle API routes
-  if (req.url === '/api/chat' && req.method === 'POST') {
-    let body = '';
-    req.on('data', chunk => { body += chunk; });
-    req.on('end', async () => {
-      try {
-        // Create mock Vercel req/res objects
-        const mockReq = {
-          method: req.method,
-          body: JSON.parse(body),
-        };
-        const mockRes = {
-          statusCode: 200,
-          status(code) { this.statusCode = code; return this; },
-          json(data) {
-            res.writeHead(this.statusCode, {
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*',
-            });
-            res.end(JSON.stringify(data));
-          },
-        };
-        await chatHandler.default(mockReq, mockRes);
-      } catch (err) {
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: err.message }));
+  const apiModulePath = getApiModulePath(req.url || '');
+  if (apiModulePath && fs.existsSync(apiModulePath)) {
+    try {
+      const apiModule = require(apiModulePath);
+      const handler = apiModule?.default;
+      if (typeof handler !== 'function') {
+        return sendApiResponse(res, 500, { error: 'Invalid API handler export' });
       }
-    });
+
+      const mockReq = {
+        method: req.method,
+        body: req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH'
+          ? await parseRequestBody(req)
+          : {},
+      };
+      const mockRes = {
+        statusCode: 200,
+        status(code) { this.statusCode = code; return this; },
+        json(data) { return sendApiResponse(res, this.statusCode, data); },
+      };
+
+      await handler(mockReq, mockRes);
+    } catch (err) {
+      sendApiResponse(res, 500, { error: err.message });
+    }
     return;
   }
 

@@ -1,10 +1,11 @@
-import { User, Users, Settings, LogOut, Crown, Bell, Shield, HelpCircle, ChevronRight } from 'lucide-react';
+import { User, Users, Settings, LogOut, Crown, Bell, Shield, HelpCircle, MessageSquare, ChevronRight } from 'lucide-react';
 
 interface CoachProfileProps {
   onLogout?: () => void;
+  onOpenFeedback?: () => void;
 }
 
-export function CoachProfile({ onLogout }: CoachProfileProps) {
+export function CoachProfile({ onLogout, onOpenFeedback }: CoachProfileProps) {
   const settingsSections = [
     {
       title: 'Account',
@@ -25,6 +26,7 @@ export function CoachProfile({ onLogout }: CoachProfileProps) {
       title: 'Support',
       items: [
         { icon: HelpCircle, label: 'Help Center', action: () => {} },
+        { icon: MessageSquare, label: 'Feedback', action: onOpenFeedback || (() => {}) },
         { icon: Settings, label: 'App Settings', action: () => {} },
       ],
     },
