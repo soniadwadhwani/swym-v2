@@ -9,6 +9,7 @@ let currentScreen = 'scrWelcome';
 let viewMode = 'swimmer'; // 'swimmer' or 'coach'
 let coachTab = 'coachHome';
 let feedLikes = {};
+let coachFeedbackRating = 0;
 
 // Drill state
 let drills = [{ id: '1', type: 'warmup', stroke: 'Freestyle', distance: 400, paceMin: 1, paceSec: 45, rest: 15, reps: 1 }];
@@ -1124,6 +1125,7 @@ function renderCoachDashboard(tab) {
     case 'coachAI': el.innerHTML = renderCoachAI(); break;
     case 'coachData': el.innerHTML = renderCoachData(); break;
     case 'coachProfile': el.innerHTML = renderCoachProfile(); break;
+    case 'coachFeedback': el.innerHTML = renderCoachFeedback(); break;
     default: el.innerHTML = renderCoachHome();
   }
 }
@@ -1954,6 +1956,11 @@ function renderCoachProfile() {
             <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"><path d="M4 1l5 5-5 5"/></svg>
           </button>
           <div style="height:1px;background:rgba(255,255,255,0.06);margin:0 16px"></div>
+          <button onclick="coachTabTo('coachFeedback')" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:none;border:none;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:12px"><svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"><path d="M2 3h12v8H6l-4 3V3z"/></svg><span style="font-size:13px;color:rgba(255,255,255,.7)">Feedback</span></div>
+            <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"><path d="M4 1l5 5-5 5"/></svg>
+          </button>
+          <div style="height:1px;background:rgba(255,255,255,0.06);margin:0 16px"></div>
           <button style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:none;border:none;cursor:pointer">
             <div style="display:flex;align-items:center;gap:12px"><svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5.5a1.5 1.5 0 011.5 1.5c0 1-1.5 1-1.5 2M8 11.5v.5"/></svg><span style="font-size:13px;color:rgba(255,255,255,.7)">App Settings</span></div>
             <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"><path d="M4 1l5 5-5 5"/></svg>
@@ -1974,6 +1981,194 @@ function renderCoachProfile() {
 function switchToSwimmerMode() {
   viewMode = 'swimmer';
   enterSwimmerApp();
+}
+
+function renderCoachFeedback() {
+  coachFeedbackRating = 0;
+
+  setTimeout(() => {
+    loadCoachFeedbackRows();
+    updateCoachFeedbackStars();
+  }, 0);
+
+  return `
+    <div style="padding:48px 24px 20px;background:var(--dark)">
+      <button onclick="coachTabTo('coachProfile')" style="display:inline-flex;align-items:center;gap:8px;background:none;border:none;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;margin-bottom:14px">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2L4 7l5 5"/></svg>
+        Back
+      </button>
+      <h1 style="font-family:var(--font-head);font-size:28px;color:white;margin-bottom:6px">Feedback</h1>
+      <p style="font-size:12px;color:rgba(255,255,255,.35)">Share feedback and view recent responses.</p>
+    </div>
+    <div style="padding:0 20px 120px;display:flex;flex-direction:column;gap:16px;background:var(--dark)">
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:16px">
+        <div style="font-size:12px;color:rgba(255,255,255,.8);margin-bottom:8px">Star rating</div>
+        <div style="display:flex;gap:6px;margin-bottom:14px">
+          ${[1, 2, 3, 4, 5].map((n) => `<button id="coachFeedbackStar${n}" onclick="coachFeedbackSetRating(${n})" style="width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.02);color:rgba(255,255,255,.35);font-size:20px;cursor:pointer">★</button>`).join('')}
+        </div>
+
+        <div style="font-size:12px;color:rgba(255,255,255,.8);margin-bottom:8px">Feedback</div>
+        <textarea id="coachFeedbackText" rows="4" placeholder="Write your feedback" style="width:100%;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:white;font-size:13px;outline:none;font-family:var(--font-body);resize:vertical"></textarea>
+
+        <div style="font-size:12px;color:rgba(255,255,255,.8);margin:12px 0 8px">Name</div>
+        <input id="coachFeedbackName" placeholder="Your name" style="width:100%;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:white;font-size:13px;outline:none;font-family:var(--font-body)" />
+
+        <div id="coachFeedbackMsg" style="min-height:18px;font-size:12px;color:rgba(255,255,255,.55);margin:12px 0 6px"></div>
+
+        <button id="coachFeedbackSubmitBtn" onclick="coachFeedbackSubmit()" style="width:100%;padding:12px;border-radius:12px;background:#98C0C8;border:none;color:#111033;font-size:13px;font-weight:600;cursor:pointer">Submit</button>
+      </div>
+
+      <div>
+        <div style="font-size:10px;letter-spacing:.12em;color:#d4ecf1;margin-bottom:10px;padding-left:4px">RECENT FEEDBACK</div>
+        <div id="coachFeedbackRows" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+    </div>`;
+}
+
+function coachFeedbackSetRating(value) {
+  coachFeedbackRating = value;
+  updateCoachFeedbackStars();
+}
+
+function updateCoachFeedbackStars() {
+  for (let i = 1; i <= 5; i++) {
+    const star = document.getElementById(`coachFeedbackStar${i}`);
+    if (!star) continue;
+    if (i <= coachFeedbackRating) {
+      star.style.color = '#F6AA38';
+      star.style.borderColor = 'rgba(246,170,56,0.4)';
+      star.style.background = 'rgba(246,170,56,0.12)';
+    } else {
+      star.style.color = 'rgba(255,255,255,.35)';
+      star.style.borderColor = 'rgba(255,255,255,.12)';
+      star.style.background = 'rgba(255,255,255,.02)';
+    }
+  }
+}
+
+function renderCoachFeedbackRows(rows) {
+  const container = document.getElementById('coachFeedbackRows');
+  if (!container) return;
+
+  if (!rows || !rows.length) {
+    container.innerHTML = '<div style="font-size:12px;color:rgba(255,255,255,.45);padding:0 4px">No feedback yet.</div>';
+    return;
+  }
+
+  container.innerHTML = rows.map((row) => {
+    const stars = [1, 2, 3, 4, 5].map((n) => `<span style="color:${n <= (row.rating || 0) ? '#F6AA38' : 'rgba(255,255,255,.18)'}">★</span>`).join('');
+    return `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:12px 14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">
+        <div style="font-size:13px;color:white">${escapeHtml(row.name || 'Anonymous')}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.35)">${escapeHtml(formatCoachFeedbackTime(row.timestamp || ''))}</div>
+      </div>
+      <div style="font-size:12px;letter-spacing:.08em;margin-bottom:6px">${stars}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.72);line-height:1.55;white-space:pre-wrap">${escapeHtml(row.feedback || '')}</div>
+    </div>`;
+  }).join('');
+}
+
+function formatCoachFeedbackTime(ts) {
+  if (!ts) return 'Unknown date';
+  const d = new Date(ts);
+  if (Number.isNaN(d.getTime())) return ts;
+  return d.toLocaleString();
+}
+
+async function loadCoachFeedbackRows() {
+  const msg = document.getElementById('coachFeedbackMsg');
+  const rowsEl = document.getElementById('coachFeedbackRows');
+  if (rowsEl) {
+    rowsEl.innerHTML = '<div style="font-size:12px;color:rgba(255,255,255,.45);padding:0 4px">Loading feedback...</div>';
+  }
+  if (msg) {
+    msg.style.color = 'rgba(255,255,255,.55)';
+    msg.textContent = '';
+  }
+
+  try {
+    const res = await fetch('/api/feedback');
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error || 'Unable to load feedback');
+    renderCoachFeedbackRows(Array.isArray(data.rows) ? data.rows : []);
+  } catch (err) {
+    if (msg) {
+      msg.style.color = '#fca5a5';
+      msg.textContent = err.message || 'Unable to load feedback';
+    }
+    if (rowsEl) {
+      rowsEl.innerHTML = '<div style="font-size:12px;color:rgba(255,255,255,.45);padding:0 4px">No feedback yet.</div>';
+    }
+  }
+}
+
+async function coachFeedbackSubmit() {
+  const msg = document.getElementById('coachFeedbackMsg');
+  const textEl = document.getElementById('coachFeedbackText');
+  const nameEl = document.getElementById('coachFeedbackName');
+  const btn = document.getElementById('coachFeedbackSubmitBtn');
+
+  const feedback = (textEl?.value || '').trim();
+  const name = (nameEl?.value || '').trim();
+
+  if (!coachFeedbackRating) {
+    if (msg) {
+      msg.style.color = '#fca5a5';
+      msg.textContent = 'Please select a star rating.';
+    }
+    return;
+  }
+
+  if (!feedback) {
+    if (msg) {
+      msg.style.color = '#fca5a5';
+      msg.textContent = 'Please write your feedback.';
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    btn.style.opacity = '0.75';
+  }
+
+  if (msg) {
+    msg.style.color = 'rgba(255,255,255,.55)';
+    msg.textContent = '';
+  }
+
+  try {
+    const res = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rating: coachFeedbackRating, feedback, name }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error || 'Unable to submit feedback');
+
+    if (msg) {
+      msg.style.color = '#86efac';
+      msg.textContent = 'Thanks! Your feedback was submitted.';
+    }
+
+    if (textEl) textEl.value = '';
+    if (nameEl) nameEl.value = '';
+    coachFeedbackRating = 0;
+    updateCoachFeedbackStars();
+    renderCoachFeedbackRows(Array.isArray(data.rows) ? data.rows : []);
+  } catch (err) {
+    if (msg) {
+      msg.style.color = '#fca5a5';
+      msg.textContent = err.message || 'Unable to submit feedback';
+    }
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Submit';
+      btn.style.opacity = '1';
+    }
+  }
 }
 
 function toggleModeDropdown(btn) {
